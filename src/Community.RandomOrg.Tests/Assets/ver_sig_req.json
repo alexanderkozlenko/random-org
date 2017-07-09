@@ -1,0 +1,26 @@
+{
+    "jsonrpc": "2.0",
+    "method": "verifySignature",
+    "params": {
+        "random": {
+            "method": "generateSignedIntegers",
+            "hashedApiKey": "oT3AdLMVZKajz0pgW/8Z+t5sGZkqQSOnAi1aB8Li0tXgWf8LolrgdQ1wn9sKx1ehxhUZmhwUIpAtM8QeRbn51Q==",
+            "n": 6,
+            "min": 1,
+            "max": 6,
+            "replacement": true,
+            "base": 10,
+            "data": [
+                3,
+                6,
+                4,
+                6,
+                1,
+                5
+            ],
+            "completionTime": "2013-07-07 09:00:43Z",
+            "serialNumber": 69149
+        },
+        "signature": "Pd46xecjlt/EEOdNGFQNCFHVJhZ5lfVUFLziDusOpLIKGbbHh4kCRM8+el8xh3ASUgR7qfL+K7pzERsIIHIheiIt8EXq9Xr/DW3N3qfKL/4Cai+zyBGn4xThSJnXSJPvM+LuXI+B2dPx7GYJa2PSVgF+fV3j0eN+exAa4fjAQFGiPDQo+dCQO3cSO8aZ76tSGJpo/6b1rR/sdIt8uAWRsfL56tFA+2+xUtuXU5vM8HT+KO6o4N7TWpvBz1rw/0S9iiIRdIDJ5M/AjKXeXKMMkDBHUaeUWCDEZkZOMYTk6IvOpERlsWz0dz2xrs4NE8vZsi4nIVU5izGLYceMRf2TmZVC7XXdZDbeEnJnCmDacRBONqTYklJ22wGrXrFs8GElEoG3IqOgjS1ZME3/jBGW7G3eUB1xb0lT773V2YvGBPTqsnz3tawO8UDdIpoGjSQjtgql/j7gzNmyW6AC9wvrLyXeh7OP6rhp3SLNUAjNhr+QqjHrqPEv+QqkZspYCxTMVyRILCe+z+jTbNnTClVpgxIP5hSfLkinea/TpomZqWj6KwYPqKuiNMrEXsbWlAytzr1v1tsbHbESb2XKytUDWHqmBDCNxHphcgVTmn9+bi2+WPjueBBUH+b0ZOvHIZNxld9P76x8IlcOVKRLl770j0yD3ActIZNaHvUNYeBoK2M="
+    }
+}

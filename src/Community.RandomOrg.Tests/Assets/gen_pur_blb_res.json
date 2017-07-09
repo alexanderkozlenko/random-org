@@ -1,0 +1,15 @@
+{
+    "jsonrpc": "2.0",
+    "result": {
+        "random": {
+            "data": [
+                "aNB8L3hY3kWYXgTUQxGVB5njMe2e0l3LCjkDCN1u12kPBPrsDcWMLTCDlB60kRhAlGbvPqoBHhjg6ZbOM4LfD3T9/wfhvnqJ1FTraamW2IAUnyKxz27fgcPw1So6ToIBL0fGQLpMQDF2/nEmNmFRNa9s6sQ+400IGA+ZeaOAgjE="
+            ],
+            "completionTime": "2011-10-10 13:19:12Z"
+        },
+        "bitsUsed": 1024,
+        "bitsLeft": 198976,
+        "requestsLeft": 9999,
+        "advisoryDelay": 0
+    }
+}

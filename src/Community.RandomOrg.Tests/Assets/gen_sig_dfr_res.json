@@ -1,0 +1,31 @@
+{
+    "jsonrpc": "2.0",
+    "result": {
+        "random": {
+            "method": "generateSignedDecimalFractions",
+            "hashedApiKey": "oT3AdLMVZKajz0pgW/8Z+t5sGZkqQSOnAi1aB8Li0tXgWf8LolrgdQ1wn9sKx1ehxhUZmhwUIpAtM8QeRbn51Q==",
+            "n": 10,
+            "decimalPlaces": 8,
+            "replacement": true,
+            "data": [
+                0.95500371,
+                0.65189604,
+                0.10816501,
+                0.74836463,
+                0.55116651,
+                0.6243396,
+                0.1743356,
+                0.60179234,
+                0.26488912,
+                0.42426186
+            ],
+            "completionTime": "2013-09-30 14:54:11Z",
+            "serialNumber": 69259
+        },
+        "signature": "ENJ8vaXRW6OnZSSnML16OaZC4ROYAU+jFsjcVFg41Y6nAR6p9/wYde9GmV8OBgI1IkocyJbuWqTiD0y8mm/RQRNNXLXhVWwe8MuFp6CNR9N7drJMMY3/51PxmRYc9ottUFakn/JxCE2a3kwyYaD5y50WuzqTWgA1yqxRuudcWQMl4WrvIcqc8LWAqgAMUfCn/va3xQ749CzI9gpiemzbWcfEUjU56D4Kv7hJtUTN4WsVCD2TWGK5kUpmiz+R1tVfNQkgsmeFMA5J8KFAv3kVMdK09EVfCn+Y1bWEotQvkQcpepD6Lm/ZlZhriDyutv8mqSftecTVQI8VyRFilkReI0Wb7URJgS5kaYFkXwP4lVlFvvFMJCvTZ5MNZvu9boh0tYwqGQW4mZPNcaGm1BA5IShlPFz71K8SeyQAhKSxhYoK8/0zlcT0or7uJb7hcIBcErThoUqx1VzwbSLP3sr83usLhw4pqVxXQnxjV1HEVmo/csEVwM7lo6bBgN4ev0cUiBzdWzMKAv5MfjshgPyN1zUSmSkrkNgDxxhbiAkCZ6QagGTszVK0HxFG4qAhMPIwNihQNkfNalDewiodkShMWDXcbY8imqhgkfvGCXT7FdjTpmhtBHrOUInMOAEEnIurT78eNZBHDadjjwuoOogTAwXo3fLVJj5vg/ch4qGZAQ0=",
+        "bitsUsed": 266,
+        "bitsLeft": 932416,
+        "requestsLeft": 199992,
+        "advisoryDelay": 1000
+    }
+}

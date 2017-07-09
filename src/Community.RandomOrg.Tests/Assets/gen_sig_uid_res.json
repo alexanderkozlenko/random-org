@@ -1,0 +1,20 @@
+{
+    "jsonrpc": "2.0",
+    "result": {
+        "random": {
+            "method": "generateSignedUUIDs",
+            "hashedApiKey": "oT3AdLMVZKajz0pgW/8Z+t5sGZkqQSOnAi1aB8Li0tXgWf8LolrgdQ1wn9sKx1ehxhUZmhwUIpAtM8QeRbn51Q==",
+            "n": 1,
+            "data": [
+                "9f7bc2c6-9673-4c0a-aef4-aa6dd9d62ec8"
+            ],
+            "completionTime": "2013-09-30 17:24:33Z",
+            "serialNumber": 69269
+        },
+        "signature": "FvhPYF3jd+KLk6vxrvDIPU9xrkDhjv/WMOWbmBhKjYG6+vxGYFBY0s68DXHirF6mWpbaXLv27fw7GK32pzbUR7SmSDT9xmdwqedVMJzDXoX06MSh000k5j6gK2xV/1o84FxxLpsmOeOLCRQy0CeHax21E7SptJn90PLl3a1xu08b7FOU60AbktrQiBG3nxsCmLjfiBJ8qACowGcG34pq8FE1NYijnZO4h9q2TxySeHFPlJ69dnOUbXuWUniGxHctOqNY4cRrNo808Z61MuqgPteX62MtR9xslhLC107jc/yOYUiTVblTihABsfWPvGbt8+S7b9M92jn5vxN7eNUx1duEBtaKnV0MX/ycm2D4lqqxQ4cYuB8h7NCwJwFnC5M/n4QDVcNGN7I7uXyHtl+7kU4nThZ7g6PVSiEV1dVRusc2AdO+KEGukRZMz8QjD1SAEchf9URUp/TLJID75JcykzBckLkOwpI4DnVodgKhdetFc3HEQ7BxM6FOyb7xuuzrq4BAMEqS2kvAo4SGHafk/8eilCCNkC3jfdWdHMikz1VZxJ6ykjdvjM2sMhfxSN+kNW93RuYtL0tDkkiTbfAw06vuIFTiHgKtiWpNYbVyZcAeVibTzmy6cyG29aYIj3Yyh1fRCuJPx1Js/ZW6vhRGFisSdF5Cakcw4EAzTdhDPxU=",
+        "bitsUsed": 122,
+        "bitsLeft": 897974,
+        "requestsLeft": 199982,
+        "advisoryDelay": 1000
+    }
+}

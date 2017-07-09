@@ -1,0 +1,15 @@
+{
+    "jsonrpc": "2.0",
+    "result": {
+        "random": {
+            "data": [
+                "47849fd4-b790-492e-8b93-c601a91b662d"
+            ],
+            "completionTime": "2013-02-11 16:42:07Z"
+        },
+        "bitsUsed": 122,
+        "bitsLeft": 998532,
+        "requestsLeft": 199996,
+        "advisoryDelay": 1000
+    }
+}

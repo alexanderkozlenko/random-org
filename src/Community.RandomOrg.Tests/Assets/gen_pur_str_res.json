@@ -1,0 +1,22 @@
+{
+    "jsonrpc": "2.0",
+    "result": {
+        "random": {
+            "data": [
+                "grvhglvahj",
+                "hjrmosjwed",
+                "nivjyqptyy",
+                "lhogeshsmi",
+                "syilbgsytb",
+                "birvcmgdrz",
+                "wgclyynpcq",
+                "eujwnhgonh"
+            ],
+            "completionTime": "2011-10-10 13:19:12Z"
+        },
+        "bitsUsed": 376,
+        "bitsLeft": 199624,
+        "requestsLeft": 9999,
+        "advisoryDelay": 0
+    }
+}

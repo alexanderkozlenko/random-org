@@ -1,0 +1,8 @@
+﻿<Project>
+  <PropertyGroup>
+    <RepositoryPath>$(MSBuildThisFileDirectory)..\..</RepositoryPath>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)open.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>True</SignAssembly>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+</Project>

@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="..\scheme\solution.props" />
+  <Import Project="..\scheme\solution.package.props" />
+  <PropertyGroup>
+    <TargetFramework>netstandard1.1</TargetFramework>
+    <BaseIntermediateOutputPath>$(RepositoryPath)\bin\obj\$(AssemblyName)\</BaseIntermediateOutputPath>
+    <OutputPath>$(RepositoryPath)\bin\bin\$(AssemblyName)\$(Configuration)\</OutputPath>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="System.Buffers" Version="4.3.0" />
+    <PackageReference Include="System.Data.JsonRpc" Version="1.2.1" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,9 @@
+{
+    "jsonrpc": "2.0",
+    "method": "generateSignedBlobs",
+    "params": {
+        "apiKey": "00000000-0000-0000-0000-000000000000",
+        "n": 1,
+        "size": 1024
+    }
+}
