@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Data
 {
-    internal abstract class RpcRandomResult<TRandom, TValue> : RpcMethodResult, IAdvisoryDelayAware
+    internal abstract class RpcRandomResult<TRandom, TValue> : RpcMethodResult
         where TRandom : RpcRandom<TValue>
     {
         [JsonProperty("random")]

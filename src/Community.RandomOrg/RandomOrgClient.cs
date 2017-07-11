@@ -110,8 +110,9 @@ namespace Community.RandomOrg
             target.CompletionTime = source.CompletionTime;
         }
 
-        private async Task<T> InvokeRandomOrgMethod<T>(string method, RpcMethodParams @params, CancellationToken cancellationToken)
-            where T : RpcMethodResult
+        private async Task<TResult> InvokeRandomOrgMethod<TResult, TRandom, TValue>(string method, RpcRandomParams @params, CancellationToken cancellationToken)
+            where TResult : RpcRandomResult<TRandom, TValue>
+            where TRandom : RpcRandom<TValue>
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -119,9 +120,7 @@ namespace Community.RandomOrg
 
             try
             {
-                var advisoryDelayAware = typeof(IAdvisoryDelayAware).GetTypeInfo().IsAssignableFrom(typeof(T).GetTypeInfo());
-
-                if (advisoryDelayAware && _advisoryTime.HasValue)
+                if (_advisoryTime.HasValue)
                 {
                     var advisoryDelay = _advisoryTime.Value - DateTime.UtcNow;
 
@@ -129,50 +128,11 @@ namespace Community.RandomOrg
                     {
                         await Task.Delay(advisoryDelay, cancellationToken).ConfigureAwait(false);
                     }
-
-                    _advisoryTime = null;
                 }
 
-                var jsonRpcRequest = new JsonRpcRequest(method, Guid.NewGuid().ToString(), @params);
+                var result = (TResult)await InvokeRandomOrgMethod(method, @params, cancellationToken).ConfigureAwait(false);
 
-                var bindings = new Dictionary<JsonRpcId, string>(1)
-                {
-                    [jsonRpcRequest.Id] = jsonRpcRequest.Method
-                };
-                var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri)
-                {
-                    Content = new StringContent(_jsonRpcSerializer.SerializeRequest(jsonRpcRequest), Encoding.UTF8, _HTTP_MEDIA_TYPE)
-                };
-
-                var httpResponseMessage = await _httpMessageInvoker.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
-
-                httpResponseMessage.EnsureSuccessStatusCode();
-
-                var mediaType = httpResponseMessage.Content.Headers.ContentType?.MediaType;
-
-                if (string.Compare(mediaType, _HTTP_MEDIA_TYPE, StringComparison.OrdinalIgnoreCase) != 0)
-                {
-                    throw new InvalidOperationException(_resourceManager.GetString("MediaTypeError"));
-                }
-
-                var httpResponseContent = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
-                var responseData = _jsonRpcSerializer.DeserializeResponsesData(httpResponseContent, bindings);
-                var message = responseData.GetSingleItem().GetMessage();
-
-                if (!message.Success)
-                {
-                    throw new RandomOrgException(message.Error.Code, message.Error.Message);
-                }
-
-                var result = (T)message.Result;
-
-                if (result is IAdvisoryDelayAware advisoryDelayInfo)
-                {
-                    if (advisoryDelayInfo.AdvisoryDelay.Ticks > 0)
-                    {
-                        _advisoryTime = DateTime.UtcNow + advisoryDelayInfo.AdvisoryDelay;
-                    }
-                }
+                _advisoryTime = result.Random.CompletionTime + result.AdvisoryDelay;
 
                 return result;
             }
@@ -180,6 +140,59 @@ namespace Community.RandomOrg
             {
                 _requestSemaphore.Release();
             }
+        }
+
+        private async Task<TResult> InvokeRandomOrgMethod<TResult>(string method, RpcMethodParams @params, CancellationToken cancellationToken)
+            where TResult : RpcMethodResult
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await _requestSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+            try
+            {
+                return (TResult)await InvokeRandomOrgMethod(method, @params, cancellationToken).ConfigureAwait(false);
+            }
+            finally
+            {
+                _requestSemaphore.Release();
+            }
+        }
+
+        private async Task<object> InvokeRandomOrgMethod(string method, object @params, CancellationToken cancellationToken)
+        {
+            var jsonRpcRequest = new JsonRpcRequest(method, Guid.NewGuid().ToString(), @params);
+
+            var bindings = new Dictionary<JsonRpcId, string>(1)
+            {
+                [jsonRpcRequest.Id] = jsonRpcRequest.Method
+            };
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri)
+            {
+                Content = new StringContent(_jsonRpcSerializer.SerializeRequest(jsonRpcRequest), Encoding.UTF8, _HTTP_MEDIA_TYPE)
+            };
+
+            var httpResponseMessage = await _httpMessageInvoker.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
+
+            httpResponseMessage.EnsureSuccessStatusCode();
+
+            var mediaType = httpResponseMessage.Content.Headers.ContentType?.MediaType;
+
+            if (string.Compare(mediaType, _HTTP_MEDIA_TYPE, StringComparison.OrdinalIgnoreCase) != 0)
+            {
+                throw new InvalidOperationException(_resourceManager.GetString("MediaTypeError"));
+            }
+
+            var httpResponseContent = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var responseData = _jsonRpcSerializer.DeserializeResponsesData(httpResponseContent, bindings);
+            var message = responseData.GetSingleItem().GetMessage();
+
+            if (!message.Success)
+            {
+                throw new RandomOrgException(message.Error.Code, message.Error.Message);
+            }
+
+            return message.Result;
         }
 
         private static HttpMessageInvoker CreateHttpMessageInvoker()
