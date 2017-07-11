@@ -167,32 +167,34 @@ namespace Community.RandomOrg
             {
                 [jsonRpcRequest.Id] = jsonRpcRequest.Method
             };
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri)
+
+            using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
             {
-                Content = new StringContent(_jsonRpcSerializer.SerializeRequest(jsonRpcRequest), Encoding.UTF8, _HTTP_MEDIA_TYPE)
-            };
+                httpRequestMessage.Content = new StringContent(_jsonRpcSerializer.SerializeRequest(jsonRpcRequest), Encoding.UTF8, _HTTP_MEDIA_TYPE);
 
-            var httpResponseMessage = await _httpMessageInvoker.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false);
+                using (var httpResponseMessage = await _httpMessageInvoker.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false))
+                {
+                    httpResponseMessage.EnsureSuccessStatusCode();
 
-            httpResponseMessage.EnsureSuccessStatusCode();
+                    var mediaType = httpResponseMessage.Content.Headers.ContentType?.MediaType;
 
-            var mediaType = httpResponseMessage.Content.Headers.ContentType?.MediaType;
+                    if (string.Compare(mediaType, _HTTP_MEDIA_TYPE, StringComparison.OrdinalIgnoreCase) != 0)
+                    {
+                        throw new InvalidOperationException(_resourceManager.GetString("MediaTypeError"));
+                    }
 
-            if (string.Compare(mediaType, _HTTP_MEDIA_TYPE, StringComparison.OrdinalIgnoreCase) != 0)
-            {
-                throw new InvalidOperationException(_resourceManager.GetString("MediaTypeError"));
+                    var httpResponseContent = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var responseData = _jsonRpcSerializer.DeserializeResponsesData(httpResponseContent, bindings);
+                    var message = responseData.GetSingleItem().GetMessage();
+
+                    if (!message.Success)
+                    {
+                        throw new RandomOrgException(message.Error.Code, message.Error.Message);
+                    }
+
+                    return message.Result;
+                }
             }
-
-            var httpResponseContent = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
-            var responseData = _jsonRpcSerializer.DeserializeResponsesData(httpResponseContent, bindings);
-            var message = responseData.GetSingleItem().GetMessage();
-
-            if (!message.Success)
-            {
-                throw new RandomOrgException(message.Error.Code, message.Error.Message);
-            }
-
-            return message.Result;
         }
 
         private static HttpMessageInvoker CreateHttpMessageInvoker()
