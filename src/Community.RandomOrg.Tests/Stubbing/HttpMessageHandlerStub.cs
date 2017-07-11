@@ -53,12 +53,12 @@ namespace Community.RandomOrg.Tests.Stubbing
         {
             if (_messageHandler != null)
             {
-                return await _messageHandler.Invoke(request, cancellationToken);
+                return await _messageHandler.Invoke(request, cancellationToken).ConfigureAwait(false);
             }
             else
             {
-                var requestContent = await request.Content.ReadAsStringAsync();
-                var responseContent = await _contentHandler.Invoke(requestContent);
+                var requestContent = await request.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var responseContent = await _contentHandler.Invoke(requestContent).ConfigureAwait(false);
 
                 var response = new HttpResponseMessage
                 {

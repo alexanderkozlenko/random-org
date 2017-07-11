@@ -3,6 +3,11 @@
     /// <summary>Encapsulates the signed random strings and associated data.</summary>
     public sealed class SignedStringsRandom : SignedRandom<string>
     {
+        /// <summary>Initializes a new instance of the <see cref="SignedStringsRandom" /> class.</summary>
+        public SignedStringsRandom()
+        {
+        }
+
         /// <summary>Gets or sets the length of each string.</summary>
         public int Length { get; set; }
 

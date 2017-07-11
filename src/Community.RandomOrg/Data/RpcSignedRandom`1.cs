@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Community.RandomOrg.Converters;
+﻿using Community.RandomOrg.Converters;
 using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Data
 {
-    internal abstract class RpcSignedRandom<T>
+    internal abstract class RpcSignedRandom<T> : RpcRandom<T>
     {
         [JsonProperty("n")]
         public long Count { get; set; }
@@ -17,14 +15,7 @@ namespace Community.RandomOrg.Data
         [JsonConverter(typeof(Base64ToByteArrayConverter))]
         public byte[] ApiKeyHash { get; set; }
 
-        [JsonProperty("completionTime")]
-        [JsonConverter(typeof(RandomDateTimeConverter))]
-        public DateTime CompletionTime { get; set; }
-
         [JsonProperty("serialNumber")]
         public long SerialNumber { get; set; }
-
-        [JsonProperty("data")]
-        public IReadOnlyList<T> Data { get; set; }
     }
 }

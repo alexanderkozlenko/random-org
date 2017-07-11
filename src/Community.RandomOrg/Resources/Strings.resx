@@ -198,9 +198,6 @@
   <data name="VerifySignatureDataUndefined" xml:space="preserve">
     <value>The data is undefined</value>
   </data>
-  <data name="VerifySignatureRandomTypeError" xml:space="preserve">
-    <value>Invalid type of random data</value>
-  </data>
   <data name="VerifySignatureSerialNumberUndefined" xml:space="preserve">
     <value>The serial number is not specified</value>
   </data>

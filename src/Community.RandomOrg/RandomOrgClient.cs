@@ -53,7 +53,7 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentNullException(nameof(apiKey));
             }
-            if (!Guid.TryParseExact(apiKey, "D", out var apiKeyGuid))
+            if (!Guid.TryParseExact(apiKey, "D", out var _))
             {
                 throw new ArgumentException(_resourceManager.GetString("ApiKeyFormatError"), nameof(apiKey));
             }
@@ -64,6 +64,7 @@ namespace Community.RandomOrg
 
         /// <summary>Returns information related to the usage of a given API key as an asynchronous operation.</summary>
         /// <returns>A <see cref="RandomUsage" /> instance.</returns>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         public Task<RandomUsage> GetUsageAsync()
         {
             return GetUsageAsync(CancellationToken.None);
@@ -72,6 +73,8 @@ namespace Community.RandomOrg
         /// <summary>Returns information related to the usage of a given API key as an asynchronous operation.</summary>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>A <see cref="RandomUsage" /> instance.</returns>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<RandomUsage> GetUsageAsync(CancellationToken cancellationToken)
         {
             var @params = new RpcGetUsageParams
@@ -110,7 +113,9 @@ namespace Community.RandomOrg
         private async Task<T> InvokeRandomOrgMethod<T>(string method, RpcMethodParams @params, CancellationToken cancellationToken)
             where T : RpcMethodResult
         {
-            await _requestSemaphore.WaitAsync().ConfigureAwait(false);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            await _requestSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             try
             {
@@ -122,8 +127,10 @@ namespace Community.RandomOrg
 
                     if (advisoryDelay.Ticks > 0)
                     {
-                        await Task.Delay(advisoryDelay).ConfigureAwait(false);
+                        await Task.Delay(advisoryDelay, cancellationToken).ConfigureAwait(false);
                     }
+
+                    _advisoryTime = null;
                 }
 
                 var jsonRpcRequest = new JsonRpcRequest(method, Guid.NewGuid().ToString(), @params);
@@ -154,11 +161,6 @@ namespace Community.RandomOrg
 
                 if (!message.Success)
                 {
-                    if (advisoryDelayAware)
-                    {
-                        _advisoryTime = null;
-                    }
-
                     throw new RandomOrgException(message.Error.Code, message.Error.Message);
                 }
 
@@ -169,10 +171,6 @@ namespace Community.RandomOrg
                     if (advisoryDelayInfo.AdvisoryDelay.Ticks > 0)
                     {
                         _advisoryTime = DateTime.UtcNow + advisoryDelayInfo.AdvisoryDelay;
-                    }
-                    else
-                    {
-                        _advisoryTime = null;
                     }
                 }
 
@@ -212,17 +210,17 @@ namespace Community.RandomOrg
             scheme.Methods[_RPC_VERIFY_SIGNATUREE] =
                new JsonRpcMethodScheme(typeof(RpcVerifyResult), typeof(object[]));
             scheme.Methods[_RPC_GENERATE_PURE_INTEGERS] =
-                new JsonRpcMethodScheme(typeof(RpcRandomResult<int>), typeof(object[]));
+                new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<int>), typeof(object[]));
             scheme.Methods[_RPC_GENERATE_PURE_DECIMAL_FRACTIONS] =
-                new JsonRpcMethodScheme(typeof(RpcRandomResult<decimal>), typeof(object[]));
+                new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<decimal>), typeof(object[]));
             scheme.Methods[_RPC_GENERATE_PURE_GAUSSIANS] =
-                new JsonRpcMethodScheme(typeof(RpcRandomResult<decimal>), typeof(object[]));
+                new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<decimal>), typeof(object[]));
             scheme.Methods[_RPC_GENERATE_PURE_STRINGS] =
-                new JsonRpcMethodScheme(typeof(RpcRandomResult<string>), typeof(object[]));
+                new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<string>), typeof(object[]));
             scheme.Methods[_RPC_GENERATE_PURE_UUIDS] =
-                new JsonRpcMethodScheme(typeof(RpcRandomResult<Guid>), typeof(object[]));
+                new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<Guid>), typeof(object[]));
             scheme.Methods[_RPC_GENERATE_PURE_BLOBS] =
-                new JsonRpcMethodScheme(typeof(RpcRandomResult<string>), typeof(object[]));
+                new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<string>), typeof(object[]));
             scheme.Methods[_RPC_GENERATE_SIGNED_INTEGERS] =
                 new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedIntegersRandom, int>), typeof(object[]));
             scheme.Methods[_RPC_GENERATE_SIGNED_DECIMAL_FRACTIONS] =
@@ -251,10 +249,11 @@ namespace Community.RandomOrg
             return new ResourceManager($"{assembly.GetName().Name}.Resources.Strings", assembly);
         }
 
-        /// <summary>Releases the unmanaged resources and disposes of the managed resources used by the component for sending HTTP requests.</summary>
+        /// <summary>Releases all resources used by the current instance of the <see cref="RandomOrgClient" />.</summary>
         public void Dispose()
         {
             _httpMessageInvoker.Dispose();
+            _requestSemaphore.Dispose();
         }
     }
 }

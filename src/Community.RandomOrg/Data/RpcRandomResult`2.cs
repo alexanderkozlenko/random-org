@@ -4,10 +4,11 @@ using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Data
 {
-    internal sealed class RpcRandomResult<T> : RpcMethodResult, IAdvisoryDelayAware
+    internal abstract class RpcRandomResult<TRandom, TValue> : RpcMethodResult, IAdvisoryDelayAware
+        where TRandom : RpcRandom<TValue>
     {
         [JsonProperty("random")]
-        public RpcRandom<T> Random { get; set; }
+        public TRandom Random { get; set; }
 
         [JsonProperty("bitsLeft")]
         public long BitsLeft { get; set; }

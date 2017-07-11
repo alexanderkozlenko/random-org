@@ -3,6 +3,11 @@
     /// <summary>Encapsulates the signed random integers and associated data.</summary>
     public sealed class SignedIntegersRandom : SignedRandom<int>
     {
+        /// <summary>Initializes a new instance of the <see cref="SignedIntegersRandom" /> class.</summary>
+        public SignedIntegersRandom()
+        {
+        }
+
         /// <summary>Gets or sets the lower boundary for the range from which the random numbers will be picked.</summary>
         public int Minimum { get; set; }
 

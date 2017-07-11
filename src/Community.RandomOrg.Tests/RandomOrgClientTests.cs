@@ -18,6 +18,20 @@ namespace Community.RandomOrg.Tests
         private const string _RANDOM_API_KEY = "00000000-0000-0000-0000-000000000000";
         private const string _HTTP_MEDIA_TYPE = "application/json";
 
+        private static Task<string> HandleRequestContent(string requestContent, string expectedRequestAsset, string expectedResponseAsset)
+        {
+            var requestJsonObjectActual = JObject.Parse(requestContent);
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString(expectedRequestAsset));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString(expectedResponseAsset));
+
+            requestJsonObject["id"] = requestJsonObjectActual["id"];
+            responseJsonObject["id"] = requestJsonObjectActual["id"];
+
+            Assert.True(JToken.DeepEquals(requestJsonObject, requestJsonObjectActual));
+
+            return Task.FromResult(responseJsonObject.ToString());
+        }
+
         [Fact]
         public void ConstructorWhenApiKeyIsNull()
         {
@@ -55,21 +69,7 @@ namespace Community.RandomOrg.Tests
         public async void GenerateIntegers()
         {
             var stubHandler = (Func<string, Task<string>>)
-                (
-                    requestContent =>
-                        {
-                            var requestJsonObjectActual = JObject.Parse(requestContent);
-                            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_int_req.json"));
-                            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_int_res.json"));
-
-                            requestJsonObject["id"] = requestJsonObjectActual["id"];
-                            responseJsonObject["id"] = requestJsonObjectActual["id"];
-
-                            Assert.True(JToken.DeepEquals(requestJsonObject, requestJsonObjectActual));
-
-                            return Task.FromResult(responseJsonObject.ToString());
-                        }
-                );
+                (requestContent => HandleRequestContent(requestContent, "Assets.gen_pur_int_req.json", "Assets.gen_pur_int_res.json"));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
@@ -120,21 +120,7 @@ namespace Community.RandomOrg.Tests
         public async void GenerateDecimalFractions()
         {
             var stubHandler = (Func<string, Task<string>>)
-                (
-                    requestContent =>
-                    {
-                        var requestJsonObjectActual = JObject.Parse(requestContent);
-                        var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_dfr_req.json"));
-                        var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_dfr_res.json"));
-
-                        requestJsonObject["id"] = requestJsonObjectActual["id"];
-                        responseJsonObject["id"] = requestJsonObjectActual["id"];
-
-                        Assert.True(JToken.DeepEquals(requestJsonObject, requestJsonObjectActual));
-
-                        return Task.FromResult(responseJsonObject.ToString());
-                    }
-                );
+                (requestContent => HandleRequestContent(requestContent, "Assets.gen_pur_dfr_req.json", "Assets.gen_pur_dfr_res.json"));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
@@ -196,21 +182,7 @@ namespace Community.RandomOrg.Tests
         public async void GenerateGaussians()
         {
             var stubHandler = (Func<string, Task<string>>)
-                (
-                    requestContent =>
-                    {
-                        var requestJsonObjectActual = JObject.Parse(requestContent);
-                        var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_gss_req.json"));
-                        var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_gss_res.json"));
-
-                        requestJsonObject["id"] = requestJsonObjectActual["id"];
-                        responseJsonObject["id"] = requestJsonObjectActual["id"];
-
-                        Assert.True(JToken.DeepEquals(requestJsonObject, requestJsonObjectActual));
-
-                        return Task.FromResult(responseJsonObject.ToString());
-                    }
-                );
+                (requestContent => HandleRequestContent(requestContent, "Assets.gen_pur_gss_req.json", "Assets.gen_pur_gss_res.json"));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
@@ -289,21 +261,7 @@ namespace Community.RandomOrg.Tests
         public async void GenerateStrings()
         {
             var stubHandler = (Func<string, Task<string>>)
-                (
-                    requestContent =>
-                    {
-                        var requestJsonObjectActual = JObject.Parse(requestContent);
-                        var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_str_req.json"));
-                        var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_str_res.json"));
-
-                        requestJsonObject["id"] = requestJsonObjectActual["id"];
-                        responseJsonObject["id"] = requestJsonObjectActual["id"];
-
-                        Assert.True(JToken.DeepEquals(requestJsonObject, requestJsonObjectActual));
-
-                        return Task.FromResult(responseJsonObject.ToString());
-                    }
-                );
+                (requestContent => HandleRequestContent(requestContent, "Assets.gen_pur_str_req.json", "Assets.gen_pur_str_res.json"));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
@@ -354,21 +312,7 @@ namespace Community.RandomOrg.Tests
         public async void GenerateUuids()
         {
             var stubHandler = (Func<string, Task<string>>)
-                (
-                    requestContent =>
-                    {
-                        var requestJsonObjectActual = JObject.Parse(requestContent);
-                        var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_uid_req.json"));
-                        var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_uid_res.json"));
-
-                        requestJsonObject["id"] = requestJsonObjectActual["id"];
-                        responseJsonObject["id"] = requestJsonObjectActual["id"];
-
-                        Assert.True(JToken.DeepEquals(requestJsonObject, requestJsonObjectActual));
-
-                        return Task.FromResult(responseJsonObject.ToString());
-                    }
-                );
+                (requestContent => HandleRequestContent(requestContent, "Assets.gen_pur_uid_req.json", "Assets.gen_pur_uid_res.json"));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
@@ -416,21 +360,7 @@ namespace Community.RandomOrg.Tests
         public async void GenerateBlobs()
         {
             var stubHandler = (Func<string, Task<string>>)
-                (
-                    requestContent =>
-                    {
-                        var requestJsonObjectActual = JObject.Parse(requestContent);
-                        var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_blb_req.json"));
-                        var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_blb_res.json"));
-
-                        requestJsonObject["id"] = requestJsonObjectActual["id"];
-                        responseJsonObject["id"] = requestJsonObjectActual["id"];
-
-                        Assert.True(JToken.DeepEquals(requestJsonObject, requestJsonObjectActual));
-
-                        return Task.FromResult(responseJsonObject.ToString());
-                    }
-                );
+                (requestContent => HandleRequestContent(requestContent, "Assets.gen_pur_blb_req.json", "Assets.gen_pur_blb_res.json"));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
@@ -461,21 +391,7 @@ namespace Community.RandomOrg.Tests
         public async void GetUsage()
         {
             var stubHandler = (Func<string, Task<string>>)
-                (
-                    requestContent =>
-                    {
-                        var requestJsonObjectActual = JObject.Parse(requestContent);
-                        var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_req.json"));
-                        var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_res.json"));
-
-                        requestJsonObject["id"] = requestJsonObjectActual["id"];
-                        responseJsonObject["id"] = requestJsonObjectActual["id"];
-
-                        Assert.True(JToken.DeepEquals(requestJsonObject, requestJsonObjectActual));
-
-                        return Task.FromResult(responseJsonObject.ToString());
-                    }
-                );
+                (requestContent => HandleRequestContent(requestContent, "Assets.get_usg_req.json", "Assets.get_usg_res.json"));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
@@ -516,21 +432,7 @@ namespace Community.RandomOrg.Tests
         public async void GenerateSignedIntegers()
         {
             var stubHandler = (Func<string, Task<string>>)
-                (
-                    requestContent =>
-                    {
-                        var requestJsonObjectActual = JObject.Parse(requestContent);
-                        var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_int_req.json"));
-                        var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_int_res.json"));
-
-                        requestJsonObject["id"] = requestJsonObjectActual["id"];
-                        responseJsonObject["id"] = requestJsonObjectActual["id"];
-
-                        Assert.True(JToken.DeepEquals(requestJsonObject, requestJsonObjectActual));
-
-                        return Task.FromResult(responseJsonObject.ToString());
-                    }
-                );
+                (requestContent => HandleRequestContent(requestContent, "Assets.gen_sig_int_req.json", "Assets.gen_sig_int_res.json"));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
@@ -601,21 +503,7 @@ namespace Community.RandomOrg.Tests
         public async void GenerateSignedDecimalFractions()
         {
             var stubHandler = (Func<string, Task<string>>)
-                (
-                    requestContent =>
-                    {
-                        var requestJsonObjectActual = JObject.Parse(requestContent);
-                        var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_dfr_req.json"));
-                        var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_dfr_res.json"));
-
-                        requestJsonObject["id"] = requestJsonObjectActual["id"];
-                        responseJsonObject["id"] = requestJsonObjectActual["id"];
-
-                        Assert.True(JToken.DeepEquals(requestJsonObject, requestJsonObjectActual));
-
-                        return Task.FromResult(responseJsonObject.ToString());
-                    }
-                );
+                (requestContent => HandleRequestContent(requestContent, "Assets.gen_sig_dfr_req.json", "Assets.gen_sig_dfr_res.json"));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
@@ -696,21 +584,7 @@ namespace Community.RandomOrg.Tests
         public async void GenerateSignedGaussians()
         {
             var stubHandler = (Func<string, Task<string>>)
-                (
-                    requestContent =>
-                    {
-                        var requestJsonObjectActual = JObject.Parse(requestContent);
-                        var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_gss_req.json"));
-                        var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_gss_res.json"));
-
-                        requestJsonObject["id"] = requestJsonObjectActual["id"];
-                        responseJsonObject["id"] = requestJsonObjectActual["id"];
-
-                        Assert.True(JToken.DeepEquals(requestJsonObject, requestJsonObjectActual));
-
-                        return Task.FromResult(responseJsonObject.ToString());
-                    }
-                );
+                (requestContent => HandleRequestContent(requestContent, "Assets.gen_sig_gss_req.json", "Assets.gen_sig_gss_res.json"));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
@@ -807,21 +681,7 @@ namespace Community.RandomOrg.Tests
         public async void GenerateSignedStrings()
         {
             var stubHandler = (Func<string, Task<string>>)
-                (
-                    requestContent =>
-                    {
-                        var requestJsonObjectActual = JObject.Parse(requestContent);
-                        var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_str_req.json"));
-                        var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_str_res.json"));
-
-                        requestJsonObject["id"] = requestJsonObjectActual["id"];
-                        responseJsonObject["id"] = requestJsonObjectActual["id"];
-
-                        Assert.True(JToken.DeepEquals(requestJsonObject, requestJsonObjectActual));
-
-                        return Task.FromResult(responseJsonObject.ToString());
-                    }
-                );
+                (requestContent => HandleRequestContent(requestContent, "Assets.gen_sig_str_req.json", "Assets.gen_sig_str_res.json"));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
@@ -892,21 +752,7 @@ namespace Community.RandomOrg.Tests
         public async void GenerateSignedUuids()
         {
             var stubHandler = (Func<string, Task<string>>)
-                (
-                    requestContent =>
-                    {
-                        var requestJsonObjectActual = JObject.Parse(requestContent);
-                        var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_uid_req.json"));
-                        var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_uid_res.json"));
-
-                        requestJsonObject["id"] = requestJsonObjectActual["id"];
-                        responseJsonObject["id"] = requestJsonObjectActual["id"];
-
-                        Assert.True(JToken.DeepEquals(requestJsonObject, requestJsonObjectActual));
-
-                        return Task.FromResult(responseJsonObject.ToString());
-                    }
-                );
+                (requestContent => HandleRequestContent(requestContent, "Assets.gen_sig_uid_req.json", "Assets.gen_sig_uid_res.json"));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
@@ -971,21 +817,7 @@ namespace Community.RandomOrg.Tests
         public async void GenerateSignedBlobs()
         {
             var stubHandler = (Func<string, Task<string>>)
-                (
-                    requestContent =>
-                    {
-                        var requestJsonObjectActual = JObject.Parse(requestContent);
-                        var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_blb_req.json"));
-                        var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_blb_res.json"));
-
-                        requestJsonObject["id"] = requestJsonObjectActual["id"];
-                        responseJsonObject["id"] = requestJsonObjectActual["id"];
-
-                        Assert.True(JToken.DeepEquals(requestJsonObject, requestJsonObjectActual));
-
-                        return Task.FromResult(responseJsonObject.ToString());
-                    }
-                );
+                (requestContent => HandleRequestContent(requestContent, "Assets.gen_sig_blb_req.json", "Assets.gen_sig_blb_res.json"));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
@@ -1071,21 +903,7 @@ namespace Community.RandomOrg.Tests
         public async void VerifySignature()
         {
             var stubHandler = (Func<string, Task<string>>)
-                (
-                    requestContent =>
-                    {
-                        var requestJsonObjectActual = JObject.Parse(requestContent);
-                        var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.ver_sig_req.json"));
-                        var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.ver_sig_res.json"));
-
-                        requestJsonObject["id"] = requestJsonObjectActual["id"];
-                        responseJsonObject["id"] = requestJsonObjectActual["id"];
-
-                        Assert.True(JToken.DeepEquals(requestJsonObject, requestJsonObjectActual));
-
-                        return Task.FromResult(responseJsonObject.ToString());
-                    }
-                );
+                (requestContent => HandleRequestContent(requestContent, "Assets.ver_sig_req.json", "Assets.ver_sig_res.json"));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
@@ -1155,8 +973,6 @@ namespace Community.RandomOrg.Tests
 
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
-                var random = new SignedIntegersRandom();
-
                 await Assert.ThrowsAsync<HttpRequestException>(
                     () => client.GetUsageAsync());
             }
@@ -1187,8 +1003,6 @@ namespace Community.RandomOrg.Tests
 
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
-                var random = new SignedIntegersRandom();
-
                 await Assert.ThrowsAsync<InvalidOperationException>(
                     () => client.GetUsageAsync());
             }

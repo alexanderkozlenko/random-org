@@ -3,6 +3,11 @@
     /// <summary>Encapsulates the signed random decimal fractions and associated data.</summary>
     public sealed class SignedDecimalFractionsRandom : SignedRandom<decimal>
     {
+        /// <summary>Initializes a new instance of the <see cref="SignedDecimalFractionsRandom" /> class.</summary>
+        public SignedDecimalFractionsRandom()
+        {
+        }
+
         /// <summary>Gets or sets the number of decimal places to use.</summary>
         public int DecimalPlaces { get; set; }
 

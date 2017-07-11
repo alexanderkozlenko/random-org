@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Data
 {
-    internal sealed class RpcRandom<T>
+    internal abstract class RpcRandom<T>
     {
         [JsonProperty("completionTime")]
         [JsonConverter(typeof(RandomDateTimeConverter))]
