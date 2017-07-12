@@ -36,7 +36,7 @@ namespace Community.RandomOrg.Tests
         public void ConstructorWhenApiKeyIsNull()
         {
             Assert.Throws<ArgumentNullException>(
-                () => new RandomOrgClient(null));
+                () => new RandomOrgClient(default(string)));
         }
 
         [Fact]
@@ -45,6 +45,14 @@ namespace Community.RandomOrg.Tests
             Assert.Throws<ArgumentException>(
                 () => new RandomOrgClient("test_value"));
         }
+
+        [Fact]
+        public void ConstructorWhenHttpMessageInvokerIsNull()
+        {
+            Assert.Throws<ArgumentNullException>(
+                () => new RandomOrgClient(default(HttpMessageInvoker)));
+        }
+
 
         [Theory]
         [InlineData(00000, 0, 5)]
@@ -384,6 +392,19 @@ namespace Community.RandomOrg.Tests
                 };
 
                 Assert.Equal(data, result.Random.Data);
+            }
+        }
+
+        [Fact]
+        public async void GetUsageWhenApiKeyIsNull()
+        {
+            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+
+            using (var client = new RandomOrgClient(httpClient))
+            {
+                await Assert.ThrowsAsync<InvalidOperationException>(
+                    () => client.GetUsageAsync());
             }
         }
 
@@ -907,7 +928,7 @@ namespace Community.RandomOrg.Tests
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(httpClient))
             {
                 var apiKeyHash = Convert.FromBase64String(
                     "oT3AdLMVZKajz0pgW/8Z+t5sGZkqQSOnAi1aB8Li0tXgWf8LolrgdQ1wn9sKx1ehxhUZmhwUIpAtM8QeRbn51Q==");

@@ -120,6 +120,9 @@
   <data name="ApiKeyFormatError" xml:space="preserve">
     <value>Invalid format of the specified API key</value>
   </data>
+  <data name="ApiKeyRequired" xml:space="preserve">
+    <value>An API key is required for the operation</value>
+  </data>
   <data name="ApiKeyStatusError" xml:space="preserve">
     <value>Invalid API key status: "{0}"</value>
   </data>

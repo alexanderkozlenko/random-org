@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Resources;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ using Community.RandomOrg.Data;
 
 namespace Community.RandomOrg
 {
-    /// <summary>RANDOM.ORG service client.</summary>
+    /// <summary>A RANDOM.ORG service client.</summary>
     public sealed partial class RandomOrgClient : IDisposable
     {
         private const string _HTTP_MEDIA_TYPE = "application/json";
@@ -44,10 +45,9 @@ namespace Community.RandomOrg
 
         /// <summary>Initializes a new instance of the <see cref="RandomOrgClient" /> class.</summary>
         /// <param name="apiKey">The API key, which is used to track the true random bit usage for the client.</param>
-        /// <param name="httpMessageInvoker">The component for sending HTTP requests.</param>
         /// <exception cref="ArgumentNullException"><paramref name="apiKey" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException"><paramref name="apiKey" /> is not of UUID format.</exception>
-        public RandomOrgClient(string apiKey, HttpMessageInvoker httpMessageInvoker = null)
+        public RandomOrgClient(string apiKey)
         {
             if (apiKey == null)
             {
@@ -59,7 +59,44 @@ namespace Community.RandomOrg
             }
 
             _apiKey = apiKey;
-            _httpMessageInvoker = httpMessageInvoker ?? CreateHttpMessageInvoker();
+            _httpMessageInvoker = CreateHttpMessageInvoker();
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="RandomOrgClient" /> class.</summary>
+        /// <param name="httpMessageInvoker">The component for sending HTTP requests.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="httpMessageInvoker" /> is <see langword="null" />.</exception>
+        public RandomOrgClient(HttpMessageInvoker httpMessageInvoker)
+        {
+            if (httpMessageInvoker == null)
+            {
+                throw new ArgumentNullException(nameof(httpMessageInvoker));
+            }
+
+            _httpMessageInvoker = httpMessageInvoker;
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="RandomOrgClient" /> class.</summary>
+        /// <param name="apiKey">The API key, which is used to track the true random bit usage for the client.</param>
+        /// <param name="httpMessageInvoker">The component for sending HTTP requests.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="apiKey" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentException"><paramref name="apiKey" /> is not of UUID format.</exception>
+        public RandomOrgClient(string apiKey, HttpMessageInvoker httpMessageInvoker)
+        {
+            if (apiKey == null)
+            {
+                throw new ArgumentNullException(nameof(apiKey));
+            }
+            if (httpMessageInvoker == null)
+            {
+                throw new ArgumentNullException(nameof(httpMessageInvoker));
+            }
+            if (!Guid.TryParseExact(apiKey, "D", out var _))
+            {
+                throw new ArgumentException(_resourceManager.GetString("ApiKeyFormatError"), nameof(apiKey));
+            }
+
+            _apiKey = apiKey;
+            _httpMessageInvoker = httpMessageInvoker;
         }
 
         /// <summary>Returns information related to the usage of a given API key as an asynchronous operation.</summary>
@@ -77,6 +114,8 @@ namespace Community.RandomOrg
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<RandomUsage> GetUsageAsync(CancellationToken cancellationToken)
         {
+            EnsureApiKeyIsSpecified();
+
             var @params = new RpcGetUsageParams
             {
                 ApiKey = _apiKey
@@ -87,6 +126,16 @@ namespace Community.RandomOrg
             return new RandomUsage(result.Status, result.CreationTime, result.TotalBits, result.BitsLeft, result.TotalRequests, result.RequestsLeft);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void EnsureApiKeyIsSpecified()
+        {
+            if (_apiKey == null)
+            {
+                throw new InvalidOperationException(_resourceManager.GetString("ApiKeyRequired"));
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void TransferValues<T>(SignedRandom<T> source, RpcSignedRandom<T> target)
         {
             target.Count = source.Data.Count;
@@ -96,6 +145,7 @@ namespace Community.RandomOrg
             target.SerialNumber = source.SerialNumber;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void TransferValues<T>(RpcSignedRandom<T> source, SignedRandom<T> target)
         {
             target.ApiKeyHash = source.ApiKeyHash;
@@ -104,6 +154,7 @@ namespace Community.RandomOrg
             target.SerialNumber = source.SerialNumber;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void TransferValues<T>(RpcRandom<T> source, Random<T> target)
         {
             target.Data = source.Data;

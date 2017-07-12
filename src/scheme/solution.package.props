@@ -1,6 +1,6 @@
 ﻿<Project>
   <PropertyGroup>
-    <VersionPrefix>1.0.2</VersionPrefix>
+    <VersionPrefix>1.0.3</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <Product><![CDATA[Community.RandomOrg]]></Product>
     <Description><![CDATA[A client for the RANDOM.ORG service]]></Description>

@@ -4,7 +4,7 @@
     /// <typeparam name="T">The type of random object.</typeparam>
     public sealed class SimpleRandom<T> : Random<T>
     {
-        /// <summary>Initializes a new instance of the <see cref="Random{T}" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="SimpleRandom{T}" /> class.</summary>
         public SimpleRandom()
         {
         }

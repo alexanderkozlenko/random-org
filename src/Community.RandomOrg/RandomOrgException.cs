@@ -2,7 +2,7 @@
 
 namespace Community.RandomOrg
 {
-    /// <summary>Represents errors that occur during RANDOM.ORG method invocation.</summary>
+    /// <summary>Represents error that occur during RANDOM.ORG method invocation.</summary>
     public sealed class RandomOrgException : Exception
     {
         internal RandomOrgException(long code, string message)
