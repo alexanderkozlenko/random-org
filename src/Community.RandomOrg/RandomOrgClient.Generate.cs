@@ -59,7 +59,7 @@ namespace Community.RandomOrg
             };
 
             var result = await InvokeRandomOrgMethod<RpcSimpleRandomResult<int>, RpcSimpleRandom<int>, int>(
-                _RPC_GENERATE_PURE_INTEGERS, @params, cancellationToken).ConfigureAwait(false);
+                _RPC_GENERATE_SIMPLE_INTEGERS, @params, cancellationToken).ConfigureAwait(false);
 
             var random = new SimpleRandom<int>();
 
@@ -114,7 +114,7 @@ namespace Community.RandomOrg
             };
 
             var result = await InvokeRandomOrgMethod<RpcSimpleRandomResult<decimal>, RpcSimpleRandom<decimal>, decimal>(
-                _RPC_GENERATE_PURE_DECIMAL_FRACTIONS, @params, cancellationToken).ConfigureAwait(false);
+                _RPC_GENERATE_SIMPLE_DECIMAL_FRACTIONS, @params, cancellationToken).ConfigureAwait(false);
 
             var random = new SimpleRandom<decimal>();
 
@@ -180,7 +180,7 @@ namespace Community.RandomOrg
             };
 
             var result = await InvokeRandomOrgMethod<RpcSimpleRandomResult<decimal>, RpcSimpleRandom<decimal>, decimal>(
-                _RPC_GENERATE_PURE_GAUSSIANS, @params, cancellationToken).ConfigureAwait(false);
+                _RPC_GENERATE_SIMPLE_GAUSSIANS, @params, cancellationToken).ConfigureAwait(false);
 
             var random = new SimpleRandom<decimal>();
 
@@ -251,7 +251,7 @@ namespace Community.RandomOrg
             };
 
             var result = await InvokeRandomOrgMethod<RpcSimpleRandomResult<string>, RpcSimpleRandom<string>, string>(
-                _RPC_GENERATE_PURE_STRINGS, @params, cancellationToken).ConfigureAwait(false);
+                _RPC_GENERATE_SIMPLE_STRINGS, @params, cancellationToken).ConfigureAwait(false);
 
             var random = new SimpleRandom<string>();
 
@@ -296,7 +296,7 @@ namespace Community.RandomOrg
             };
 
             var result = await InvokeRandomOrgMethod<RpcSimpleRandomResult<Guid>, RpcSimpleRandom<Guid>, Guid>(
-                _RPC_GENERATE_PURE_UUIDS, @params, cancellationToken).ConfigureAwait(false);
+                _RPC_GENERATE_SIMPLE_UUIDS, @params, cancellationToken).ConfigureAwait(false);
 
             var random = new SimpleRandom<Guid>();
 
@@ -356,7 +356,7 @@ namespace Community.RandomOrg
             };
 
             var result = await InvokeRandomOrgMethod<RpcSimpleRandomResult<string>, RpcSimpleRandom<string>, string>(
-                _RPC_GENERATE_PURE_BLOBS, @params, cancellationToken).ConfigureAwait(false);
+                _RPC_GENERATE_SIMPLE_BLOBS, @params, cancellationToken).ConfigureAwait(false);
 
             var random = new SimpleRandom<byte[]>
             {

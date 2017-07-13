@@ -20,12 +20,12 @@ namespace Community.RandomOrg
         private const string _HTTP_MEDIA_TYPE = "application/json";
         private const string _RPC_GET_USAGE = "getUsage";
         private const string _RPC_VERIFY_SIGNATUREE = "verifySignature";
-        private const string _RPC_GENERATE_PURE_INTEGERS = "generateIntegers";
-        private const string _RPC_GENERATE_PURE_DECIMAL_FRACTIONS = "generateDecimalFractions";
-        private const string _RPC_GENERATE_PURE_GAUSSIANS = "generateGaussians";
-        private const string _RPC_GENERATE_PURE_STRINGS = "generateStrings";
-        private const string _RPC_GENERATE_PURE_UUIDS = "generateUUIDs";
-        private const string _RPC_GENERATE_PURE_BLOBS = "generateBlobs";
+        private const string _RPC_GENERATE_SIMPLE_INTEGERS = "generateIntegers";
+        private const string _RPC_GENERATE_SIMPLE_DECIMAL_FRACTIONS = "generateDecimalFractions";
+        private const string _RPC_GENERATE_SIMPLE_GAUSSIANS = "generateGaussians";
+        private const string _RPC_GENERATE_SIMPLE_STRINGS = "generateStrings";
+        private const string _RPC_GENERATE_SIMPLE_UUIDS = "generateUUIDs";
+        private const string _RPC_GENERATE_SIMPLE_BLOBS = "generateBlobs";
         private const string _RPC_GENERATE_SIGNED_INTEGERS = "generateSignedIntegers";
         private const string _RPC_GENERATE_SIGNED_DECIMAL_FRACTIONS = "generateSignedDecimalFractions";
         private const string _RPC_GENERATE_SIGNED_GAUSSIANS = "generateSignedGaussians";
@@ -275,17 +275,17 @@ namespace Community.RandomOrg
                 new JsonRpcMethodScheme(typeof(RpcGetUsageResult), typeof(object[]));
             scheme.Methods[_RPC_VERIFY_SIGNATUREE] =
                new JsonRpcMethodScheme(typeof(RpcVerifyResult), typeof(object[]));
-            scheme.Methods[_RPC_GENERATE_PURE_INTEGERS] =
+            scheme.Methods[_RPC_GENERATE_SIMPLE_INTEGERS] =
                 new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<int>), typeof(object[]));
-            scheme.Methods[_RPC_GENERATE_PURE_DECIMAL_FRACTIONS] =
+            scheme.Methods[_RPC_GENERATE_SIMPLE_DECIMAL_FRACTIONS] =
                 new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<decimal>), typeof(object[]));
-            scheme.Methods[_RPC_GENERATE_PURE_GAUSSIANS] =
+            scheme.Methods[_RPC_GENERATE_SIMPLE_GAUSSIANS] =
                 new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<decimal>), typeof(object[]));
-            scheme.Methods[_RPC_GENERATE_PURE_STRINGS] =
+            scheme.Methods[_RPC_GENERATE_SIMPLE_STRINGS] =
                 new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<string>), typeof(object[]));
-            scheme.Methods[_RPC_GENERATE_PURE_UUIDS] =
+            scheme.Methods[_RPC_GENERATE_SIMPLE_UUIDS] =
                 new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<Guid>), typeof(object[]));
-            scheme.Methods[_RPC_GENERATE_PURE_BLOBS] =
+            scheme.Methods[_RPC_GENERATE_SIMPLE_BLOBS] =
                 new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<string>), typeof(object[]));
             scheme.Methods[_RPC_GENERATE_SIGNED_INTEGERS] =
                 new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedIntegersRandom, int>), typeof(object[]));

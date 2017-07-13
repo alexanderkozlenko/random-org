@@ -1028,5 +1028,39 @@ namespace Community.RandomOrg.Tests
                     () => client.GetUsageAsync());
             }
         }
+
+        [Fact]
+        public async void RandomOrgErrorWithNoData()
+        {
+            var stubHandler = (Func<string, Task<string>>)
+                (requestContent => HandleRequestContent(requestContent, "Assets.get_usg_req_101.json", "Assets.get_usg_res_101.json"));
+
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+
+            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            {
+                var exception = await Assert.ThrowsAsync<RandomOrgException>(
+                    () => client.GetUsageAsync());
+
+                Assert.Equal(101, exception.Code);
+            }
+        }
+
+        [Fact]
+        public async void RandomOrgErrorWithData()
+        {
+            var stubHandler = (Func<string, Task<string>>)
+                (requestContent => HandleRequestContent(requestContent, "Assets.get_usg_req_501.json", "Assets.get_usg_res_501.json"));
+
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+
+            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            {
+                var exception = await Assert.ThrowsAsync<RandomOrgException>(
+                    () => client.GetUsageAsync());
+
+                Assert.Equal(501, exception.Code);
+            }
+        }
     }
 }
