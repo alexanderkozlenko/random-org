@@ -17,5 +17,11 @@ namespace Community.RandomOrg.Data
 
         [JsonProperty("serialNumber")]
         public long SerialNumber { get; set; }
+
+        [JsonProperty("license")]
+        public RpcLicense License { get; set; }
+
+        [JsonProperty("userData")]
+        public string UserData { get; set; }
     }
 }

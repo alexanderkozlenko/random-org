@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Data
 {
-    internal sealed class RpcGenerateStringsParams : RpcRandomParams
+    internal sealed class RpcGenerateStringsParams : RpcGenerateParams
     {
         [JsonProperty("length")]
         public long Length { get; set; }

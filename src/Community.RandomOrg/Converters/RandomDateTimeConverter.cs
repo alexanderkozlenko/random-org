@@ -4,7 +4,10 @@ namespace Community.RandomOrg.Converters
 {
     internal sealed class RandomDateTimeConverter : IsoDateTimeConverter
     {
-        public RandomDateTimeConverter() =>
+        public RandomDateTimeConverter()
+        {
             DateTimeFormat = "yyyy'-'MM'-'dd' 'HH':'mm':'ss.FFFFFFFK";
+            DateTimeStyles = System.Globalization.DateTimeStyles.AdjustToUniversal;
+        }
     }
 }

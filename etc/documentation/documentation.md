@@ -1,11 +1,11 @@
-`RandomOrgClient` supports all [RANDOM.ORG](https://random.org) API methods, available through JSON-RPC protocol. A client instance is created with an API key and optional `HttpMessageInvoker` instance, all methods support operation cancellation via a `CancellationToken`.
+The client supports all RANDOM.ORG [Core API v2](https://api.random.org/json-rpc/2) methods and provides operation cancellation via a [`CancellationToken`](https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken?view=netstandard-1.1).
 
 ```cs
 using (var client = new RandomOrgClient("00000000-0000-0000-0000-000000000000"))
 {
     // Get current API key's status and available bits
 
-    var usage = await client.GetUsageAsync(CancellationToken.None);
+    var usg = await client.GetUsageAsync();
 
     // Generate an integer from the [0,10] range without replacement
 
@@ -36,16 +36,25 @@ using (var client = new RandomOrgClient("00000000-0000-0000-0000-000000000000"))
     // with signature, which can be verified afterwards
 
     var srii = await client.GenerateSignedIntegersAsync(1, 0, 10, false);
+
+    // Signature verification can be executed without specifying an API key
+
     var vrii = await client.VerifySignatureAsync(srii.Random, srii.Signature);
 
-    Console.WriteLine($"Key status: {usage.Status}, bits left: {usage.BitsLeft}");
+    // Since RANDOM.ORG stores the signed result for a minimum of 24 hours,
+    // it can be fetched again by a serial number
+
+    var crii = await client.GetResultAsync<SignedIntegersRandom, int>(srii.Random.SerialNumber);
+
+    Console.WriteLine($"Key status: {usg.Status}, bits left: {usg.BitsLeft}");
     Console.WriteLine($"Random integer: {rii.Random.Data[0]}");
     Console.WriteLine($"Random decimal fraction: {rif.Random.Data[0]}");
     Console.WriteLine($"Random Gaussian number: {rig.Random.Data[0]}");
     Console.WriteLine($"Random string: {ris.Random.Data[0]}");
     Console.WriteLine($"Random UUID: {riu.Random.Data[0]}");
     Console.WriteLine($"Random BLOB: {Convert.ToBase64String(rib.Random.Data[0])}");
-    Console.WriteLine($"Signed random integer (data): {rii.Random.Data[0]}");
+    Console.WriteLine($"Signed random integer (data): {srii.Random.Data[0]}");
     Console.WriteLine($"Signed random integer (authenticity): {vrii}");
+    Console.WriteLine($"Signed random integer (cached data): {crii.Random.Data[0]}");
 }
 ```

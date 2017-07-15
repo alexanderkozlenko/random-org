@@ -7,7 +7,6 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Community.RandomOrg.Data;
@@ -17,9 +16,6 @@ namespace Community.RandomOrg
     /// <summary>A RANDOM.ORG service client.</summary>
     public sealed partial class RandomOrgClient : IDisposable
     {
-        private const string _HTTP_MEDIA_TYPE = "application/json";
-        private const string _RPC_GET_USAGE = "getUsage";
-        private const string _RPC_VERIFY_SIGNATUREE = "verifySignature";
         private const string _RPC_GENERATE_SIMPLE_INTEGERS = "generateIntegers";
         private const string _RPC_GENERATE_SIMPLE_DECIMAL_FRACTIONS = "generateDecimalFractions";
         private const string _RPC_GENERATE_SIMPLE_GAUSSIANS = "generateGaussians";
@@ -32,14 +28,20 @@ namespace Community.RandomOrg
         private const string _RPC_GENERATE_SIGNED_STRINGS = "generateSignedStrings";
         private const string _RPC_GENERATE_SIGNED_UUIDS = "generateSignedUUIDs";
         private const string _RPC_GENERATE_SIGNED_BLOBS = "generateSignedBlobs";
+        private const string _RPC_GET_RESULT = "getResult";
+        private const string _RPC_GET_USAGE = "getUsage";
+        private const string _RPC_VERIFY_SIGNATUREE = "verifySignature";
 
-        private static readonly ResourceManager _resourceManager = CreateResourceManager();
+        private static readonly MediaTypeHeaderValue _httpMediaTypeHeader = new MediaTypeHeaderValue("application/json");
         private static readonly JsonRpcSerializer _jsonRpcSerializer = CreateJsonRpcSerializer();
-        private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/1/invoke", UriKind.Absolute);
+        private static readonly ResourceManager _resourceManager = CreateResourceManager();
+        private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/2/invoke", UriKind.Absolute);
 
         private readonly string _apiKey;
         private readonly HttpMessageInvoker _httpMessageInvoker;
         private readonly SemaphoreSlim _requestSemaphore = new SemaphoreSlim(1, 1);
+        private readonly Dictionary<JsonRpcId, string> _rpcMethodNameBindings = new Dictionary<JsonRpcId, string>(1);
+        private readonly Dictionary<JsonRpcId, JsonRpcMethodScheme> _rpcMethodSchemeBindings = new Dictionary<JsonRpcId, JsonRpcMethodScheme>(1);
 
         private DateTime? _advisoryTime;
 
@@ -131,7 +133,7 @@ namespace Community.RandomOrg
         {
             if (_apiKey == null)
             {
-                throw new InvalidOperationException(_resourceManager.GetString("ApiKeyRequired"));
+                throw new InvalidOperationException(_resourceManager.GetString("ClientApiKeyRequired"));
             }
         }
 
@@ -143,6 +145,13 @@ namespace Community.RandomOrg
             target.Data = source.Data;
             target.CompletionTime = source.CompletionTime;
             target.SerialNumber = source.SerialNumber;
+
+            target.License = new RpcLicense
+            {
+                Type = source.License.Type,
+                Text = source.License.Text,
+                InfoUrl = source.License.InfoUrl
+            };
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -152,6 +161,14 @@ namespace Community.RandomOrg
             target.Data = source.Data;
             target.CompletionTime = source.CompletionTime;
             target.SerialNumber = source.SerialNumber;
+            target.UserData = source.UserData;
+
+            target.License = new License
+            {
+                Type = source.License.Type,
+                Text = source.License.Text,
+                InfoUrl = source.License.InfoUrl
+            };
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -161,7 +178,7 @@ namespace Community.RandomOrg
             target.CompletionTime = source.CompletionTime;
         }
 
-        private async Task<TResult> InvokeRandomOrgMethod<TResult, TRandom, TValue>(string method, RpcRandomParams @params, CancellationToken cancellationToken)
+        private async Task<TResult> InvokeRandomOrgMethod<TResult, TRandom, TValue>(string method, RpcGenerateParams @params, CancellationToken cancellationToken)
             where TResult : RpcRandomResult<TRandom, TValue>
             where TRandom : RpcRandom<TValue>
         {
@@ -181,7 +198,7 @@ namespace Community.RandomOrg
                     }
                 }
 
-                var result = (TResult)await InvokeRandomOrgMethod(method, @params, cancellationToken).ConfigureAwait(false);
+                var result = (TResult)await InvokeRandomOrgMethod(method, @params, null, cancellationToken).ConfigureAwait(false);
 
                 _advisoryTime = result.Random.CompletionTime + result.AdvisoryDelay;
 
@@ -202,7 +219,7 @@ namespace Community.RandomOrg
 
             try
             {
-                return (TResult)await InvokeRandomOrgMethod(method, @params, cancellationToken).ConfigureAwait(false);
+                return (TResult)await InvokeRandomOrgMethod(method, @params, null, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -210,18 +227,27 @@ namespace Community.RandomOrg
             }
         }
 
-        private async Task<object> InvokeRandomOrgMethod(string method, object @params, CancellationToken cancellationToken)
+        private async Task<object> InvokeRandomOrgMethod(string method, object @params, Type resultType, CancellationToken cancellationToken)
         {
             var jsonRpcRequest = new JsonRpcRequest(method, Guid.NewGuid().ToString(), @params);
 
-            var bindings = new Dictionary<JsonRpcId, string>(1)
+            if (resultType != null)
             {
-                [jsonRpcRequest.Id] = jsonRpcRequest.Method
-            };
+                _rpcMethodSchemeBindings[jsonRpcRequest.Id] = new JsonRpcMethodScheme(resultType, typeof(object[]));
+            }
+            else
+            {
+                _rpcMethodNameBindings[jsonRpcRequest.Id] = jsonRpcRequest.Method;
+            }
+
+            var httpResponseContent = default(string);
 
             using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
             {
-                httpRequestMessage.Content = new StringContent(_jsonRpcSerializer.SerializeRequest(jsonRpcRequest), Encoding.UTF8, _HTTP_MEDIA_TYPE);
+                var httpRequestMessageContent = new StringContent(_jsonRpcSerializer.SerializeRequest(jsonRpcRequest));
+
+                httpRequestMessageContent.Headers.ContentType = _httpMediaTypeHeader;
+                httpRequestMessage.Content = httpRequestMessageContent;
 
                 using (var httpResponseMessage = await _httpMessageInvoker.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false))
                 {
@@ -229,23 +255,36 @@ namespace Community.RandomOrg
 
                     var mediaType = httpResponseMessage.Content.Headers.ContentType?.MediaType;
 
-                    if (string.Compare(mediaType, _HTTP_MEDIA_TYPE, StringComparison.OrdinalIgnoreCase) != 0)
+                    if (string.Compare(mediaType, _httpMediaTypeHeader.MediaType, StringComparison.OrdinalIgnoreCase) != 0)
                     {
-                        throw new InvalidOperationException(_resourceManager.GetString("MediaTypeError"));
+                        throw new InvalidOperationException(string.Format(_resourceManager.GetString("ServiceContentTypeError"), mediaType));
                     }
 
-                    var httpResponseContent = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
-                    var responseData = _jsonRpcSerializer.DeserializeResponsesData(httpResponseContent, bindings);
-                    var message = responseData.GetSingleItem().GetMessage();
-
-                    if (!message.Success)
-                    {
-                        throw new RandomOrgException(message.Error.Code, message.Error.Message);
-                    }
-
-                    return message.Result;
+                    httpResponseContent = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
             }
+
+            var responseData = resultType != null ?
+                _jsonRpcSerializer.DeserializeResponsesData(httpResponseContent, _rpcMethodSchemeBindings) :
+                _jsonRpcSerializer.DeserializeResponsesData(httpResponseContent, _rpcMethodNameBindings);
+
+            if (resultType != null)
+            {
+                _rpcMethodSchemeBindings.Clear();
+            }
+            else
+            {
+                _rpcMethodNameBindings.Clear();
+            }
+
+            var message = responseData.GetSingleItem().GetMessage();
+
+            if (!message.Success)
+            {
+                throw new RandomOrgException(message.Error.Code, message.Error.Message);
+            }
+
+            return message.Result;
         }
 
         private static HttpMessageInvoker CreateHttpMessageInvoker()
@@ -257,7 +296,7 @@ namespace Community.RandomOrg
 
             var httpClient = new HttpClient(httpClientHandler);
 
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(_HTTP_MEDIA_TYPE));
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(_httpMediaTypeHeader.MediaType));
             httpClient.DefaultRequestHeaders.ExpectContinue = false;
             httpClient.Timeout = TimeSpan.FromMinutes(2);
 
@@ -274,7 +313,7 @@ namespace Community.RandomOrg
             scheme.Methods[_RPC_GET_USAGE] =
                 new JsonRpcMethodScheme(typeof(RpcGetUsageResult), typeof(object[]));
             scheme.Methods[_RPC_VERIFY_SIGNATUREE] =
-               new JsonRpcMethodScheme(typeof(RpcVerifyResult), typeof(object[]));
+                new JsonRpcMethodScheme(typeof(RpcVerifyResult), typeof(object[]));
             scheme.Methods[_RPC_GENERATE_SIMPLE_INTEGERS] =
                 new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<int>), typeof(object[]));
             scheme.Methods[_RPC_GENERATE_SIMPLE_DECIMAL_FRACTIONS] =

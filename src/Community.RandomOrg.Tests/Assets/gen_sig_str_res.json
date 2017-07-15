@@ -3,28 +3,34 @@
     "result": {
         "random": {
             "method": "generateSignedStrings",
-            "hashedApiKey": "oT3AdLMVZKajz0pgW/8Z+t5sGZkqQSOnAi1aB8Li0tXgWf8LolrgdQ1wn9sKx1ehxhUZmhwUIpAtM8QeRbn51Q==",
+            "hashedApiKey": "jRRSWJJ4kGLIQJ6FngDu2WaGnf7CAV8jqmj2K2HjaF5y++av3qB7r4oq67cnIKAEBeciqJKCXdXKE9apwtg2MA==",
             "n": 8,
             "length": 10,
             "characters": "abcdefghijklmnopqrstuvwxyz",
             "replacement": true,
             "data": [
-                "vnbbvnytjx",
-                "wazkxrindd",
-                "bdkyzpwggk",
-                "veanpfbyun",
-                "dbeswfjiak",
-                "gfgmrppopl",
-                "chwkiiwozg",
-                "xvdfnqdqdw"
+                "dmrfwmcclb",
+                "fdztgetgzf",
+                "mbfjfgvhvp",
+                "qfllbtnwlh",
+                "wcepppjgkl",
+                "bdoismmnky",
+                "lyxxbfasgm",
+                "swmsyolhar"
             ],
-            "completionTime": "2013-09-30 16:56:46Z",
-            "serialNumber": 69266
+            "license": {
+                "type": "commercial-2",
+                "text": "These values are licensed for commercial (non-gambling) use.",
+                "infoUrl": "https://api.random.org/licenses/commercial-2"
+            },
+            "userData": null,
+            "completionTime": "2017-02-12 13:41:22Z",
+            "serialNumber": 16
         },
-        "signature": "XFGHFilFS5jNvL8jmlvzvBogF8SQqFTGkeIUzs4NzzKGe4Qy7R8Uhl0Oi/gBuxBGIL94IjfXmPaEWD4gycuxOv+Yg5GEKlSVyeXY0D1AJF6E6e5HEhpCp0leo+rEQi2uR8tM21BVrGbAq9mWuJy8pkBa4CxQcvkyu2+4ct9Ci1PMTyr+ia+yo46rzW1s8cHXtIHUL4BOC6JZWahzknR+zzdY2sBQ2D+7FZkXo9J34HLtnoXmFkXMFU/yIGfUnfeEKlqBtNFk11C6JkWULX7cBdfMxOGaEyu+StRYnhjjixIxQvbJgPUG7T9L1+e/rP/iTYvuEZUViRhiJxLKkB85mlPSZYkclgZjV/90d0SR+ZciVJwkGdHvM+5vyN3XzoDAhZpDmAr3sp5uDD1oOA4KEKqqnZYiTQaHgVauWi9cXsGznoEZFB6AUtEWz5z+kvAayKwNP1//2Ob3KcELNZDOVgoo3uEJW1QjwyonmWoO2gVKC2vwcgyLnMDme21Nh8q+yRusSCveCOCVr3zWInW0K6Oy8CpvfpS5HReN5q7eYbN/mIKrdgYDro04jtjNCDVTx/+WzZEVbnN6Egi+3RpyPhI6t48//9sE9LELhnjf+D++JOo8Z52KckfXRHu+UFkBvvrEwyM68ivbkZiJMJYme4ZPt6UVFmv6yHy1O15bkNo=",
+        "signature": "uxNedFTWcAhFyGzrPFFEGGa81QKaepcemBFSfcLczUXXUWGgdjH6P/xE+1kR7jLIt/VLw/xOu/g1vPHyawtnvkPBle6HmQCnJ+nPRjNLUyEpAcZKiOCpvMRtsiUV9IBAwSefWgqaA+IdE457IwSG+LHXAn//0tiISn7hFdSF51cSsbvbM8aLH12vXc9AUuaqGlp6KpTgyfQAX1IciHrPiowdgmJ5hqJvXGj40h1C/NtHPazx6tvEE3ZHHgRubUUlAFJiP3hYcOZq1f+hdyk5d8pHKRFJsZee8aqiszidLPIeWGP4ce+8/g9NSAVUW3uqyxhSfnWM/CIo6ajR+VmzvjTdQO9ThcmkwXIgFauKaOkXmHi/kAzP9X2bLrxu3fIORtno/AO0Asu0mvC8QEcXk2iUWNqfU8FD0DcYeK44qpzKz+Rd1NSyGYVcU7katKSXZghEGQexXd0LHq5IQQeyUIJkA515l+sppebQpScRiUip2AmM2EJTxVuXDRL857R1zyorHZb5GHAUXb5jYUvRrxhavC73G8ppKv7z3aVSVZJ0fqam7zKQyQaWY4wrTG4HjJuHX0Elvtxp49HB4dkHs9nPGw+ETJRiNPZm9Fguf/z4RWuCAuvdarPSINK2N4Fmv2ww5tKWj/veFmHc52oRHFq/cv+90hpPFDaIc6beJ+Y=",
         "bitsUsed": 376,
-        "bitsLeft": 898958,
-        "requestsLeft": 199985,
-        "advisoryDelay": 1000
+        "bitsLeft": 4963692,
+        "requestsLeft": 19986,
+        "advisoryDelay": 1100
     }
 }

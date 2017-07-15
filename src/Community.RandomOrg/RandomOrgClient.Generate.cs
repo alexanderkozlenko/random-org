@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.JsonRpc;
 using System.Threading;
 using System.Threading.Tasks;
 using Community.RandomOrg.Data;
@@ -387,7 +388,7 @@ namespace Community.RandomOrg
         public Task<SignedGenerationInfo<SignedIntegersRandom, int>> GenerateSignedIntegersAsync(
             int count, int minimum, int maximum, bool replacement)
         {
-            return GenerateSignedIntegersAsync(count, minimum, maximum, replacement, CancellationToken.None);
+            return GenerateSignedIntegersAsync(count, minimum, maximum, replacement, null, CancellationToken.None);
         }
 
         /// <summary>Generates true random integers within a user-defined range with signature as an asynchronous operation.</summary>
@@ -400,8 +401,41 @@ namespace Community.RandomOrg
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="minimum" />, or <paramref name="maximum" /> is outside the allowable range of values.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        public async Task<SignedGenerationInfo<SignedIntegersRandom, int>> GenerateSignedIntegersAsync(
+        public Task<SignedGenerationInfo<SignedIntegersRandom, int>> GenerateSignedIntegersAsync(
             int count, int minimum, int maximum, bool replacement, CancellationToken cancellationToken)
+        {
+            return GenerateSignedIntegersAsync(count, minimum, maximum, replacement, null, cancellationToken);
+        }
+
+        /// <summary>Generates true random integers within a user-defined range with signature as an asynchronous operation.</summary>
+        /// <param name="count">How many random integers to generate. Must be within the [1,1e4] range.</param>
+        /// <param name="minimum">The lower boundary for the range from which the random numbers will be picked. Must be within the [-1e9,1e9] range.</param>
+        /// <param name="maximum">The upper boundary for the range from which the random numbers will be picked. Must be within the [-1e9,1e9] range.</param>
+        /// <param name="replacement">Specifies whether the random numbers should be picked with replacement.</param>
+        /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1e3.</param>
+        /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="minimum" />, or <paramref name="maximum" /> is outside the allowable range of values.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public Task<SignedGenerationInfo<SignedIntegersRandom, int>> GenerateSignedIntegersAsync(
+            int count, int minimum, int maximum, bool replacement, string userData)
+        {
+            return GenerateSignedIntegersAsync(count, minimum, maximum, replacement, userData, CancellationToken.None);
+        }
+
+        /// <summary>Generates true random integers within a user-defined range with signature as an asynchronous operation.</summary>
+        /// <param name="count">How many random integers to generate. Must be within the [1,1e4] range.</param>
+        /// <param name="minimum">The lower boundary for the range from which the random numbers will be picked. Must be within the [-1e9,1e9] range.</param>
+        /// <param name="maximum">The upper boundary for the range from which the random numbers will be picked. Must be within the [-1e9,1e9] range.</param>
+        /// <param name="replacement">Specifies whether the random numbers should be picked with replacement.</param>
+        /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1e3.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="minimum" />, or <paramref name="maximum" /> is outside the allowable range of values.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public async Task<SignedGenerationInfo<SignedIntegersRandom, int>> GenerateSignedIntegersAsync(
+            int count, int minimum, int maximum, bool replacement, string userData, CancellationToken cancellationToken)
         {
             if ((count < 1) || (count > 10000))
             {
@@ -415,12 +449,17 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentOutOfRangeException(nameof(maximum), maximum, _resourceManager.GetString("RandomIntegersMaximumError"));
             }
+            if ((userData != null) && (userData.Length > 1000))
+            {
+                throw new ArgumentException(_resourceManager.GetString("RandomUserDataLengthError"), nameof(userData));
+            }
 
             EnsureApiKeyIsSpecified();
 
             var @params = new RpcGenerateIntegersParams
             {
                 ApiKey = _apiKey,
+                UserData = userData,
                 Count = count,
                 Minimum = minimum,
                 Maximum = maximum,
@@ -453,7 +492,7 @@ namespace Community.RandomOrg
         public Task<SignedGenerationInfo<SignedDecimalFractionsRandom, decimal>> GenerateSignedDecimalFractionsAsync(
             int count, int decimalPlaces, bool replacement)
         {
-            return GenerateSignedDecimalFractionsAsync(count, decimalPlaces, replacement, CancellationToken.None);
+            return GenerateSignedDecimalFractionsAsync(count, decimalPlaces, replacement, null, CancellationToken.None);
         }
 
         /// <summary>Generates true random decimal fractions from a uniform distribution across the [0,1] interval with a user-defined number of decimal places with signature as an asynchronous operation.</summary>
@@ -465,8 +504,39 @@ namespace Community.RandomOrg
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="decimalPlaces" /> is outside the allowable range of values.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        public async Task<SignedGenerationInfo<SignedDecimalFractionsRandom, decimal>> GenerateSignedDecimalFractionsAsync(
+        public Task<SignedGenerationInfo<SignedDecimalFractionsRandom, decimal>> GenerateSignedDecimalFractionsAsync(
             int count, int decimalPlaces, bool replacement, CancellationToken cancellationToken)
+        {
+            return GenerateSignedDecimalFractionsAsync(count, decimalPlaces, replacement, null, cancellationToken);
+        }
+
+        /// <summary>Generates true random decimal fractions from a uniform distribution across the [0,1] interval with a user-defined number of decimal places with signature as an asynchronous operation.</summary>
+        /// <param name="count">How many random decimal fractions to generate. Must be within the [1,1e4] range.</param>
+        /// <param name="decimalPlaces">The number of decimal places to use. Must be within the [1,20] range.</param>
+        /// <param name="replacement">Specifies whether the random numbers should be picked with replacement.</param>
+        /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1e3.</param>
+        /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="decimalPlaces" /> is outside the allowable range of values.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public Task<SignedGenerationInfo<SignedDecimalFractionsRandom, decimal>> GenerateSignedDecimalFractionsAsync(
+            int count, int decimalPlaces, bool replacement, string userData)
+        {
+            return GenerateSignedDecimalFractionsAsync(count, decimalPlaces, replacement, userData, CancellationToken.None);
+        }
+
+        /// <summary>Generates true random decimal fractions from a uniform distribution across the [0,1] interval with a user-defined number of decimal places with signature as an asynchronous operation.</summary>
+        /// <param name="count">How many random decimal fractions to generate. Must be within the [1,1e4] range.</param>
+        /// <param name="decimalPlaces">The number of decimal places to use. Must be within the [1,20] range.</param>
+        /// <param name="replacement">Specifies whether the random numbers should be picked with replacement.</param>
+        /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1e3.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="decimalPlaces" /> is outside the allowable range of values.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public async Task<SignedGenerationInfo<SignedDecimalFractionsRandom, decimal>> GenerateSignedDecimalFractionsAsync(
+            int count, int decimalPlaces, bool replacement, string userData, CancellationToken cancellationToken)
         {
             if ((count < 1) || (count > 10000))
             {
@@ -476,12 +546,17 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentOutOfRangeException(nameof(decimalPlaces), decimalPlaces, _resourceManager.GetString("RandomDecimalFractionsDecimalPlacesError"));
             }
+            if ((userData != null) && (userData.Length > 1000))
+            {
+                throw new ArgumentException(_resourceManager.GetString("RandomUserDataLengthError"), nameof(userData));
+            }
 
             EnsureApiKeyIsSpecified();
 
             var @params = new RpcGenerateDecimalFractionsParams
             {
                 ApiKey = _apiKey,
+                UserData = userData,
                 Count = count,
                 DecimalPlaces = decimalPlaces,
                 Replacement = replacement
@@ -513,7 +588,7 @@ namespace Community.RandomOrg
         public Task<SignedGenerationInfo<SignedGaussiansRandom, decimal>> GenerateSignedGaussiansAsync(
             int count, decimal mean, decimal standardDeviation, int significantDigits)
         {
-            return GenerateSignedGaussiansAsync(count, mean, standardDeviation, significantDigits, CancellationToken.None);
+            return GenerateSignedGaussiansAsync(count, mean, standardDeviation, significantDigits, null, CancellationToken.None);
         }
 
         /// <summary>Generates true random numbers from a Gaussian distribution with signature as an asynchronous operation.</summary>
@@ -526,8 +601,41 @@ namespace Community.RandomOrg
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="mean" />, <paramref name="standardDeviation" />, or <paramref name="significantDigits" /> is outside the allowable range of values.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        public async Task<SignedGenerationInfo<SignedGaussiansRandom, decimal>> GenerateSignedGaussiansAsync(
+        public Task<SignedGenerationInfo<SignedGaussiansRandom, decimal>> GenerateSignedGaussiansAsync(
             int count, decimal mean, decimal standardDeviation, int significantDigits, CancellationToken cancellationToken)
+        {
+            return GenerateSignedGaussiansAsync(count, mean, standardDeviation, significantDigits, null, cancellationToken);
+        }
+
+        /// <summary>Generates true random numbers from a Gaussian distribution with signature as an asynchronous operation.</summary>
+        /// <param name="count">How many random numbers to generate. Must be within the [1,1e4] range.</param>
+        /// <param name="mean">The distribution's mean. Must be within the [-1e6,1e6] range.</param>
+        /// <param name="standardDeviation">The distribution's standard deviation. Must be within the [-1e6,1e6] range.</param>
+        /// <param name="significantDigits">The number of significant digits to use. Must be within the [2,20] range.</param>
+        /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1e3.</param>
+        /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="mean" />, <paramref name="standardDeviation" />, or <paramref name="significantDigits" /> is outside the allowable range of values.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public Task<SignedGenerationInfo<SignedGaussiansRandom, decimal>> GenerateSignedGaussiansAsync(
+            int count, decimal mean, decimal standardDeviation, int significantDigits, string userData)
+        {
+            return GenerateSignedGaussiansAsync(count, mean, standardDeviation, significantDigits, userData, CancellationToken.None);
+        }
+
+        /// <summary>Generates true random numbers from a Gaussian distribution with signature as an asynchronous operation.</summary>
+        /// <param name="count">How many random numbers to generate. Must be within the [1,1e4] range.</param>
+        /// <param name="mean">The distribution's mean. Must be within the [-1e6,1e6] range.</param>
+        /// <param name="standardDeviation">The distribution's standard deviation. Must be within the [-1e6,1e6] range.</param>
+        /// <param name="significantDigits">The number of significant digits to use. Must be within the [2,20] range.</param>
+        /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1e3.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="mean" />, <paramref name="standardDeviation" />, or <paramref name="significantDigits" /> is outside the allowable range of values.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public async Task<SignedGenerationInfo<SignedGaussiansRandom, decimal>> GenerateSignedGaussiansAsync(
+            int count, decimal mean, decimal standardDeviation, int significantDigits, string userData, CancellationToken cancellationToken)
         {
             if ((count < 1) || (count > 10000))
             {
@@ -545,12 +653,17 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentOutOfRangeException(nameof(significantDigits), significantDigits, _resourceManager.GetString("RandomGaussiansSignificantDigitsError"));
             }
+            if ((userData != null) && (userData.Length > 1000))
+            {
+                throw new ArgumentException(_resourceManager.GetString("RandomUserDataLengthError"), nameof(userData));
+            }
 
             EnsureApiKeyIsSpecified();
 
             var @params = new RpcGenerateGaussiansParams
             {
                 ApiKey = _apiKey,
+                UserData = userData,
                 Count = count,
                 Mean = mean,
                 StandardDeviation = standardDeviation,
@@ -586,7 +699,7 @@ namespace Community.RandomOrg
         public Task<SignedGenerationInfo<SignedStringsRandom, string>> GenerateSignedStringsAsync(
             int count, int length, string characters, bool replacement)
         {
-            return GenerateSignedStringsAsync(count, length, characters, replacement, CancellationToken.None);
+            return GenerateSignedStringsAsync(count, length, characters, replacement, null, CancellationToken.None);
         }
 
         /// <summary>Generates true random strings with signature as an asynchronous operation.</summary>
@@ -601,8 +714,45 @@ namespace Community.RandomOrg
         /// <exception cref="ArgumentException"><paramref name="characters" /> contains invalid number of characters .</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        public async Task<SignedGenerationInfo<SignedStringsRandom, string>> GenerateSignedStringsAsync(
+        public Task<SignedGenerationInfo<SignedStringsRandom, string>> GenerateSignedStringsAsync(
             int count, int length, string characters, bool replacement, CancellationToken cancellationToken)
+        {
+            return GenerateSignedStringsAsync(count, length, characters, replacement, null, cancellationToken);
+        }
+
+        /// <summary>Generates true random strings with signature as an asynchronous operation.</summary>
+        /// <param name="count">How many random strings to generate. Must be within the [1,1e4] range.</param>
+        /// <param name="length">The length of each string. Must be within the [1,20] range.</param>
+        /// <param name="characters">A string that contains the set of characters that are allowed to occur in the random strings. The maximum number of characters is 80.</param>
+        /// <param name="replacement">Specifies whether the random strings should be picked with replacement.</param>
+        /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1e3.</param>
+        /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="length" /> is outside the allowable range of values.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="characters" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentException"><paramref name="characters" /> contains invalid number of characters .</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public Task<SignedGenerationInfo<SignedStringsRandom, string>> GenerateSignedStringsAsync(
+            int count, int length, string characters, bool replacement, string userData)
+        {
+            return GenerateSignedStringsAsync(count, length, characters, replacement, userData, CancellationToken.None);
+        }
+
+        /// <summary>Generates true random strings with signature as an asynchronous operation.</summary>
+        /// <param name="count">How many random strings to generate. Must be within the [1,1e4] range.</param>
+        /// <param name="length">The length of each string. Must be within the [1,20] range.</param>
+        /// <param name="characters">A string that contains the set of characters that are allowed to occur in the random strings. The maximum number of characters is 80.</param>
+        /// <param name="replacement">Specifies whether the random strings should be picked with replacement.</param>
+        /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1e3.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="length" /> is outside the allowable range of values.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="characters" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentException"><paramref name="characters" /> contains invalid number of characters .</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public async Task<SignedGenerationInfo<SignedStringsRandom, string>> GenerateSignedStringsAsync(
+            int count, int length, string characters, bool replacement, string userData, CancellationToken cancellationToken)
         {
             if ((count < 1) || (count > 10000))
             {
@@ -620,12 +770,17 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentException(_resourceManager.GetString("RandomStringsCharactersNumberError"), nameof(characters));
             }
+            if ((userData != null) && (userData.Length > 1000))
+            {
+                throw new ArgumentException(_resourceManager.GetString("RandomUserDataLengthError"), nameof(userData));
+            }
 
             EnsureApiKeyIsSpecified();
 
             var @params = new RpcGenerateStringsParams
             {
                 ApiKey = _apiKey,
+                UserData = userData,
                 Count = count,
                 Length = length,
                 Characters = characters,
@@ -656,7 +811,7 @@ namespace Community.RandomOrg
         public Task<SignedGenerationInfo<SignedUuidsRandom, Guid>> GenerateSignedUuidsAsync(
             int count)
         {
-            return GenerateSignedUuidsAsync(count, CancellationToken.None);
+            return GenerateSignedUuidsAsync(count, null, CancellationToken.None);
         }
 
         /// <summary>Generates version 4 true random UUIDs in accordance with section 4.4 of RFC 4122 with signature as an asynchronous operation.</summary>
@@ -666,12 +821,43 @@ namespace Community.RandomOrg
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> is outside the allowable range of values.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        public async Task<SignedGenerationInfo<SignedUuidsRandom, Guid>> GenerateSignedUuidsAsync(
+        public Task<SignedGenerationInfo<SignedUuidsRandom, Guid>> GenerateSignedUuidsAsync(
             int count, CancellationToken cancellationToken)
+        {
+            return GenerateSignedUuidsAsync(count, null, cancellationToken);
+        }
+
+        /// <summary>Generates version 4 true random UUIDs in accordance with section 4.4 of RFC 4122 with signature as an asynchronous operation.</summary>
+        /// <param name="count">How many random UUIDs to generate. Must be within the [1,1e3] range.</param>
+        /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1e3.</param>
+        /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> is outside the allowable range of values.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public Task<SignedGenerationInfo<SignedUuidsRandom, Guid>> GenerateSignedUuidsAsync(
+            int count, string userData)
+        {
+            return GenerateSignedUuidsAsync(count, userData, CancellationToken.None);
+        }
+
+        /// <summary>Generates version 4 true random UUIDs in accordance with section 4.4 of RFC 4122 with signature as an asynchronous operation.</summary>
+        /// <param name="count">How many random UUIDs to generate. Must be within the [1,1e3] range.</param>
+        /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1e3.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> is outside the allowable range of values.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public async Task<SignedGenerationInfo<SignedUuidsRandom, Guid>> GenerateSignedUuidsAsync(
+            int count, string userData, CancellationToken cancellationToken)
         {
             if ((count < 1) || (count > 1000))
             {
                 throw new ArgumentOutOfRangeException(nameof(count), count, _resourceManager.GetString("RandomUuidsCountError"));
+            }
+            if ((userData != null) && (userData.Length > 1000))
+            {
+                throw new ArgumentException(_resourceManager.GetString("RandomUserDataLengthError"), nameof(userData));
             }
 
             EnsureApiKeyIsSpecified();
@@ -679,6 +865,7 @@ namespace Community.RandomOrg
             var @params = new RpcGenerateUuidsParams
             {
                 ApiKey = _apiKey,
+                UserData = userData,
                 Count = count
             };
 
@@ -702,7 +889,7 @@ namespace Community.RandomOrg
         public Task<SignedGenerationInfo<SignedBlobsRandom, byte[]>> GenerateSignedBlobsAsync(
             int count, int size)
         {
-            return GenerateSignedBlobsAsync(count, size, CancellationToken.None);
+            return GenerateSignedBlobsAsync(count, size, null, CancellationToken.None);
         }
 
         /// <summary>Generates BLOBs containing true random data with signature as an asynchronous operation.</summary>
@@ -713,8 +900,37 @@ namespace Community.RandomOrg
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="size" /> is outside the allowable range of values.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        public async Task<SignedGenerationInfo<SignedBlobsRandom, byte[]>> GenerateSignedBlobsAsync(
+        public Task<SignedGenerationInfo<SignedBlobsRandom, byte[]>> GenerateSignedBlobsAsync(
             int count, int size, CancellationToken cancellationToken)
+        {
+            return GenerateSignedBlobsAsync(count, size, null, cancellationToken);
+        }
+
+        /// <summary>Generates BLOBs containing true random data with signature as an asynchronous operation.</summary>
+        /// <param name="count">How many random blobs to generate. Must be within the [1,100] range.</param>
+        /// <param name="size">The size of each blob, measured in bits. Must be within the [1,1048576] range and must be divisible by 8. The total size of all blobs requested must not exceed 1048576 bits.</param>
+        /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1e3.</param>
+        /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="size" /> is outside the allowable range of values.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public Task<SignedGenerationInfo<SignedBlobsRandom, byte[]>> GenerateSignedBlobsAsync(
+            int count, int size, string userData)
+        {
+            return GenerateSignedBlobsAsync(count, size, userData, CancellationToken.None);
+        }
+
+        /// <summary>Generates BLOBs containing true random data with signature as an asynchronous operation.</summary>
+        /// <param name="count">How many random blobs to generate. Must be within the [1,100] range.</param>
+        /// <param name="size">The size of each blob, measured in bits. Must be within the [1,1048576] range and must be divisible by 8. The total size of all blobs requested must not exceed 1048576 bits.</param>
+        /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1e3.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="size" /> is outside the allowable range of values.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public async Task<SignedGenerationInfo<SignedBlobsRandom, byte[]>> GenerateSignedBlobsAsync(
+            int count, int size, string userData, CancellationToken cancellationToken)
         {
             if ((count < 1) || (count > 100))
             {
@@ -732,12 +948,17 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentOutOfRangeException(nameof(size), size, _resourceManager.GetString("RandomBlobsTotalSizeError"));
             }
+            if ((userData != null) && (userData.Length > 1000))
+            {
+                throw new ArgumentException(_resourceManager.GetString("RandomUserDataLengthError"), nameof(userData));
+            }
 
             EnsureApiKeyIsSpecified();
 
             var @params = new RpcGenerateBlobsParams
             {
                 ApiKey = _apiKey,
+                UserData = userData,
                 Count = count,
                 Size = size
             };
@@ -762,8 +983,203 @@ namespace Community.RandomOrg
 
             random.Data = data;
 
+            random.License = new License
+            {
+                Type = result.Random.License.Type,
+                Text = result.Random.License.Text,
+                InfoUrl = result.Random.License.InfoUrl
+            };
+
             return new SignedGenerationInfo<SignedBlobsRandom, byte[]>(
                 random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature);
+        }
+
+        /// <summary>Retrieves previously generated signed results (which are stored for 24 hours) as an asynchronous operation.</summary>
+        /// <typeparam name="TRandom">The type of random data container.</typeparam>
+        /// <typeparam name="TValue">The type of random object.</typeparam>
+        /// <param name="serialNumber">The integer containing the serial number associated with this random information.</param>
+        /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="InvalidOperationException">An error occurred during random container conversion.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public Task<SignedGenerationInfo<TRandom, TValue>> GetResultAsync<TRandom, TValue>(long serialNumber)
+            where TRandom : SignedRandom<TValue>
+        {
+            return GetResultAsync<TRandom, TValue>(serialNumber, CancellationToken.None);
+        }
+
+        /// <summary>Retrieves previously generated signed results (which are stored for 24 hours) as an asynchronous operation.</summary>
+        /// <typeparam name="TRandom">The type of random data container.</typeparam>
+        /// <typeparam name="TValue">The type of random object.</typeparam>
+        /// <param name="serialNumber">The integer containing the serial number associated with this random information.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="InvalidOperationException">An error occurred during random container conversion.</exception>
+        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        public async Task<SignedGenerationInfo<TRandom, TValue>> GetResultAsync<TRandom, TValue>(long serialNumber, CancellationToken cancellationToken)
+            where TRandom : SignedRandom<TValue>
+        {
+            EnsureApiKeyIsSpecified();
+
+            var @params = new RpcGetResultParams
+            {
+                ApiKey = _apiKey,
+                SerialNumber = serialNumber
+            };
+
+            var resultType = default(Type);
+
+            if (typeof(TRandom) == typeof(SignedIntegersRandom))
+            {
+                resultType = typeof(RpcSignedRandomResult<RpcSignedIntegersRandom, int>);
+            }
+            else if (typeof(TRandom) == typeof(SignedDecimalFractionsRandom))
+            {
+                resultType = typeof(RpcSignedRandomResult<RpcSignedDecimalFractionsRandom, decimal>);
+            }
+            else if (typeof(TRandom) == typeof(SignedGaussiansRandom))
+            {
+                resultType = typeof(RpcSignedRandomResult<RpcSignedGaussiansRandom, decimal>);
+            }
+            else if (typeof(TRandom) == typeof(SignedStringsRandom))
+            {
+                resultType = typeof(RpcSignedRandomResult<RpcSignedStringsRandom, string>);
+            }
+            else if (typeof(TRandom) == typeof(SignedUuidsRandom))
+            {
+                resultType = typeof(RpcSignedRandomResult<RpcSignedUuidsRandom, Guid>);
+            }
+            else if (typeof(TRandom) == typeof(SignedBlobsRandom))
+            {
+                resultType = typeof(RpcSignedRandomResult<RpcSignedBlobsRandom, string>);
+            }
+
+            var result = default(object);
+
+            try
+            {
+                result = await InvokeRandomOrgMethod(_RPC_GET_RESULT, @params, resultType, cancellationToken);
+            }
+            catch (JsonRpcException ex)
+                when (ex.Type == JsonRpcExceptionType.GenericError)
+            {
+                throw new InvalidOperationException(_resourceManager.GetString("ServiceRandomContainerTypeError"), ex);
+            }
+
+            var generationInfo = default(SignedGenerationInfo<TRandom, TValue>);
+
+            if (typeof(TRandom) == typeof(SignedIntegersRandom))
+            {
+                var typedResult = (RpcSignedRandomResult<RpcSignedIntegersRandom, int>)result;
+
+                var typedRandom = new SignedIntegersRandom
+                {
+                    Minimum = (int)typedResult.Random.Minimum,
+                    Maximum = (int)typedResult.Random.Maximum,
+                    Replacement = typedResult.Random.Replacement
+                };
+
+                TransferValues(typedResult.Random, typedRandom);
+
+                var typedGenerationInfo = new SignedGenerationInfo<SignedIntegersRandom, int>(
+                    typedRandom, typedResult.BitsUsed, typedResult.BitsLeft, typedResult.RequestsLeft, typedResult.Signature);
+
+                generationInfo = (SignedGenerationInfo<TRandom, TValue>)(object)typedGenerationInfo;
+            }
+            else if (typeof(TRandom) == typeof(SignedDecimalFractionsRandom))
+            {
+                var typedResult = (RpcSignedRandomResult<RpcSignedDecimalFractionsRandom, decimal>)result;
+
+                var typedRandom = new SignedDecimalFractionsRandom
+                {
+                    DecimalPlaces = (int)typedResult.Random.DecimalPlaces,
+                    Replacement = typedResult.Random.Replacement
+                };
+
+                TransferValues(typedResult.Random, typedRandom);
+
+                var typedGenerationInfo = new SignedGenerationInfo<SignedDecimalFractionsRandom, decimal>(
+                    typedRandom, typedResult.BitsUsed, typedResult.BitsLeft, typedResult.RequestsLeft, typedResult.Signature);
+
+                generationInfo = (SignedGenerationInfo<TRandom, TValue>)(object)typedGenerationInfo;
+            }
+            else if (typeof(TRandom) == typeof(SignedGaussiansRandom))
+            {
+                var typedResult = (RpcSignedRandomResult<RpcSignedGaussiansRandom, decimal>)result;
+
+                var typedRandom = new SignedGaussiansRandom
+                {
+                    Mean = typedResult.Random.Mean,
+                    StandardDeviation = typedResult.Random.StandardDeviation,
+                    SignificantDigits = (int)typedResult.Random.SignificantDigits
+                };
+
+                TransferValues(typedResult.Random, typedRandom);
+
+                var typedGenerationInfo = new SignedGenerationInfo<SignedGaussiansRandom, decimal>(
+                    typedRandom, typedResult.BitsUsed, typedResult.BitsLeft, typedResult.RequestsLeft, typedResult.Signature);
+
+                generationInfo = (SignedGenerationInfo<TRandom, TValue>)(object)typedGenerationInfo;
+            }
+            else if (typeof(TRandom) == typeof(SignedStringsRandom))
+            {
+                var typedResult = (RpcSignedRandomResult<RpcSignedStringsRandom, string>)result;
+
+                var typedRandom = new SignedStringsRandom
+                {
+                    Length = (int)typedResult.Random.Length,
+                    Characters = typedResult.Random.Characters,
+                    Replacement = typedResult.Random.Replacement
+                };
+
+                TransferValues(typedResult.Random, typedRandom);
+
+                var typedGenerationInfo = new SignedGenerationInfo<SignedStringsRandom, string>(
+                    typedRandom, typedResult.BitsUsed, typedResult.BitsLeft, typedResult.RequestsLeft, typedResult.Signature);
+
+                generationInfo = (SignedGenerationInfo<TRandom, TValue>)(object)typedGenerationInfo;
+            }
+            else if (typeof(TRandom) == typeof(SignedUuidsRandom))
+            {
+                var typedResult = (RpcSignedRandomResult<RpcSignedUuidsRandom, Guid>)result;
+                var typedRandom = new SignedUuidsRandom();
+
+                TransferValues(typedResult.Random, typedRandom);
+
+                var typedGenerationInfo = new SignedGenerationInfo<SignedUuidsRandom, Guid>(
+                    typedRandom, typedResult.BitsUsed, typedResult.BitsLeft, typedResult.RequestsLeft, typedResult.Signature);
+
+                generationInfo = (SignedGenerationInfo<TRandom, TValue>)(object)typedGenerationInfo;
+            }
+            else if (typeof(TRandom) == typeof(SignedBlobsRandom))
+            {
+                var typedResult = (RpcSignedRandomResult<RpcSignedBlobsRandom, string>)result;
+
+                var typedRandom = new SignedBlobsRandom
+                {
+                    ApiKeyHash = typedResult.Random.ApiKeyHash,
+                    CompletionTime = typedResult.Random.CompletionTime,
+                    SerialNumber = typedResult.Random.SerialNumber,
+                    Size = (int)typedResult.Random.Size
+                };
+
+                var data = new byte[typedResult.Random.Data.Count][];
+
+                for (var i = 0; i < data.Length; i++)
+                {
+                    data[i] = Convert.FromBase64String(typedResult.Random.Data[i]);
+                }
+
+                typedRandom.Data = data;
+
+                var typedGenerationInfo = new SignedGenerationInfo<SignedBlobsRandom, byte[]>(
+                    typedRandom, typedResult.BitsUsed, typedResult.BitsLeft, typedResult.RequestsLeft, typedResult.Signature);
+
+                generationInfo = (SignedGenerationInfo<TRandom, TValue>)(object)typedGenerationInfo;
+            }
+
+            return generationInfo;
         }
 
         /// <summary>Verifies the signature of signed random objects and associated data.</summary>
@@ -820,6 +1236,10 @@ namespace Community.RandomOrg
             if (random.SerialNumber == 0L)
             {
                 throw new ArgumentException(_resourceManager.GetString("VerifySignatureSerialNumberUndefined"), nameof(random));
+            }
+            if (random.License == null)
+            {
+                throw new ArgumentException(_resourceManager.GetString("VerifySignatureLicenseUndefined"), nameof(random));
             }
             if (signature.Length == 0)
             {

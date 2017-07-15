@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Data
 {
-    internal sealed class RpcGenerateGaussiansParams : RpcRandomParams
+    internal sealed class RpcGenerateGaussiansParams : RpcGenerateParams
     {
         [JsonProperty("mean")]
         [JsonConverter(typeof(RandomDecimalConverter))]

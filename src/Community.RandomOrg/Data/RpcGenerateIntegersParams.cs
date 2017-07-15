@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Data
 {
-    internal sealed class RpcGenerateIntegersParams : RpcRandomParams
+    internal sealed class RpcGenerateIntegersParams : RpcGenerateParams
     {
         [JsonProperty("min")]
         public long Minimum { get; set; }

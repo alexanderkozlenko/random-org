@@ -17,19 +17,66 @@ namespace Community.RandomOrg.Tests
     {
         private const string _RANDOM_API_KEY = "00000000-0000-0000-0000-000000000000";
         private const string _HTTP_MEDIA_TYPE = "application/json";
+        private const string _TIMESTAMP_FORMAT = "yyyy'-'MM'-'dd' 'HH':'mm':'ss.FFFFFFFK";
 
-        private static Task<string> HandleRequestContent(string requestContent, string expectedRequestAsset, string expectedResponseAsset)
+        private static Task<string> HandleRequestContent(string requestContent, JToken expectedRequestObject, JToken expectedResponseObject)
         {
             var requestJsonObjectActual = JObject.Parse(requestContent);
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString(expectedRequestAsset));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString(expectedResponseAsset));
 
-            requestJsonObject["id"] = requestJsonObjectActual["id"];
-            responseJsonObject["id"] = requestJsonObjectActual["id"];
+            expectedRequestObject["id"] = requestJsonObjectActual["id"];
+            expectedResponseObject["id"] = requestJsonObjectActual["id"];
 
-            Assert.True(JToken.DeepEquals(requestJsonObject, requestJsonObjectActual));
+            Assert.True(JToken.DeepEquals(expectedRequestObject, requestJsonObjectActual));
 
-            return Task.FromResult(responseJsonObject.ToString());
+            return Task.FromResult(expectedResponseObject.ToString());
+        }
+
+        private static void VerifyGenerationInfo<TValue>(SimpleGenerationInfo<TValue> typedObject, JObject jsonObject)
+        {
+            Assert.NotNull(typedObject);
+            Assert.Equal(jsonObject["result"]["bitsUsed"], typedObject.BitsUsed);
+            Assert.Equal(jsonObject["result"]["bitsLeft"], typedObject.BitsLeft);
+            Assert.Equal(jsonObject["result"]["requestsLeft"], typedObject.RequestsLeft);
+            Assert.NotNull(typedObject.Random);
+            Assert.Equal(jsonObject["result"]["random"]["completionTime"], typedObject.Random.CompletionTime.ToString(_TIMESTAMP_FORMAT));
+            Assert.NotNull(typedObject.Random.Data);
+            Assert.Equal(jsonObject["result"]["random"]["data"].ToObject<TValue[]>(), typedObject.Random.Data);
+        }
+
+        private static void VerifyGenerationInfo<TRandom, TValue>(SignedGenerationInfo<TRandom, TValue> typedObject, JObject jsonObject)
+            where TRandom : SignedRandom<TValue>
+        {
+            Assert.NotNull(typedObject);
+            Assert.Equal(jsonObject["result"]["bitsUsed"], typedObject.BitsUsed);
+            Assert.Equal(jsonObject["result"]["bitsLeft"], typedObject.BitsLeft);
+            Assert.Equal(jsonObject["result"]["requestsLeft"], typedObject.RequestsLeft);
+            Assert.Equal(jsonObject["result"]["signature"], Convert.ToBase64String(typedObject.Signature));
+            Assert.NotNull(typedObject.Random);
+            Assert.Equal(jsonObject["result"]["random"]["completionTime"], typedObject.Random.CompletionTime.ToString(_TIMESTAMP_FORMAT));
+            Assert.Equal(jsonObject["result"]["random"]["hashedApiKey"], Convert.ToBase64String(typedObject.Random.ApiKeyHash));
+            Assert.Equal(jsonObject["result"]["random"]["serialNumber"], typedObject.Random.SerialNumber);
+            Assert.Equal(jsonObject["result"]["random"]["userData"], typedObject.Random.UserData);
+            Assert.NotNull(typedObject.Random.Data);
+            Assert.Equal(jsonObject["result"]["random"]["data"].ToObject<TValue[]>(), typedObject.Random.Data);
+            Assert.NotNull(typedObject.Random.License);
+            Assert.Equal(jsonObject["result"]["random"]["license"]["type"], typedObject.Random.License.Type);
+            Assert.Equal(jsonObject["result"]["random"]["license"]["text"], typedObject.Random.License.Text);
+            Assert.Equal(jsonObject["result"]["random"]["license"]["infoUrl"], typedObject.Random.License.InfoUrl?.OriginalString);
+        }
+
+        private static string ConvertApiKeyStatus(ApiKeyStatus value)
+        {
+            switch (value)
+            {
+                case ApiKeyStatus.Stopped:
+                    return "stopped";
+                case ApiKeyStatus.Paused:
+                    return "paused";
+                case ApiKeyStatus.Running:
+                    return "running";
+                default:
+                    throw new NotSupportedException();
+            }
         }
 
         [Fact]
@@ -53,7 +100,6 @@ namespace Community.RandomOrg.Tests
                 () => new RandomOrgClient(default(HttpMessageInvoker)));
         }
 
-
         [Theory]
         [InlineData(00000, 0, 5)]
         [InlineData(10001, 0, 5)]
@@ -76,34 +122,23 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateIntegers()
         {
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_int_req.json"));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_int_res.json"));
+
             var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, "Assets.gen_pur_int_req.json", "Assets.gen_pur_int_res.json"));
+                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
-                var result = await client.GenerateIntegersAsync(6, 1, 6, true);
+                var result = await client.GenerateIntegersAsync(
+                    requestJsonObject["params"]["n"].ToObject<int>(),
+                    requestJsonObject["params"]["min"].ToObject<int>(),
+                    requestJsonObject["params"]["max"].ToObject<int>(),
+                    true);
 
-                Assert.NotNull(result);
-                Assert.Equal(16, result.BitsUsed);
-                Assert.Equal(199984, result.BitsLeft);
-                Assert.Equal(9999, result.RequestsLeft);
-                Assert.NotNull(result.Random);
-                Assert.Equal(new DateTime(2011, 10, 10, 13, 19, 12, 00, DateTimeKind.Utc), result.Random.CompletionTime);
-                Assert.NotNull(result.Random.Data);
-
-                var data = new[]
-                {
-                    1,
-                    5,
-                    4,
-                    6,
-                    6,
-                    4
-                };
-
-                Assert.Equal(data, result.Random.Data);
+                VerifyGenerationInfo(result, responseJsonObject);
             }
         }
 
@@ -127,38 +162,22 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateDecimalFractions()
         {
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_dfr_req.json"));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_dfr_res.json"));
+
             var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, "Assets.gen_pur_dfr_req.json", "Assets.gen_pur_dfr_res.json"));
+                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
-                var result = await client.GenerateDecimalFractionsAsync(10, 8, true);
+                var result = await client.GenerateDecimalFractionsAsync(
+                    requestJsonObject["params"]["n"].ToObject<int>(),
+                    requestJsonObject["params"]["decimalPlaces"].ToObject<int>(),
+                    true);
 
-                Assert.NotNull(result);
-                Assert.Equal(266, result.BitsUsed);
-                Assert.Equal(199734, result.BitsLeft);
-                Assert.Equal(8463, result.RequestsLeft);
-                Assert.NotNull(result.Random);
-                Assert.Equal(new DateTime(2013, 01, 25, 19, 16, 42, 00, DateTimeKind.Utc), result.Random.CompletionTime);
-                Assert.NotNull(result.Random.Data);
-
-                var data = new[]
-                {
-                    0.07532050m,
-                    0.59823072m,
-                    0.46109946m,
-                    0.28453638m,
-                    0.92390558m,
-                    0.53087566m,
-                    0.48139983m,
-                    0.06829921m,
-                    0.18780000m,
-                    0.10107864m
-                };
-
-                Assert.Equal(data, result.Random.Data);
+                VerifyGenerationInfo(result, responseJsonObject);
             }
         }
 
@@ -189,32 +208,23 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateGaussians()
         {
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_gss_req.json"));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_gss_res.json"));
+
             var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, "Assets.gen_pur_gss_req.json", "Assets.gen_pur_gss_res.json"));
+                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
-                var result = await client.GenerateGaussiansAsync(4, 0.0m, 1.0m, 8);
+                var result = await client.GenerateGaussiansAsync(
+                    requestJsonObject["params"]["n"].ToObject<int>(),
+                    requestJsonObject["params"]["mean"].ToObject<decimal>(),
+                    requestJsonObject["params"]["standardDeviation"].ToObject<decimal>(),
+                    requestJsonObject["params"]["significantDigits"].ToObject<int>());
 
-                Assert.NotNull(result);
-                Assert.Equal(106, result.BitsUsed);
-                Assert.Equal(199894, result.BitsLeft);
-                Assert.Equal(5442, result.RequestsLeft);
-                Assert.NotNull(result.Random);
-                Assert.Equal(new DateTime(2013, 01, 25, 19, 16, 42, 00, DateTimeKind.Utc), result.Random.CompletionTime);
-                Assert.NotNull(result.Random.Data);
-
-                var data = new[]
-                {
-                    +0.40250410m,
-                    -1.49188310m,
-                    +0.64733849m,
-                    +0.52222420m
-                };
-
-                Assert.Equal(data, result.Random.Data);
+                VerifyGenerationInfo(result, responseJsonObject);
             }
         }
 
@@ -268,36 +278,23 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateStrings()
         {
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_str_req.json"));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_str_res.json"));
+
             var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, "Assets.gen_pur_str_req.json", "Assets.gen_pur_str_res.json"));
+                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
-                var result = await client.GenerateStringsAsync(8, 10, "abcdefghijklmnopqrstuvwxyz", true);
+                var result = await client.GenerateStringsAsync(
+                    requestJsonObject["params"]["n"].ToObject<int>(),
+                    requestJsonObject["params"]["length"].ToObject<int>(),
+                    requestJsonObject["params"]["characters"].ToObject<string>(),
+                    true);
 
-                Assert.NotNull(result);
-                Assert.Equal(376, result.BitsUsed);
-                Assert.Equal(199624, result.BitsLeft);
-                Assert.Equal(9999, result.RequestsLeft);
-                Assert.NotNull(result.Random);
-                Assert.Equal(new DateTime(2011, 10, 10, 13, 19, 12, 00, DateTimeKind.Utc), result.Random.CompletionTime);
-                Assert.NotNull(result.Random.Data);
-
-                var data = new[]
-                {
-                    "grvhglvahj",
-                    "hjrmosjwed",
-                    "nivjyqptyy",
-                    "lhogeshsmi",
-                    "syilbgsytb",
-                    "birvcmgdrz",
-                    "wgclyynpcq",
-                    "eujwnhgonh"
-                };
-
-                Assert.Equal(data, result.Random.Data);
+                VerifyGenerationInfo(result, responseJsonObject);
             }
         }
 
@@ -319,29 +316,20 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateUuids()
         {
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_uid_req.json"));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_uid_res.json"));
+
             var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, "Assets.gen_pur_uid_req.json", "Assets.gen_pur_uid_res.json"));
+                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
-                var result = await client.GenerateUuidsAsync(1);
+                var result = await client.GenerateUuidsAsync(
+                    requestJsonObject["params"]["n"].ToObject<int>());
 
-                Assert.NotNull(result);
-                Assert.Equal(122, result.BitsUsed);
-                Assert.Equal(998532, result.BitsLeft);
-                Assert.Equal(199996, result.RequestsLeft);
-                Assert.NotNull(result.Random);
-                Assert.Equal(new DateTime(2013, 02, 11, 16, 42, 07, 00, DateTimeKind.Utc), result.Random.CompletionTime);
-                Assert.NotNull(result.Random.Data);
-
-                var data = new[]
-                {
-                    new Guid("47849fd4-b790-492e-8b93-c601a91b662d")
-                };
-
-                Assert.Equal(data, result.Random.Data);
+                VerifyGenerationInfo(result, responseJsonObject);
             }
         }
 
@@ -367,31 +355,34 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateBlobs()
         {
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_blb_req.json"));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_blb_res.json"));
+
             var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, "Assets.gen_pur_blb_req.json", "Assets.gen_pur_blb_res.json"));
+                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
-                var result = await client.GenerateBlobsAsync(1, 1024);
+                var result = await client.GenerateBlobsAsync(
+                    requestJsonObject["params"]["n"].ToObject<int>(),
+                    requestJsonObject["params"]["size"].ToObject<int>());
 
                 Assert.NotNull(result);
-                Assert.Equal(1024, result.BitsUsed);
-                Assert.Equal(198976, result.BitsLeft);
-                Assert.Equal(9999, result.RequestsLeft);
+                Assert.Equal(responseJsonObject["result"]["bitsUsed"], result.BitsUsed);
+                Assert.Equal(responseJsonObject["result"]["bitsLeft"], result.BitsLeft);
+                Assert.Equal(responseJsonObject["result"]["requestsLeft"], result.RequestsLeft);
                 Assert.NotNull(result.Random);
-                Assert.Equal(new DateTime(2011, 10, 10, 13, 19, 12, 00, DateTimeKind.Utc), result.Random.CompletionTime);
+                Assert.Equal(responseJsonObject["result"]["random"]["completionTime"], result.Random.CompletionTime.ToString(_TIMESTAMP_FORMAT));
                 Assert.NotNull(result.Random.Data);
 
-                var data = new[]
-                {
-                    Convert.FromBase64String(
-                       "aNB8L3hY3kWYXgTUQxGVB5njMe2e0l3LCjkDCN1u12kPBPrsDcWMLTCDlB60kRhAlGbvPqoBHhjg6ZbOM4LfD3T9/wfhvnqJ1FTr" +
-                       "aamW2IAUnyKxz27fgcPw1So6ToIBL0fGQLpMQDF2/nEmNmFRNa9s6sQ+400IGA+ZeaOAgjE=")
-                };
+                var dataJsonObject = (JArray)responseJsonObject["result"]["random"]["data"];
 
-                Assert.Equal(data, result.Random.Data);
+                for (var i = 0; i < dataJsonObject.Count; i++)
+                {
+                    Assert.Equal(dataJsonObject[i], Convert.ToBase64String(result.Random.Data[i]));
+                }
             }
         }
 
@@ -411,8 +402,11 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GetUsage()
         {
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_req.json"));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_res.json"));
+
             var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, "Assets.get_usg_req.json", "Assets.get_usg_res.json"));
+                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
@@ -421,12 +415,12 @@ namespace Community.RandomOrg.Tests
                 var result = await client.GetUsageAsync();
 
                 Assert.NotNull(result);
-                Assert.Equal(ApiKeyStatus.Running, result.Status);
-                Assert.Equal(new DateTime(2013, 02, 01, 17, 53, 40, 00, DateTimeKind.Utc), result.CreationTime);
-                Assert.Equal(998532, result.BitsLeft);
-                Assert.Equal(199996, result.RequestsLeft);
-                Assert.Equal(1646421, result.TotalBits);
-                Assert.Equal(65036, result.TotalRequests);
+                Assert.Equal(responseJsonObject["result"]["status"], ConvertApiKeyStatus(result.Status));
+                Assert.Equal(responseJsonObject["result"]["creationTime"], result.CreationTime.ToString(_TIMESTAMP_FORMAT));
+                Assert.Equal(responseJsonObject["result"]["bitsLeft"], result.BitsLeft);
+                Assert.Equal(responseJsonObject["result"]["requestsLeft"], result.RequestsLeft);
+                Assert.Equal(responseJsonObject["result"]["totalBits"], result.TotalBits);
+                Assert.Equal(responseJsonObject["result"]["totalRequests"], result.TotalRequests);
             }
         }
 
@@ -452,54 +446,27 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateSignedIntegers()
         {
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_int_req.json"));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_int_res.json"));
+
             var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, "Assets.gen_sig_int_req.json", "Assets.gen_sig_int_res.json"));
+                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
-                var result = await client.GenerateSignedIntegersAsync(6, 1, 6, true);
+                var result = await client.GenerateSignedIntegersAsync(
+                    requestJsonObject["params"]["n"].ToObject<int>(),
+                    requestJsonObject["params"]["min"].ToObject<int>(),
+                    requestJsonObject["params"]["max"].ToObject<int>(),
+                    true);
 
-                Assert.NotNull(result);
+                VerifyGenerationInfo(result, responseJsonObject);
 
-                var apiKeyHash = Convert.FromBase64String(
-                       "oT3AdLMVZKajz0pgW/8Z+t5sGZkqQSOnAi1aB8Li0tXgWf8LolrgdQ1wn9sKx1ehxhUZmhwUIpAtM8QeRbn51Q==");
-
-                Assert.Equal(apiKeyHash, result.Random.ApiKeyHash);
-                Assert.Equal(1, result.Random.Minimum);
-                Assert.Equal(6, result.Random.Maximum);
-                Assert.True(result.Random.Replacement);
-                Assert.Equal(69260, result.Random.SerialNumber);
-                Assert.Equal(16, result.BitsUsed);
-                Assert.Equal(932400, result.BitsLeft);
-                Assert.Equal(199991, result.RequestsLeft);
-                Assert.NotNull(result.Random);
-                Assert.Equal(new DateTime(2013, 09, 30, 14, 58, 03, 00, DateTimeKind.Utc), result.Random.CompletionTime);
-                Assert.NotNull(result.Random.Data);
-
-                var data = new[]
-                {
-                    2,
-                    4,
-                    4,
-                    1,
-                    5,
-                    3
-                };
-
-                Assert.Equal(data, result.Random.Data);
-
-                var signature = Convert.FromBase64String(
-                    "BxHxajeRg7Q+XGjBdFS1c7wkZbJgJlverfZ5TVDyzCKqo2K5A4pD+54EMqmysRYwkL3w2NS2DFLVrsyO1o96bW9BGp5zjjrEegz9" +
-                    "mB+04iOTaRwmdQnLJAj/m3WRptA+qzodPCTaqud8YWBifqWCM34q98XwjX+nlahyHVHT9vf5KO0YVkD/yRI1WN5M/qX21chVvSxh" +
-                    "WdmIrdCkrovGnysFq8SzCRNhpYx+/1P+YT2IKsH8jth9z82IAz1ANVh918H/UdpuD1dR7TD6nk3ntRgGrIiu2qqVzFi8A7/6viVg" +
-                    "RqtffE4KVZY6O9mUJ+sGkF5Ohayms7LHSFy1VC8wMbMgwod+A8nr5yzjAC4SCUkT1bKAyWNF3SdVcLtvWdcf97Ew6RjohzCW4Vs3" +
-                    "jUlh6jF/pj3b3++U3lBHCh43IIonw8MQ7afwpqP12yvyDym1isNjhMKYjmzWRerSvnsMyQIH8xFW7IHt2g/0qnzJgABFmUNBRKJP" +
-                    "CD9CMgjh60sSwW7EyrGMy7/qisfE0IU74P/F7KCty/g1jIlXX5/O1lQjwY34wnoP0NXL08QteukRZZUfJQnscx1NGE+HX1c9bMBI" +
-                    "8LC0ZFYFk+uY6ib/0rCV5OcLLE9PihCdC8WoI1x3bobr8tbtfgnXMTjogxwVXiiSN1TMnTIWlJ+KM5eSWrw=");
-
-                Assert.Equal(signature, result.Signature);
+                Assert.Equal(responseJsonObject["result"]["random"]["min"], result.Random.Minimum);
+                Assert.Equal(responseJsonObject["result"]["random"]["max"], result.Random.Maximum);
+                Assert.Equal(responseJsonObject["result"]["random"]["replacement"], result.Random.Replacement);
             }
         }
 
@@ -523,57 +490,25 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateSignedDecimalFractions()
         {
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_dfr_req.json"));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_dfr_res.json"));
+
             var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, "Assets.gen_sig_dfr_req.json", "Assets.gen_sig_dfr_res.json"));
+                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
-                var result = await client.GenerateSignedDecimalFractionsAsync(10, 8, true);
+                var result = await client.GenerateSignedDecimalFractionsAsync(
+                    requestJsonObject["params"]["n"].ToObject<int>(),
+                    requestJsonObject["params"]["decimalPlaces"].ToObject<int>(),
+                    true);
 
-                Assert.NotNull(result);
+                VerifyGenerationInfo(result, responseJsonObject);
 
-                var apiKeyHash = Convert.FromBase64String(
-                       "oT3AdLMVZKajz0pgW/8Z+t5sGZkqQSOnAi1aB8Li0tXgWf8LolrgdQ1wn9sKx1ehxhUZmhwUIpAtM8QeRbn51Q==");
-
-                Assert.Equal(apiKeyHash, result.Random.ApiKeyHash);
-                Assert.Equal(8, result.Random.DecimalPlaces);
-                Assert.True(result.Random.Replacement);
-                Assert.Equal(69259, result.Random.SerialNumber);
-                Assert.Equal(266, result.BitsUsed);
-                Assert.Equal(932416, result.BitsLeft);
-                Assert.Equal(199992, result.RequestsLeft);
-                Assert.NotNull(result.Random);
-                Assert.Equal(new DateTime(2013, 09, 30, 14, 54, 11, 00, DateTimeKind.Utc), result.Random.CompletionTime);
-                Assert.NotNull(result.Random.Data);
-
-                var data = new[]
-                {
-                    0.95500371m,
-                    0.65189604m,
-                    0.10816501m,
-                    0.74836463m,
-                    0.55116651m,
-                    0.62433960m,
-                    0.17433560m,
-                    0.60179234m,
-                    0.26488912m,
-                    0.42426186m
-                };
-
-                Assert.Equal(data, result.Random.Data);
-
-                var signature = Convert.FromBase64String(
-                    "ENJ8vaXRW6OnZSSnML16OaZC4ROYAU+jFsjcVFg41Y6nAR6p9/wYde9GmV8OBgI1IkocyJbuWqTiD0y8mm/RQRNNXLXhVWwe8MuF" +
-                    "p6CNR9N7drJMMY3/51PxmRYc9ottUFakn/JxCE2a3kwyYaD5y50WuzqTWgA1yqxRuudcWQMl4WrvIcqc8LWAqgAMUfCn/va3xQ74" +
-                    "9CzI9gpiemzbWcfEUjU56D4Kv7hJtUTN4WsVCD2TWGK5kUpmiz+R1tVfNQkgsmeFMA5J8KFAv3kVMdK09EVfCn+Y1bWEotQvkQcp" +
-                    "epD6Lm/ZlZhriDyutv8mqSftecTVQI8VyRFilkReI0Wb7URJgS5kaYFkXwP4lVlFvvFMJCvTZ5MNZvu9boh0tYwqGQW4mZPNcaGm" +
-                    "1BA5IShlPFz71K8SeyQAhKSxhYoK8/0zlcT0or7uJb7hcIBcErThoUqx1VzwbSLP3sr83usLhw4pqVxXQnxjV1HEVmo/csEVwM7l" +
-                    "o6bBgN4ev0cUiBzdWzMKAv5MfjshgPyN1zUSmSkrkNgDxxhbiAkCZ6QagGTszVK0HxFG4qAhMPIwNihQNkfNalDewiodkShMWDXc" +
-                    "bY8imqhgkfvGCXT7FdjTpmhtBHrOUInMOAEEnIurT78eNZBHDadjjwuoOogTAwXo3fLVJj5vg/ch4qGZAQ0=");
-
-                Assert.Equal(signature, result.Signature);
+                Assert.Equal(responseJsonObject["result"]["random"]["decimalPlaces"], result.Random.DecimalPlaces);
+                Assert.Equal(responseJsonObject["result"]["random"]["replacement"], result.Random.Replacement);
             }
         }
 
@@ -604,52 +539,27 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateSignedGaussians()
         {
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_gss_req.json"));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_gss_res.json"));
+
             var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, "Assets.gen_sig_gss_req.json", "Assets.gen_sig_gss_res.json"));
+                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
-                var result = await client.GenerateSignedGaussiansAsync(4, 0.0m, 1.0m, 8);
+                var result = await client.GenerateSignedGaussiansAsync(
+                    requestJsonObject["params"]["n"].ToObject<int>(),
+                    requestJsonObject["params"]["mean"].ToObject<decimal>(),
+                    requestJsonObject["params"]["standardDeviation"].ToObject<decimal>(),
+                    requestJsonObject["params"]["significantDigits"].ToObject<int>());
 
-                Assert.NotNull(result);
+                VerifyGenerationInfo(result, responseJsonObject);
 
-                var apiKeyHash = Convert.FromBase64String(
-                       "oT3AdLMVZKajz0pgW/8Z+t5sGZkqQSOnAi1aB8Li0tXgWf8LolrgdQ1wn9sKx1ehxhUZmhwUIpAtM8QeRbn51Q==");
-
-                Assert.Equal(apiKeyHash, result.Random.ApiKeyHash);
-                Assert.Equal(0.0m, result.Random.Mean);
-                Assert.Equal(1.0m, result.Random.StandardDeviation);
-                Assert.Equal(8, result.Random.SignificantDigits);
-                Assert.Equal(69263, result.Random.SerialNumber);
-                Assert.Equal(106, result.BitsUsed);
-                Assert.Equal(927902, result.BitsLeft);
-                Assert.Equal(199988, result.RequestsLeft);
-                Assert.NotNull(result.Random);
-                Assert.Equal(new DateTime(2013, 09, 30, 16, 02, 19, 00, DateTimeKind.Utc), result.Random.CompletionTime);
-                Assert.NotNull(result.Random.Data);
-
-                var data = new[]
-                {
-                    +1.15038670m,
-                    -0.71234425m,
-                    +1.77860770m,
-                    +0.14022009m
-                };
-
-                Assert.Equal(data, result.Random.Data);
-
-                var signature = Convert.FromBase64String(
-                    "hM5qlrWiB5OZlo6hQ8WsrJXVl8uJOTggaXeg/6RpzdEuAObxte6a40QVC0cs8aG7/UdUE7sVtx/IIdyR8A6pomiKGzu4DXMNaBes" +
-                    "x6OdKKlLSkzgZcHWvTSey95OOjinzO4XCxp+ZP2j+TVUSvyNy1701u7Yq1pYmhzz5h64QlKzJZob9lFdabxR8H05EdjJugb6cgDF" +
-                    "UMiTbzqUWukJa/oyrs1Y5ZgdgC0RiT9xgFWsnaizv+SJsvhwh5bvxo1hQOtrnKZ7bxF9WBghou2VaCT2gsjmViJwrX6xOPUO2wRP" +
-                    "snYm+6o5cs/pZPwVkwumj7LUDm/jAvVslXbMcpOzOBvquR0uNtJT8jnF6Ev4dvOmrtjN38DRx0OmP4YDp4fj1+1Hk/jXCeXqsuTd" +
-                    "0qdk6cFOqmyje4agjm1Qwewvl+R2rVtuoUB3FQNHd+fHbz3QmsxpL/kFRhsW7gu8Gc9w6ruc30AFUBRn+2Le9dFAHbnfsH1nP23w" +
-                    "2AVBQONyaD5evkv0W3IuM6D9zwHCwlSkJBYfWr6AzwG0wNAkfHPRD5ZkKyEvAfl7ykqOagQVWGuXqZ3YUl1z10/c2ZTx3sMEqAqI" +
-                    "ba/SQnMkweROcIbbLOXIUWwfAJh++mVsbRvKecffTBKzodssAMvBs9/9UUsmm8/7gXNoGMDfCX1xPlKkRw8=");
-
-                Assert.Equal(signature, result.Signature);
+                Assert.Equal(responseJsonObject["result"]["random"]["mean"], result.Random.Mean);
+                Assert.Equal(responseJsonObject["result"]["random"]["standardDeviation"], result.Random.StandardDeviation);
+                Assert.Equal(responseJsonObject["result"]["random"]["significantDigits"], result.Random.SignificantDigits);
             }
         }
 
@@ -701,56 +611,27 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateSignedStrings()
         {
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_str_req.json"));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_str_res.json"));
+
             var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, "Assets.gen_sig_str_req.json", "Assets.gen_sig_str_res.json"));
+                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
-                var result = await client.GenerateSignedStringsAsync(8, 10, "abcdefghijklmnopqrstuvwxyz", true);
+                var result = await client.GenerateSignedStringsAsync(
+                    requestJsonObject["params"]["n"].ToObject<int>(),
+                    requestJsonObject["params"]["length"].ToObject<int>(),
+                    requestJsonObject["params"]["characters"].ToObject<string>(),
+                    true);
 
-                Assert.NotNull(result);
+                VerifyGenerationInfo(result, responseJsonObject);
 
-                var apiKeyHash = Convert.FromBase64String(
-                       "oT3AdLMVZKajz0pgW/8Z+t5sGZkqQSOnAi1aB8Li0tXgWf8LolrgdQ1wn9sKx1ehxhUZmhwUIpAtM8QeRbn51Q==");
-
-                Assert.Equal(apiKeyHash, result.Random.ApiKeyHash);
-                Assert.Equal(10, result.Random.Length);
-                Assert.Equal("abcdefghijklmnopqrstuvwxyz", result.Random.Characters);
-                Assert.True(result.Random.Replacement);
-                Assert.Equal(69266, result.Random.SerialNumber);
-                Assert.Equal(376, result.BitsUsed);
-                Assert.Equal(898958, result.BitsLeft);
-                Assert.Equal(199985, result.RequestsLeft);
-                Assert.NotNull(result.Random);
-                Assert.Equal(new DateTime(2013, 09, 30, 16, 56, 46, 00, DateTimeKind.Utc), result.Random.CompletionTime);
-                Assert.NotNull(result.Random.Data);
-
-                var data = new[]
-                {
-                    "vnbbvnytjx",
-                    "wazkxrindd",
-                    "bdkyzpwggk",
-                    "veanpfbyun",
-                    "dbeswfjiak",
-                    "gfgmrppopl",
-                    "chwkiiwozg",
-                    "xvdfnqdqdw"
-                };
-
-                Assert.Equal(data, result.Random.Data);
-
-                var signature = Convert.FromBase64String(
-                    "XFGHFilFS5jNvL8jmlvzvBogF8SQqFTGkeIUzs4NzzKGe4Qy7R8Uhl0Oi/gBuxBGIL94IjfXmPaEWD4gycuxOv+Yg5GEKlSVyeXY" +
-                    "0D1AJF6E6e5HEhpCp0leo+rEQi2uR8tM21BVrGbAq9mWuJy8pkBa4CxQcvkyu2+4ct9Ci1PMTyr+ia+yo46rzW1s8cHXtIHUL4BO" +
-                    "C6JZWahzknR+zzdY2sBQ2D+7FZkXo9J34HLtnoXmFkXMFU/yIGfUnfeEKlqBtNFk11C6JkWULX7cBdfMxOGaEyu+StRYnhjjixIx" +
-                    "QvbJgPUG7T9L1+e/rP/iTYvuEZUViRhiJxLKkB85mlPSZYkclgZjV/90d0SR+ZciVJwkGdHvM+5vyN3XzoDAhZpDmAr3sp5uDD1o" +
-                    "OA4KEKqqnZYiTQaHgVauWi9cXsGznoEZFB6AUtEWz5z+kvAayKwNP1//2Ob3KcELNZDOVgoo3uEJW1QjwyonmWoO2gVKC2vwcgyL" +
-                    "nMDme21Nh8q+yRusSCveCOCVr3zWInW0K6Oy8CpvfpS5HReN5q7eYbN/mIKrdgYDro04jtjNCDVTx/+WzZEVbnN6Egi+3RpyPhI6" +
-                    "t48//9sE9LELhnjf+D++JOo8Z52KckfXRHu+UFkBvvrEwyM68ivbkZiJMJYme4ZPt6UVFmv6yHy1O15bkNo=");
-
-                Assert.Equal(signature, result.Signature);
+                Assert.Equal(responseJsonObject["result"]["random"]["length"], result.Random.Length);
+                Assert.Equal(responseJsonObject["result"]["random"]["characters"], result.Random.Characters);
+                Assert.Equal(responseJsonObject["result"]["random"]["replacement"], result.Random.Replacement);
             }
         }
 
@@ -772,46 +653,20 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateSignedUuids()
         {
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_uid_req.json"));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_uid_res.json"));
+
             var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, "Assets.gen_sig_uid_req.json", "Assets.gen_sig_uid_res.json"));
+                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
-                var result = await client.GenerateSignedUuidsAsync(1);
+                var result = await client.GenerateSignedUuidsAsync(
+                    requestJsonObject["params"]["n"].ToObject<int>());
 
-                Assert.NotNull(result);
-
-                var apiKeyHash = Convert.FromBase64String(
-                       "oT3AdLMVZKajz0pgW/8Z+t5sGZkqQSOnAi1aB8Li0tXgWf8LolrgdQ1wn9sKx1ehxhUZmhwUIpAtM8QeRbn51Q==");
-
-                Assert.Equal(apiKeyHash, result.Random.ApiKeyHash);
-                Assert.Equal(69269, result.Random.SerialNumber);
-                Assert.Equal(122, result.BitsUsed);
-                Assert.Equal(897974, result.BitsLeft);
-                Assert.Equal(199982, result.RequestsLeft);
-                Assert.NotNull(result.Random);
-                Assert.Equal(new DateTime(2013, 09, 30, 17, 24, 33, 00, DateTimeKind.Utc), result.Random.CompletionTime);
-                Assert.NotNull(result.Random.Data);
-
-                var data = new[]
-                {
-                    new Guid("9f7bc2c6-9673-4c0a-aef4-aa6dd9d62ec8")
-                };
-
-                Assert.Equal(data, result.Random.Data);
-
-                var signature = Convert.FromBase64String(
-                    "FvhPYF3jd+KLk6vxrvDIPU9xrkDhjv/WMOWbmBhKjYG6+vxGYFBY0s68DXHirF6mWpbaXLv27fw7GK32pzbUR7SmSDT9xmdwqedV" +
-                    "MJzDXoX06MSh000k5j6gK2xV/1o84FxxLpsmOeOLCRQy0CeHax21E7SptJn90PLl3a1xu08b7FOU60AbktrQiBG3nxsCmLjfiBJ8" +
-                    "qACowGcG34pq8FE1NYijnZO4h9q2TxySeHFPlJ69dnOUbXuWUniGxHctOqNY4cRrNo808Z61MuqgPteX62MtR9xslhLC107jc/yO" +
-                    "YUiTVblTihABsfWPvGbt8+S7b9M92jn5vxN7eNUx1duEBtaKnV0MX/ycm2D4lqqxQ4cYuB8h7NCwJwFnC5M/n4QDVcNGN7I7uXyH" +
-                    "tl+7kU4nThZ7g6PVSiEV1dVRusc2AdO+KEGukRZMz8QjD1SAEchf9URUp/TLJID75JcykzBckLkOwpI4DnVodgKhdetFc3HEQ7Bx" +
-                    "M6FOyb7xuuzrq4BAMEqS2kvAo4SGHafk/8eilCCNkC3jfdWdHMikz1VZxJ6ykjdvjM2sMhfxSN+kNW93RuYtL0tDkkiTbfAw06vu" +
-                    "IFTiHgKtiWpNYbVyZcAeVibTzmy6cyG29aYIj3Yyh1fRCuJPx1Js/ZW6vhRGFisSdF5Cakcw4EAzTdhDPxU=");
-
-                Assert.Equal(signature, result.Signature);
+                VerifyGenerationInfo(result, responseJsonObject);
             }
         }
 
@@ -837,49 +692,23 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateSignedBlobs()
         {
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_blb_req.json"));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_blb_res.json"));
+
             var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, "Assets.gen_sig_blb_req.json", "Assets.gen_sig_blb_res.json"));
+                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
-                var result = await client.GenerateSignedBlobsAsync(1, 1024);
+                var result = await client.GenerateSignedBlobsAsync(
+                    requestJsonObject["params"]["n"].ToObject<int>(),
+                    requestJsonObject["params"]["size"].ToObject<int>());
 
-                Assert.NotNull(result);
+                VerifyGenerationInfo(result, responseJsonObject);
 
-                var apiKeyHash = Convert.FromBase64String(
-                       "oT3AdLMVZKajz0pgW/8Z+t5sGZkqQSOnAi1aB8Li0tXgWf8LolrgdQ1wn9sKx1ehxhUZmhwUIpAtM8QeRbn51Q==");
-
-                Assert.Equal(apiKeyHash, result.Random.ApiKeyHash);
-                Assert.Equal(1024, result.Random.Size);
-                Assert.Equal(69271, result.Random.SerialNumber);
-                Assert.Equal(1024, result.BitsUsed);
-                Assert.Equal(895974, result.BitsLeft);
-                Assert.Equal(199980, result.RequestsLeft);
-                Assert.NotNull(result.Random);
-                Assert.Equal(new DateTime(2013, 09, 30, 17, 42, 32, 00, DateTimeKind.Utc), result.Random.CompletionTime);
-                Assert.NotNull(result.Random.Data);
-
-                var data = new[]
-                {
-                    Convert.FromBase64String(
-                        "KchEoBw5W2J4l7UARgR2Ku6sTkiudQbHs/0hocw/8RahUaslx4EAHNZMoeN5P7jIakx+UFnLfuyjbijVySzoz/Ar1QC52rBQxTo" +
-                        "3Ya+m3dCWpLmkN355UnD6nBbtieHlBd2qBUszXebneulhDJNrVuNBeX7qwpTwsXO+kD/Zxxc=")
-                };
-
-                Assert.Equal(data, result.Random.Data);
-
-                var signature = Convert.FromBase64String(
-                    "RP+b5vmSpQJK37t5BbVyJSxHB1qvv2eMQEZBNSWG2bH0j3etSNpi+LDw5af6pDDunomBcUhirQn0+utH11WXbrTnl8UhnKoNzHzU" +
-                    "5fhpBTCFwf42Tenlp9bsrAMIhB/hmoSkTWMXiVcftAGWMVxuwdE2A2jLIPv1R0++EbzQqaPAA9nIdP74c4EchA44X/p3Dv2sHeaY" +
-                    "ShY9wSHf8K7uI+ILnl7jssNwXmxvjZbEpUPvbldvkVO+IhUh6MEqPXJElNjRUjFAnoOXJe+uSMnqujE8jUPpsKLkkIJmeUmmnIOI" +
-                    "Z1D063qCZoj1V7uKZq/GhV+JnZD6geo7sCQf1UW6hdwK50KbrVZetXUg0bxUz30dpY3WB5a/BJC0/+2QxEMq/p30YYTExRdMcdbD" +
-                    "y8Nfgp/T1M5nkd9/5YTyulZCsacvvFNytrkS86kpmB++zoPwHPMKG6CDNY8JuMPbmJhMSvErhUHWY+1Au50uN7Qi0nGq5yltuLZI" +
-                    "j/HEvFhAQx5iGV9fBZZ2Vz39Q9+DYFvswS6q7ahZb2LvEUxjgrgtcJV13SIEXg9SWB2VP156YFfOsNDjBSvnmnOiN3sH4WDShCyX" +
-                    "iGeisIxOUeA2xs/cDAPwUoimBMOn1qnqD9NT9CGAeSdvX8q6qm+bU8dH2F9ZRRDIFojm7DRwgSnaECxomXw=");
-
-                Assert.Equal(signature, result.Signature);
+                Assert.Equal(responseJsonObject["result"]["random"]["size"], result.Random.Size);
             }
         }
 
@@ -923,49 +752,83 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void VerifySignature()
         {
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.ver_sig_req.json"));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.ver_sig_res.json"));
+
             var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, "Assets.ver_sig_req.json", "Assets.ver_sig_res.json"));
+                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
             using (var client = new RandomOrgClient(httpClient))
             {
-                var apiKeyHash = Convert.FromBase64String(
-                    "oT3AdLMVZKajz0pgW/8Z+t5sGZkqQSOnAi1aB8Li0tXgWf8LolrgdQ1wn9sKx1ehxhUZmhwUIpAtM8QeRbn51Q==");
-
-                var data = new[]
+                var license = new License
                 {
-                    3,
-                    6,
-                    4,
-                    6,
-                    1,
-                    5
+                    Type = "commercial-2",
+                    Text = "These values are licensed for commercial (non-gambling) use.",
+                    InfoUrl = new Uri("https://api.random.org/licenses/commercial-2")
                 };
 
                 var random = new SignedIntegersRandom
                 {
-                    ApiKeyHash = apiKeyHash,
-                    CompletionTime = new DateTime(2013, 07, 07, 09, 00, 43, 00, DateTimeKind.Utc),
-                    SerialNumber = 69149,
-                    Minimum = 1,
-                    Maximum = 6,
-                    Replacement = true,
-                    Data = data
+                    ApiKeyHash = Convert.FromBase64String(requestJsonObject["params"]["random"]["hashedApiKey"].ToObject<string>()),
+                    CompletionTime = requestJsonObject["params"]["random"]["completionTime"].ToObject<DateTime>(),
+                    SerialNumber = requestJsonObject["params"]["random"]["serialNumber"].ToObject<int>(),
+                    Minimum = requestJsonObject["params"]["random"]["min"].ToObject<int>(),
+                    Maximum = requestJsonObject["params"]["random"]["max"].ToObject<int>(),
+                    Replacement = requestJsonObject["params"]["random"]["replacement"].ToObject<bool>(),
+                    Data = requestJsonObject["params"]["random"]["data"].ToObject<int[]>(),
+                    UserData = requestJsonObject["params"]["random"]["userData"].ToObject<string>(),
+                    License = license
                 };
 
-                var signature = Convert.FromBase64String(
-                    "Pd46xecjlt/EEOdNGFQNCFHVJhZ5lfVUFLziDusOpLIKGbbHh4kCRM8+el8xh3ASUgR7qfL+K7pzERsIIHIheiIt8EXq9Xr/DW3N" +
-                    "3qfKL/4Cai+zyBGn4xThSJnXSJPvM+LuXI+B2dPx7GYJa2PSVgF+fV3j0eN+exAa4fjAQFGiPDQo+dCQO3cSO8aZ76tSGJpo/6b1" +
-                    "rR/sdIt8uAWRsfL56tFA+2+xUtuXU5vM8HT+KO6o4N7TWpvBz1rw/0S9iiIRdIDJ5M/AjKXeXKMMkDBHUaeUWCDEZkZOMYTk6IvO" +
-                    "pERlsWz0dz2xrs4NE8vZsi4nIVU5izGLYceMRf2TmZVC7XXdZDbeEnJnCmDacRBONqTYklJ22wGrXrFs8GElEoG3IqOgjS1ZME3/" +
-                    "jBGW7G3eUB1xb0lT773V2YvGBPTqsnz3tawO8UDdIpoGjSQjtgql/j7gzNmyW6AC9wvrLyXeh7OP6rhp3SLNUAjNhr+QqjHrqPEv" +
-                    "+QqkZspYCxTMVyRILCe+z+jTbNnTClVpgxIP5hSfLkinea/TpomZqWj6KwYPqKuiNMrEXsbWlAytzr1v1tsbHbESb2XKytUDWHqm" +
-                    "BDCNxHphcgVTmn9+bi2+WPjueBBUH+b0ZOvHIZNxld9P76x8IlcOVKRLl770j0yD3ActIZNaHvUNYeBoK2M=");
-
+                var signature = Convert.FromBase64String(requestJsonObject["params"]["signature"].ToObject<string>());
                 var result = await client.VerifySignatureAsync(random, signature);
 
                 Assert.True(result);
+            }
+        }
+
+        [Fact]
+        public async void GetResult()
+        {
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_res_req.json"));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_res_res.json"));
+
+            var stubHandler = (Func<string, Task<string>>)
+                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
+
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+
+            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            {
+                var result = await client.GetResultAsync<SignedIntegersRandom, int>(
+                    requestJsonObject["params"]["serialNumber"].ToObject<int>());
+
+                VerifyGenerationInfo(result, responseJsonObject);
+
+                Assert.Equal(responseJsonObject["result"]["random"]["min"], result.Random.Minimum);
+                Assert.Equal(responseJsonObject["result"]["random"]["max"], result.Random.Maximum);
+                Assert.Equal(responseJsonObject["result"]["random"]["replacement"], result.Random.Replacement);
+            }
+        }
+
+        [Fact]
+        public async void GetResultWhenRandomTypeIsInvalid()
+        {
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_res_req.json"));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_res_res.json"));
+
+            var stubHandler = (Func<string, Task<string>>)
+                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
+
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+
+            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            {
+                await Assert.ThrowsAsync<InvalidOperationException>(
+                    () => client.GetResultAsync<SignedUuidsRandom, Guid>(
+                        requestJsonObject["params"]["serialNumber"].ToObject<int>()));
             }
         }
 
@@ -1032,8 +895,11 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void RandomOrgErrorWithNoData()
         {
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_req_101.json"));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_res_101.json"));
+
             var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, "Assets.get_usg_req_101.json", "Assets.get_usg_res_101.json"));
+                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 
@@ -1049,8 +915,11 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void RandomOrgErrorWithData()
         {
+            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_req_501.json"));
+            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_res_501.json"));
+
             var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, "Assets.get_usg_req_501.json", "Assets.get_usg_res_501.json"));
+                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
 
             var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
 

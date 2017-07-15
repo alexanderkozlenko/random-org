@@ -118,19 +118,16 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ApiKeyFormatError" xml:space="preserve">
-    <value>Invalid format of the specified API key</value>
-  </data>
-  <data name="ApiKeyRequired" xml:space="preserve">
-    <value>An API key is required for the operation</value>
+    <value>Invalid format of the API key</value>
   </data>
   <data name="ApiKeyStatusError" xml:space="preserve">
     <value>Invalid API key status: "{0}"</value>
   </data>
-  <data name="MediaTypeError" xml:space="preserve">
-    <value>Service response has invalid media type</value>
+  <data name="ClientApiKeyRequired" xml:space="preserve">
+    <value>An API key is required for the operation</value>
   </data>
   <data name="RandomBlobsCountError" xml:space="preserve">
-    <value>Count must be within the [1,100] range</value>
+    <value>The count must be within the [1,100] range</value>
   </data>
   <data name="RandomBlobsSizeDivisionError" xml:space="preserve">
     <value>The size of each blob must be divisible by 8</value>
@@ -142,13 +139,13 @@
     <value>The total size of all blobs must not exceed 1048576 bits</value>
   </data>
   <data name="RandomDecimalFractionsCountError" xml:space="preserve">
-    <value>Count must be within the [1,1e4] range</value>
+    <value>The count must be within the [1,1e4] range</value>
   </data>
   <data name="RandomDecimalFractionsDecimalPlacesError" xml:space="preserve">
     <value>The number of decimal places must be within the [1,20] range</value>
   </data>
   <data name="RandomGaussiansCountError" xml:space="preserve">
-    <value>Count must be within the [1,1e4] range</value>
+    <value>The count must be within the [1,1e4] range</value>
   </data>
   <data name="RandomGaussiansMeanError" xml:space="preserve">
     <value>The distribution's mean must be within the [-1e6,1e6] range</value>
@@ -160,7 +157,7 @@
     <value>The distribution's standard deviation must be within the [-1e6,1e6] range</value>
   </data>
   <data name="RandomIntegersCountError" xml:space="preserve">
-    <value>Count must be within the [1,1e4] range</value>
+    <value>The count must be within the [1,1e4] range</value>
   </data>
   <data name="RandomIntegersMaximumError" xml:space="preserve">
     <value>The upper boundary must be within the [-1e9,1e9] range</value>
@@ -172,25 +169,34 @@
     <value>The number of characters must be within the [1,80] range</value>
   </data>
   <data name="RandomStringsCharactersUndefined" xml:space="preserve">
-    <value>The set of characters is undefined</value>
+    <value>The set of characters is not specified</value>
   </data>
   <data name="RandomStringsCountError" xml:space="preserve">
-    <value>Count must be within the [1,1e4] range</value>
+    <value>The count must be within the [1,1e4] range</value>
   </data>
   <data name="RandomStringsLengthError" xml:space="preserve">
     <value>The length of each string must be within the [1,20] range</value>
   </data>
   <data name="RandomStringsStringUndefined" xml:space="preserve">
-    <value>The string at position {0} is undefined</value>
+    <value>The string at position {0} is not specified</value>
+  </data>
+  <data name="RandomUserDataLengthError" xml:space="preserve">
+    <value>The length of user data string must be within the [1,1e3] range</value>
   </data>
   <data name="RandomUuidsCountError" xml:space="preserve">
-    <value>Count must be within the [1,1e3] range</value>
+    <value>The count must be within the [1,1e3] range</value>
+  </data>
+  <data name="ServiceContentTypeError" xml:space="preserve">
+    <value>Invalid content type of service response: "{0}"</value>
+  </data>
+  <data name="ServiceRandomContainerTypeError" xml:space="preserve">
+    <value>Invalid random container type</value>
   </data>
   <data name="VerifySignatureApiKeyLengthError" xml:space="preserve">
-    <value>The hashed API key has invalid length</value>
+    <value>The hash of API key has invalid length</value>
   </data>
   <data name="VerifySignatureApiKeyUndefined" xml:space="preserve">
-    <value>The hashed API key is undefined</value>
+    <value>The hash of API key is not specified</value>
   </data>
   <data name="VerifySignatureCompletionTimeUndefined" xml:space="preserve">
     <value>The completion time is not specified</value>
@@ -199,12 +205,15 @@
     <value>The data is empty</value>
   </data>
   <data name="VerifySignatureDataUndefined" xml:space="preserve">
-    <value>The data is undefined</value>
+    <value>The data is not specified</value>
+  </data>
+  <data name="VerifySignatureLicenseUndefined" xml:space="preserve">
+    <value>The license is not specified</value>
   </data>
   <data name="VerifySignatureSerialNumberUndefined" xml:space="preserve">
     <value>The serial number is not specified</value>
   </data>
   <data name="VerifySignatureSignatureEmpty" xml:space="preserve">
-    <value>Signature is empty</value>
+    <value>The signature is empty</value>
   </data>
 </root>

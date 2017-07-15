@@ -13,5 +13,11 @@
 
         /// <summary>Gets or sets an integer containing the serial number associated with this random information.</summary>
         public long SerialNumber { get; set; }
+
+        /// <summary>Gets or sets an optional string that is included into signed data from generation parameters.</summary>
+        public string UserData { get; set; }
+
+        /// <summary>Gets or sets an object describing the license terms under which the random values can be used.</summary>
+        public License License { get; set; }
     }
 }

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Data
 {
-    internal sealed class RpcGenerateDecimalFractionsParams : RpcRandomParams
+    internal sealed class RpcGenerateDecimalFractionsParams : RpcGenerateParams
     {
         [JsonProperty("decimalPlaces")]
         public long DecimalPlaces { get; set; }

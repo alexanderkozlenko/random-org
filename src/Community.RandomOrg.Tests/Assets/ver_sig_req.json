@@ -10,17 +10,16 @@
             "max": 6,
             "replacement": true,
             "base": 10,
-            "data": [
-                3,
-                6,
-                4,
-                6,
-                1,
-                5
-            ],
-            "completionTime": "2013-07-07 09:00:43Z",
-            "serialNumber": 69149
+            "data": [ 5, 2, 1, 4, 2, 6 ],
+            "userData": null,
+            "completionTime": "2016-11-16 14:18:19Z",
+            "serialNumber": 2647656,
+            "license": {
+                "type": "commercial-2",
+                "text": "These values are licensed for commercial (non-gambling) use.",
+                "infoUrl": "https://api.random.org/licenses/commercial-2"
+            }
         },
-        "signature": "Pd46xecjlt/EEOdNGFQNCFHVJhZ5lfVUFLziDusOpLIKGbbHh4kCRM8+el8xh3ASUgR7qfL+K7pzERsIIHIheiIt8EXq9Xr/DW3N3qfKL/4Cai+zyBGn4xThSJnXSJPvM+LuXI+B2dPx7GYJa2PSVgF+fV3j0eN+exAa4fjAQFGiPDQo+dCQO3cSO8aZ76tSGJpo/6b1rR/sdIt8uAWRsfL56tFA+2+xUtuXU5vM8HT+KO6o4N7TWpvBz1rw/0S9iiIRdIDJ5M/AjKXeXKMMkDBHUaeUWCDEZkZOMYTk6IvOpERlsWz0dz2xrs4NE8vZsi4nIVU5izGLYceMRf2TmZVC7XXdZDbeEnJnCmDacRBONqTYklJ22wGrXrFs8GElEoG3IqOgjS1ZME3/jBGW7G3eUB1xb0lT773V2YvGBPTqsnz3tawO8UDdIpoGjSQjtgql/j7gzNmyW6AC9wvrLyXeh7OP6rhp3SLNUAjNhr+QqjHrqPEv+QqkZspYCxTMVyRILCe+z+jTbNnTClVpgxIP5hSfLkinea/TpomZqWj6KwYPqKuiNMrEXsbWlAytzr1v1tsbHbESb2XKytUDWHqmBDCNxHphcgVTmn9+bi2+WPjueBBUH+b0ZOvHIZNxld9P76x8IlcOVKRLl770j0yD3ActIZNaHvUNYeBoK2M="
+        "signature": "xkGw42Y4jPFZhEQ7WyTjrvWVFeRf2bttWOkz4O5wQPcIhih1UGhRzeIbGFZ4MyDoKVw2SZLR2bamLW0bTV0ZHTINPzuC7lVuWeHseWo53PpDMCHAdBsJGnPocG57zsRHXg9w1Em7AbhoOI/loNbt5/eCEnqAj1RpuBHyPkd6ixvTAE+vxB4jtRG3pT3udp4qhFXZrgD8u2MBo+mohrsYP+mIU5+XHjC0Lf66zJ/P7vBlQnFlBowgtIrHhbGSblHxNJPd7qtCqwgC4jUTjS+JD5hhKkn7pCqflaeYU+tXLofE9nSMrJp/DsFFTDMfokP+kqtuBMFTuLF124CAczG42rRW9nYkzyyFH0ecZ10VT9mfPVR4oSfXzSBKxbWFBKZSD5V6FAMy8K1NZUs47cCiJNesV6m0hjWhuylzIsD+MJWndvPYEZOZLhFBO3QOC2/9tojG7F7zR/clvO4RGoLYDTBxmVA6YkpkwKImySJmCCKP+egYAVZcbW9FyZks5hCoiv+I0zjSU3NUoGRq1Hp4r4W6NA2hZIRKlZKF4Ryod5qP5wi8UFJSLWYxiXIbW2xxj5OhX2o0ZQuQ/3dc1JdAX515HG8w00nSLh2KJq8+FtWe/+L7G5e7VkX0TyBSzdizejCH0K7Vfzv+AOEoKy6imBryYXpkYVd546nyMlDp+wA="
     }
 }
