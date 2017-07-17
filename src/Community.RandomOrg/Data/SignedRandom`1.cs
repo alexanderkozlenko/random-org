@@ -6,6 +6,7 @@
     {
         internal SignedRandom()
         {
+            License = new License();
         }
 
         /// <summary>Gets or sets the SHA-512 hash of the API key.</summary>
@@ -17,7 +18,7 @@
         /// <summary>Gets or sets an optional string that is included into signed data from generation parameters.</summary>
         public string UserData { get; set; }
 
-        /// <summary>Gets or sets an object describing the license terms under which the random values can be used.</summary>
-        public License License { get; set; }
+        /// <summary>Gets an object describing the license terms under which the random values can be used.</summary>
+        public License License { get; }
     }
 }

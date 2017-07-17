@@ -33,7 +33,7 @@ namespace Community.RandomOrg.Converters
                 case "running":
                     return ApiKeyStatus.Running;
                 default:
-                    throw new NotSupportedException(string.Format(_resourceManager.GetString("ApiKeyStatusError"), (string)reader.Value));
+                    throw new NotSupportedException(_resourceManager.GetString("Service.ApiKeyStatusIsInvalid"));
             }
         }
 

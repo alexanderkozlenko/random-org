@@ -117,103 +117,112 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ApiKeyFormatError" xml:space="preserve">
-    <value>Invalid format of the API key</value>
+  <data name="Client.ApiKeyFormatIsInvalid" xml:space="preserve">
+    <value>The format of API key is invalid</value>
   </data>
-  <data name="ApiKeyStatusError" xml:space="preserve">
-    <value>Invalid API key status: "{0}"</value>
-  </data>
-  <data name="ClientApiKeyRequired" xml:space="preserve">
+  <data name="Client.ApiKeyIsRequired" xml:space="preserve">
     <value>An API key is required for the operation</value>
   </data>
-  <data name="RandomBlobsCountError" xml:space="preserve">
+  <data name="GetResult.InvalidRandomDataType" xml:space="preserve">
+    <value>The type of random data is invalid</value>
+  </data>
+  <data name="Random.Blobs.CountIsInvalid" xml:space="preserve">
     <value>The count must be within the [1,100] range</value>
   </data>
-  <data name="RandomBlobsSizeDivisionError" xml:space="preserve">
+  <data name="Random.Blobs.SizeDivisionIsInvalid" xml:space="preserve">
     <value>The size of each blob must be divisible by 8</value>
   </data>
-  <data name="RandomBlobsSizeError" xml:space="preserve">
+  <data name="Random.Blobs.SizeIsInvalid" xml:space="preserve">
     <value>The size of each blob must be within the [1,1048576] range</value>
   </data>
-  <data name="RandomBlobsTotalSizeError" xml:space="preserve">
+  <data name="Random.Blobs.TotalSizeIsInvalid" xml:space="preserve">
     <value>The total size of all blobs must not exceed 1048576 bits</value>
   </data>
-  <data name="RandomDecimalFractionsCountError" xml:space="preserve">
+  <data name="Random.DecimalFractions.CountIsInvalid" xml:space="preserve">
     <value>The count must be within the [1,1e4] range</value>
   </data>
-  <data name="RandomDecimalFractionsDecimalPlacesError" xml:space="preserve">
+  <data name="Random.DecimalFractions.DecimalPlacesIsInvalid" xml:space="preserve">
     <value>The number of decimal places must be within the [1,20] range</value>
   </data>
-  <data name="RandomGaussiansCountError" xml:space="preserve">
+  <data name="Random.Gaussians.CountIsInvalid" xml:space="preserve">
     <value>The count must be within the [1,1e4] range</value>
   </data>
-  <data name="RandomGaussiansMeanError" xml:space="preserve">
+  <data name="Random.Gaussians.MeanIsInvalid" xml:space="preserve">
     <value>The distribution's mean must be within the [-1e6,1e6] range</value>
   </data>
-  <data name="RandomGaussiansSignificantDigitsError" xml:space="preserve">
+  <data name="Random.Gaussians.SignificantDigitsIsInvalid" xml:space="preserve">
     <value>The number of significant digits must be within the [2,20] range</value>
   </data>
-  <data name="RandomGaussiansStandardDeviationError" xml:space="preserve">
+  <data name="Random.Gaussians.StandardDeviationIsInvalid" xml:space="preserve">
     <value>The distribution's standard deviation must be within the [-1e6,1e6] range</value>
   </data>
-  <data name="RandomIntegersCountError" xml:space="preserve">
+  <data name="Random.Integers.CountIsInvalid" xml:space="preserve">
     <value>The count must be within the [1,1e4] range</value>
   </data>
-  <data name="RandomIntegersMaximumError" xml:space="preserve">
+  <data name="Random.Integers.MaximumIsInvalid" xml:space="preserve">
     <value>The upper boundary must be within the [-1e9,1e9] range</value>
   </data>
-  <data name="RandomIntegersMinimumError" xml:space="preserve">
+  <data name="Random.Integers.MinimumIsInvalid" xml:space="preserve">
     <value>The lower boundary must be within the [-1e9,1e9] range</value>
   </data>
-  <data name="RandomStringsCharactersNumberError" xml:space="preserve">
-    <value>The number of characters must be within the [1,80] range</value>
-  </data>
-  <data name="RandomStringsCharactersUndefined" xml:space="preserve">
+  <data name="Random.Strings.CharactersIsNotSpecified" xml:space="preserve">
     <value>The set of characters is not specified</value>
   </data>
-  <data name="RandomStringsCountError" xml:space="preserve">
+  <data name="Random.Strings.CharactersNumberIsInvalid" xml:space="preserve">
+    <value>The number of characters must be within the [1,80] range</value>
+  </data>
+  <data name="Random.Strings.CountIsInvalid" xml:space="preserve">
     <value>The count must be within the [1,1e4] range</value>
   </data>
-  <data name="RandomStringsLengthError" xml:space="preserve">
+  <data name="Random.Strings.LengthIsInvalid" xml:space="preserve">
     <value>The length of each string must be within the [1,20] range</value>
   </data>
-  <data name="RandomStringsStringUndefined" xml:space="preserve">
+  <data name="Random.Strings.ValueIsNotSpecified" xml:space="preserve">
     <value>The string at position {0} is not specified</value>
   </data>
-  <data name="RandomUserDataLengthError" xml:space="preserve">
+  <data name="Random.UserData.LengthIsInvalid" xml:space="preserve">
     <value>The length of user data string must be within the [1,1e3] range</value>
   </data>
-  <data name="RandomUuidsCountError" xml:space="preserve">
+  <data name="Random.Uuids.CountIsInvalid" xml:space="preserve">
     <value>The count must be within the [1,1e3] range</value>
   </data>
-  <data name="ServiceContentTypeError" xml:space="preserve">
-    <value>Invalid content type of service response: "{0}"</value>
+  <data name="Service.ApiKeyStatusIsInvalid" xml:space="preserve">
+    <value>The status of API key is invalid</value>
   </data>
-  <data name="ServiceRandomContainerTypeError" xml:space="preserve">
-    <value>Invalid random container type</value>
+  <data name="Service.ContentLengthIsInvalid" xml:space="preserve">
+    <value>The content length of service response is invalid</value>
   </data>
-  <data name="VerifySignatureApiKeyLengthError" xml:space="preserve">
-    <value>The hash of API key has invalid length</value>
+  <data name="Service.ContentLengthIsNotSpecified" xml:space="preserve">
+    <value>The content length of service response is not specified</value>
   </data>
-  <data name="VerifySignatureApiKeyUndefined" xml:space="preserve">
+  <data name="Service.ContentTypeIsInvalid" xml:space="preserve">
+    <value>The content type of service response is invalid</value>
+  </data>
+  <data name="Service.ContentTypeIsNotSpecified" xml:space="preserve">
+    <value>The content type of service response is not specified</value>
+  </data>
+  <data name="Service.MessageIdentifierIsInvalid" xml:space="preserve">
+    <value>The service message identifier is invalid</value>
+  </data>
+  <data name="VerifySignature.ApiKeyHashIsNotSpecified" xml:space="preserve">
     <value>The hash of API key is not specified</value>
   </data>
-  <data name="VerifySignatureCompletionTimeUndefined" xml:space="preserve">
+  <data name="VerifySignature.ApiKeyHashLengthIsInvalid" xml:space="preserve">
+    <value>The hash of API key has invalid length</value>
+  </data>
+  <data name="VerifySignature.CompletionTimeIsNotSpecified" xml:space="preserve">
     <value>The completion time is not specified</value>
   </data>
-  <data name="VerifySignatureDataEmpty" xml:space="preserve">
-    <value>The data is empty</value>
+  <data name="VerifySignature.DataIsEmptySequence" xml:space="preserve">
+    <value>The random data is empty sequence</value>
   </data>
-  <data name="VerifySignatureDataUndefined" xml:space="preserve">
-    <value>The data is not specified</value>
+  <data name="VerifySignature.DataIsNotSpecified" xml:space="preserve">
+    <value>The random data is not specified</value>
   </data>
-  <data name="VerifySignatureLicenseUndefined" xml:space="preserve">
-    <value>The license is not specified</value>
-  </data>
-  <data name="VerifySignatureSerialNumberUndefined" xml:space="preserve">
+  <data name="VerifySignature.SerialNumberIsNotSpecified" xml:space="preserve">
     <value>The serial number is not specified</value>
   </data>
-  <data name="VerifySignatureSignatureEmpty" xml:space="preserve">
-    <value>The signature is empty</value>
+  <data name="VerifySignature.SignatureLengthIsInvalid" xml:space="preserve">
+    <value>The signature has invalid length</value>
   </data>
 </root>

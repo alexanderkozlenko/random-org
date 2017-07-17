@@ -5,6 +5,11 @@ namespace Community.RandomOrg.Data
 {
     internal abstract class RpcSignedRandom<T> : RpcRandom<T>
     {
+        protected RpcSignedRandom()
+        {
+            License = new RpcLicense();
+        }
+
         [JsonProperty("n")]
         public long Count { get; set; }
 
@@ -18,10 +23,10 @@ namespace Community.RandomOrg.Data
         [JsonProperty("serialNumber")]
         public long SerialNumber { get; set; }
 
-        [JsonProperty("license")]
-        public RpcLicense License { get; set; }
-
         [JsonProperty("userData")]
         public string UserData { get; set; }
+
+        [JsonProperty("license")]
+        public RpcLicense License { get; }
     }
 }

@@ -115,7 +115,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
                 await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
-                    () => client.GenerateIntegersAsync(count, minimum, maximum, false));
+                    () => client.GenerateIntegersAsync(count, minimum, maximum, false, CancellationToken.None));
             }
         }
 
@@ -136,7 +136,8 @@ namespace Community.RandomOrg.Tests
                     requestJsonObject["params"]["n"].ToObject<int>(),
                     requestJsonObject["params"]["min"].ToObject<int>(),
                     requestJsonObject["params"]["max"].ToObject<int>(),
-                    true);
+                    true,
+                    CancellationToken.None);
 
                 VerifyGenerationInfo(result, responseJsonObject);
             }
@@ -155,7 +156,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
                 await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
-                    () => client.GenerateDecimalFractionsAsync(count, decimalPlaces, false));
+                    () => client.GenerateDecimalFractionsAsync(count, decimalPlaces, false, CancellationToken.None));
             }
         }
 
@@ -175,7 +176,8 @@ namespace Community.RandomOrg.Tests
                 var result = await client.GenerateDecimalFractionsAsync(
                     requestJsonObject["params"]["n"].ToObject<int>(),
                     requestJsonObject["params"]["decimalPlaces"].ToObject<int>(),
-                    true);
+                    true,
+                    CancellationToken.None);
 
                 VerifyGenerationInfo(result, responseJsonObject);
             }
@@ -201,7 +203,7 @@ namespace Community.RandomOrg.Tests
                 var standardDeviationValue = decimal.Parse(standardDeviation, CultureInfo.InvariantCulture);
 
                 await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
-                    () => client.GenerateGaussiansAsync(count, meanValue, standardDeviationValue, significantDigits));
+                    () => client.GenerateGaussiansAsync(count, meanValue, standardDeviationValue, significantDigits, CancellationToken.None));
             }
         }
 
@@ -222,7 +224,8 @@ namespace Community.RandomOrg.Tests
                     requestJsonObject["params"]["n"].ToObject<int>(),
                     requestJsonObject["params"]["mean"].ToObject<decimal>(),
                     requestJsonObject["params"]["standardDeviation"].ToObject<decimal>(),
-                    requestJsonObject["params"]["significantDigits"].ToObject<int>());
+                    requestJsonObject["params"]["significantDigits"].ToObject<int>(),
+                    CancellationToken.None);
 
                 VerifyGenerationInfo(result, responseJsonObject);
             }
@@ -241,7 +244,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
                 await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
-                    () => client.GenerateStringsAsync(count, length, "abcde", false));
+                    () => client.GenerateStringsAsync(count, length, "abcde", false, CancellationToken.None));
             }
         }
 
@@ -254,7 +257,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
                 await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => client.GenerateStringsAsync(1, 1, null, false));
+                    () => client.GenerateStringsAsync(1, 1, null, false, CancellationToken.None));
             }
         }
 
@@ -271,7 +274,7 @@ namespace Community.RandomOrg.Tests
                 var characters = new string('a', number);
 
                 await Assert.ThrowsAsync<ArgumentException>(
-                    () => client.GenerateStringsAsync(1, 1, characters, false));
+                    () => client.GenerateStringsAsync(1, 1, characters, false, CancellationToken.None));
             }
         }
 
@@ -292,7 +295,8 @@ namespace Community.RandomOrg.Tests
                     requestJsonObject["params"]["n"].ToObject<int>(),
                     requestJsonObject["params"]["length"].ToObject<int>(),
                     requestJsonObject["params"]["characters"].ToObject<string>(),
-                    true);
+                    true,
+                    CancellationToken.None);
 
                 VerifyGenerationInfo(result, responseJsonObject);
             }
@@ -309,7 +313,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
                 await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
-                    () => client.GenerateUuidsAsync(count));
+                    () => client.GenerateUuidsAsync(count, CancellationToken.None));
             }
         }
 
@@ -327,7 +331,8 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
                 var result = await client.GenerateUuidsAsync(
-                    requestJsonObject["params"]["n"].ToObject<int>());
+                    requestJsonObject["params"]["n"].ToObject<int>(),
+                    CancellationToken.None);
 
                 VerifyGenerationInfo(result, responseJsonObject);
             }
@@ -348,7 +353,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
                 await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
-                    () => client.GenerateBlobsAsync(count, size));
+                    () => client.GenerateBlobsAsync(count, size, CancellationToken.None));
             }
         }
 
@@ -367,7 +372,8 @@ namespace Community.RandomOrg.Tests
             {
                 var result = await client.GenerateBlobsAsync(
                     requestJsonObject["params"]["n"].ToObject<int>(),
-                    requestJsonObject["params"]["size"].ToObject<int>());
+                    requestJsonObject["params"]["size"].ToObject<int>(),
+                    CancellationToken.None);
 
                 Assert.NotNull(result);
                 Assert.Equal(responseJsonObject["result"]["bitsUsed"], result.BitsUsed);
@@ -395,7 +401,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(httpClient))
             {
                 await Assert.ThrowsAsync<InvalidOperationException>(
-                    () => client.GetUsageAsync());
+                    () => client.GetUsageAsync(CancellationToken.None));
             }
         }
 
@@ -412,7 +418,7 @@ namespace Community.RandomOrg.Tests
 
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
-                var result = await client.GetUsageAsync();
+                var result = await client.GetUsageAsync(CancellationToken.None);
 
                 Assert.NotNull(result);
                 Assert.Equal(responseJsonObject["result"]["status"], ConvertApiKeyStatus(result.Status));
@@ -439,7 +445,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
                 await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
-                    () => client.GenerateSignedIntegersAsync(count, minimum, maximum, false));
+                    () => client.GenerateSignedIntegersAsync(count, minimum, maximum, false, null, CancellationToken.None));
             }
         }
 
@@ -460,7 +466,9 @@ namespace Community.RandomOrg.Tests
                     requestJsonObject["params"]["n"].ToObject<int>(),
                     requestJsonObject["params"]["min"].ToObject<int>(),
                     requestJsonObject["params"]["max"].ToObject<int>(),
-                    true);
+                    true,
+                    null,
+                    CancellationToken.None);
 
                 VerifyGenerationInfo(result, responseJsonObject);
 
@@ -483,7 +491,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
                 await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
-                    () => client.GenerateSignedDecimalFractionsAsync(count, decimalPlaces, false));
+                    () => client.GenerateSignedDecimalFractionsAsync(count, decimalPlaces, false, null, CancellationToken.None));
             }
         }
 
@@ -503,7 +511,9 @@ namespace Community.RandomOrg.Tests
                 var result = await client.GenerateSignedDecimalFractionsAsync(
                     requestJsonObject["params"]["n"].ToObject<int>(),
                     requestJsonObject["params"]["decimalPlaces"].ToObject<int>(),
-                    true);
+                    true,
+                    null,
+                    CancellationToken.None);
 
                 VerifyGenerationInfo(result, responseJsonObject);
 
@@ -532,7 +542,7 @@ namespace Community.RandomOrg.Tests
                 var standardDeviationValue = decimal.Parse(standardDeviation, CultureInfo.InvariantCulture);
 
                 await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
-                    () => client.GenerateSignedGaussiansAsync(count, meanValue, standardDeviationValue, significantDigits));
+                    () => client.GenerateSignedGaussiansAsync(count, meanValue, standardDeviationValue, significantDigits, null, CancellationToken.None));
             }
         }
 
@@ -553,7 +563,9 @@ namespace Community.RandomOrg.Tests
                     requestJsonObject["params"]["n"].ToObject<int>(),
                     requestJsonObject["params"]["mean"].ToObject<decimal>(),
                     requestJsonObject["params"]["standardDeviation"].ToObject<decimal>(),
-                    requestJsonObject["params"]["significantDigits"].ToObject<int>());
+                    requestJsonObject["params"]["significantDigits"].ToObject<int>(),
+                    null,
+                    CancellationToken.None);
 
                 VerifyGenerationInfo(result, responseJsonObject);
 
@@ -576,7 +588,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
                 await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
-                    () => client.GenerateSignedStringsAsync(count, length, "abcde", false));
+                    () => client.GenerateSignedStringsAsync(count, length, "abcde", false, null, CancellationToken.None));
             }
         }
 
@@ -589,7 +601,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
                 await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => client.GenerateSignedStringsAsync(1, 1, null, false));
+                    () => client.GenerateSignedStringsAsync(1, 1, null, false, null, CancellationToken.None));
             }
         }
 
@@ -604,7 +616,7 @@ namespace Community.RandomOrg.Tests
                 var characters = new string('a', 81);
 
                 await Assert.ThrowsAsync<ArgumentException>(
-                    () => client.GenerateSignedStringsAsync(1, 1, characters, false));
+                    () => client.GenerateSignedStringsAsync(1, 1, characters, false, null, CancellationToken.None));
             }
         }
 
@@ -625,7 +637,9 @@ namespace Community.RandomOrg.Tests
                     requestJsonObject["params"]["n"].ToObject<int>(),
                     requestJsonObject["params"]["length"].ToObject<int>(),
                     requestJsonObject["params"]["characters"].ToObject<string>(),
-                    true);
+                    true,
+                    null,
+                    CancellationToken.None);
 
                 VerifyGenerationInfo(result, responseJsonObject);
 
@@ -646,7 +660,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
                 await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
-                    () => client.GenerateSignedUuidsAsync(count));
+                    () => client.GenerateSignedUuidsAsync(count, null, CancellationToken.None));
             }
         }
 
@@ -664,7 +678,9 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
                 var result = await client.GenerateSignedUuidsAsync(
-                    requestJsonObject["params"]["n"].ToObject<int>());
+                    requestJsonObject["params"]["n"].ToObject<int>(),
+                    null,
+                    CancellationToken.None);
 
                 VerifyGenerationInfo(result, responseJsonObject);
             }
@@ -685,7 +701,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
                 await Assert.ThrowsAsync<ArgumentOutOfRangeException>(
-                    () => client.GenerateSignedBlobsAsync(count, size));
+                    () => client.GenerateSignedBlobsAsync(count, size, null, CancellationToken.None));
             }
         }
 
@@ -704,7 +720,9 @@ namespace Community.RandomOrg.Tests
             {
                 var result = await client.GenerateSignedBlobsAsync(
                     requestJsonObject["params"]["n"].ToObject<int>(),
-                    requestJsonObject["params"]["size"].ToObject<int>());
+                    requestJsonObject["params"]["size"].ToObject<int>(),
+                    null,
+                    CancellationToken.None);
 
                 VerifyGenerationInfo(result, responseJsonObject);
 
@@ -730,7 +748,7 @@ namespace Community.RandomOrg.Tests
                     "BDCNxHphcgVTmn9+bi2+WPjueBBUH+b0ZOvHIZNxld9P76x8IlcOVKRLl770j0yD3ActIZNaHvUNYeBoK2M=");
 
                 await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => client.VerifySignatureAsync(default(SignedIntegersRandom), signature));
+                    () => client.VerifySignatureAsync(default(SignedIntegersRandom), signature, CancellationToken.None));
             }
         }
 
@@ -745,7 +763,7 @@ namespace Community.RandomOrg.Tests
                 var random = new SignedIntegersRandom();
 
                 await Assert.ThrowsAsync<ArgumentNullException>(
-                    () => client.VerifySignatureAsync(random, null));
+                    () => client.VerifySignatureAsync(random, null, CancellationToken.None));
             }
         }
 
@@ -762,13 +780,6 @@ namespace Community.RandomOrg.Tests
 
             using (var client = new RandomOrgClient(httpClient))
             {
-                var license = new License
-                {
-                    Type = "commercial-2",
-                    Text = "These values are licensed for commercial (non-gambling) use.",
-                    InfoUrl = new Uri("https://api.random.org/licenses/commercial-2")
-                };
-
                 var random = new SignedIntegersRandom
                 {
                     ApiKeyHash = Convert.FromBase64String(requestJsonObject["params"]["random"]["hashedApiKey"].ToObject<string>()),
@@ -779,11 +790,14 @@ namespace Community.RandomOrg.Tests
                     Replacement = requestJsonObject["params"]["random"]["replacement"].ToObject<bool>(),
                     Data = requestJsonObject["params"]["random"]["data"].ToObject<int[]>(),
                     UserData = requestJsonObject["params"]["random"]["userData"].ToObject<string>(),
-                    License = license
                 };
 
+                random.License.Type = "commercial-2";
+                random.License.Text = "These values are licensed for commercial (non-gambling) use.";
+                random.License.InfoUrl = new Uri("https://api.random.org/licenses/commercial-2");
+
                 var signature = Convert.FromBase64String(requestJsonObject["params"]["signature"].ToObject<string>());
-                var result = await client.VerifySignatureAsync(random, signature);
+                var result = await client.VerifySignatureAsync(random, signature, CancellationToken.None);
 
                 Assert.True(result);
             }
@@ -803,7 +817,8 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
                 var result = await client.GetResultAsync<SignedIntegersRandom, int>(
-                    requestJsonObject["params"]["serialNumber"].ToObject<int>());
+                    requestJsonObject["params"]["serialNumber"].ToObject<int>(),
+                    CancellationToken.None);
 
                 VerifyGenerationInfo(result, responseJsonObject);
 
@@ -828,7 +843,8 @@ namespace Community.RandomOrg.Tests
             {
                 await Assert.ThrowsAsync<InvalidOperationException>(
                     () => client.GetResultAsync<SignedUuidsRandom, Guid>(
-                        requestJsonObject["params"]["serialNumber"].ToObject<int>()));
+                        requestJsonObject["params"]["serialNumber"].ToObject<int>(),
+                        CancellationToken.None));
             }
         }
 
@@ -858,24 +874,25 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
                 await Assert.ThrowsAsync<HttpRequestException>(
-                    () => client.GetUsageAsync());
+                    () => client.GetUsageAsync(CancellationToken.None));
             }
         }
 
         [Fact]
-        public async void InvokeMethodWhenMediaTypeInvalid()
+        public async void InvokeMethodWhenContentTypeIsInvalid()
         {
             var stubHandler = (Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>>)
                 (
                     (requestMessage, cancellationToken) =>
                     {
-                        var responseContent = EmbeddedResourceManager.GetString("Assets.get_usg_res.json");
+                        var responseContentString = EmbeddedResourceManager.GetString("Assets.get_usg_res.json");
+                        var responseContent = new StringContent(responseContentString, Encoding.UTF8, "application/octet-stream");
 
                         var responseMessage = new HttpResponseMessage
                         {
                             RequestMessage = requestMessage,
                             StatusCode = HttpStatusCode.OK,
-                            Content = new StringContent(responseContent, Encoding.UTF8, "application/octet-stream"),
+                            Content = responseContent,
                             Version = new Version(1, 1)
                         };
 
@@ -887,8 +904,41 @@ namespace Community.RandomOrg.Tests
 
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
-                await Assert.ThrowsAsync<InvalidOperationException>(
-                    () => client.GetUsageAsync());
+                await Assert.ThrowsAsync<HttpRequestException>(
+                    () => client.GetUsageAsync(CancellationToken.None));
+            }
+        }
+
+        [Fact]
+        public async void InvokeMethodWhenContentLengthIsInvalid()
+        {
+            var stubHandler = (Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>>)
+            (
+                (requestMessage, cancellationToken) =>
+                {
+                    var responseContentString = EmbeddedResourceManager.GetString("Assets.get_usg_res.json");
+                    var responseContent = new StringContent(responseContentString, Encoding.UTF8, _HTTP_MEDIA_TYPE);
+
+                    responseContent.Headers.ContentLength = 2;
+
+                    var responseMessage = new HttpResponseMessage
+                    {
+                        RequestMessage = requestMessage,
+                        StatusCode = HttpStatusCode.OK,
+                        Content = responseContent,
+                        Version = new Version(1, 1)
+                    };
+
+                    return Task.FromResult(responseMessage);
+                }
+            );
+
+            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler));
+
+            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            {
+                await Assert.ThrowsAsync<HttpRequestException>(
+                    () => client.GetUsageAsync(CancellationToken.None));
             }
         }
 
@@ -906,7 +956,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
                 var exception = await Assert.ThrowsAsync<RandomOrgException>(
-                    () => client.GetUsageAsync());
+                    () => client.GetUsageAsync(CancellationToken.None));
 
                 Assert.Equal(101, exception.Code);
             }
@@ -926,7 +976,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
                 var exception = await Assert.ThrowsAsync<RandomOrgException>(
-                    () => client.GetUsageAsync());
+                    () => client.GetUsageAsync(CancellationToken.None));
 
                 Assert.Equal(501, exception.Code);
             }

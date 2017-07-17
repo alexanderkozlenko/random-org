@@ -36,6 +36,7 @@ namespace Community.RandomOrg
         private static readonly JsonRpcSerializer _jsonRpcSerializer = CreateJsonRpcSerializer();
         private static readonly ResourceManager _resourceManager = CreateResourceManager();
         private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/2/invoke", UriKind.Absolute);
+        private static readonly IReadOnlyDictionary<Type, JsonRpcMethodScheme> _signedResultMethodSchemeBindings = CreateSignedResultMethodSchemeBindings();
 
         private readonly string _apiKey;
         private readonly HttpMessageInvoker _httpMessageInvoker;
@@ -57,7 +58,7 @@ namespace Community.RandomOrg
             }
             if (!Guid.TryParseExact(apiKey, "D", out var _))
             {
-                throw new ArgumentException(_resourceManager.GetString("ApiKeyFormatError"), nameof(apiKey));
+                throw new ArgumentException(_resourceManager.GetString("Client.ApiKeyFormatIsInvalid"), nameof(apiKey));
             }
 
             _apiKey = apiKey;
@@ -94,7 +95,7 @@ namespace Community.RandomOrg
             }
             if (!Guid.TryParseExact(apiKey, "D", out var _))
             {
-                throw new ArgumentException(_resourceManager.GetString("ApiKeyFormatError"), nameof(apiKey));
+                throw new ArgumentException(_resourceManager.GetString("Client.ApiKeyFormatIsInvalid"), nameof(apiKey));
             }
 
             _apiKey = apiKey;
@@ -133,7 +134,7 @@ namespace Community.RandomOrg
         {
             if (_apiKey == null)
             {
-                throw new InvalidOperationException(_resourceManager.GetString("ClientApiKeyRequired"));
+                throw new InvalidOperationException(_resourceManager.GetString("Client.ApiKeyIsRequired"));
             }
         }
 
@@ -145,13 +146,9 @@ namespace Community.RandomOrg
             target.Data = source.Data;
             target.CompletionTime = source.CompletionTime;
             target.SerialNumber = source.SerialNumber;
-
-            target.License = new RpcLicense
-            {
-                Type = source.License.Type,
-                Text = source.License.Text,
-                InfoUrl = source.License.InfoUrl
-            };
+            target.License.Type = source.License.Type;
+            target.License.Text = source.License.Text;
+            target.License.InfoUrl = source.License.InfoUrl;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -162,13 +159,9 @@ namespace Community.RandomOrg
             target.CompletionTime = source.CompletionTime;
             target.SerialNumber = source.SerialNumber;
             target.UserData = source.UserData;
-
-            target.License = new License
-            {
-                Type = source.License.Type,
-                Text = source.License.Text,
-                InfoUrl = source.License.InfoUrl
-            };
+            target.License.Type = source.License.Type;
+            target.License.Text = source.License.Text;
+            target.License.InfoUrl = source.License.InfoUrl;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -229,22 +222,14 @@ namespace Community.RandomOrg
 
         private async Task<object> InvokeRandomOrgMethod(string method, object @params, Type resultType, CancellationToken cancellationToken)
         {
-            var jsonRpcRequest = new JsonRpcRequest(method, Guid.NewGuid().ToString(), @params);
+            var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString("D")), @params);
+            var httpRequestString = _jsonRpcSerializer.SerializeRequest(jsonRpcRequest);
 
-            if (resultType != null)
-            {
-                _rpcMethodSchemeBindings[jsonRpcRequest.Id] = new JsonRpcMethodScheme(resultType, typeof(object[]));
-            }
-            else
-            {
-                _rpcMethodNameBindings[jsonRpcRequest.Id] = jsonRpcRequest.Method;
-            }
-
-            var httpResponseContent = default(string);
+            var httpResponseString = default(string);
 
             using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
             {
-                var httpRequestMessageContent = new StringContent(_jsonRpcSerializer.SerializeRequest(jsonRpcRequest));
+                var httpRequestMessageContent = new StringContent(httpRequestString);
 
                 httpRequestMessageContent.Headers.ContentType = _httpMediaTypeHeader;
                 httpRequestMessage.Content = httpRequestMessageContent;
@@ -253,38 +238,74 @@ namespace Community.RandomOrg
                 {
                     httpResponseMessage.EnsureSuccessStatusCode();
 
-                    var mediaType = httpResponseMessage.Content.Headers.ContentType?.MediaType;
+                    var contentType = httpResponseMessage.Content.Headers.ContentType;
 
-                    if (string.Compare(mediaType, _httpMediaTypeHeader.MediaType, StringComparison.OrdinalIgnoreCase) != 0)
+                    if (contentType == null)
                     {
-                        throw new InvalidOperationException(string.Format(_resourceManager.GetString("ServiceContentTypeError"), mediaType));
+                        throw new HttpRequestException(_resourceManager.GetString("Service.ContentTypeIsNotSpecified"));
+                    }
+                    if (string.Compare(contentType.MediaType, _httpMediaTypeHeader.MediaType, StringComparison.OrdinalIgnoreCase) != 0)
+                    {
+                        throw new HttpRequestException(_resourceManager.GetString("Service.ContentTypeIsInvalid"));
                     }
 
-                    httpResponseContent = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var contentLength = httpResponseMessage.Content.Headers.ContentLength;
+
+                    if (contentLength == null)
+                    {
+                        throw new HttpRequestException(_resourceManager.GetString("Service.ContentLengthIsNotSpecified"));
+                    }
+
+                    httpResponseString = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+                    if (httpResponseString?.Length != contentLength)
+                    {
+                        throw new HttpRequestException(_resourceManager.GetString("Service.ContentLengthIsInvalid"));
+                    }
                 }
             }
 
-            var responseData = resultType != null ?
-                _jsonRpcSerializer.DeserializeResponsesData(httpResponseContent, _rpcMethodSchemeBindings) :
-                _jsonRpcSerializer.DeserializeResponsesData(httpResponseContent, _rpcMethodNameBindings);
-
             if (resultType != null)
             {
-                _rpcMethodSchemeBindings.Clear();
+                _rpcMethodSchemeBindings[jsonRpcRequest.Id] = _signedResultMethodSchemeBindings[resultType];
             }
             else
             {
-                _rpcMethodNameBindings.Clear();
+                _rpcMethodNameBindings[jsonRpcRequest.Id] = jsonRpcRequest.Method;
             }
 
-            var message = responseData.GetSingleItem().GetMessage();
+            var responseData = default(JsonRpcData<JsonRpcResponse>);
 
-            if (!message.Success)
+            try
             {
-                throw new RandomOrgException(message.Error.Code, message.Error.Message);
+                responseData = resultType != null ?
+                    _jsonRpcSerializer.DeserializeResponsesData(httpResponseString, _rpcMethodSchemeBindings) :
+                    _jsonRpcSerializer.DeserializeResponsesData(httpResponseString, _rpcMethodNameBindings);
+            }
+            finally
+            {
+                if (resultType != null)
+                {
+                    _rpcMethodSchemeBindings.Clear();
+                }
+                else
+                {
+                    _rpcMethodNameBindings.Clear();
+                }
             }
 
-            return message.Result;
+            var jsonRpcResponse = responseData.GetSingleItem().GetMessage();
+
+            if (!jsonRpcResponse.Success)
+            {
+                throw new RandomOrgException(jsonRpcResponse.Error.Code, jsonRpcResponse.Error.Message);
+            }
+            if (jsonRpcRequest.Id != jsonRpcResponse.Id)
+            {
+                throw new JsonRpcException(_resourceManager.GetString("Service.MessageIdentifierIsInvalid"));
+            }
+
+            return jsonRpcResponse.Result;
         }
 
         private static HttpMessageInvoker CreateHttpMessageInvoker()
@@ -345,6 +366,25 @@ namespace Community.RandomOrg
             };
 
             return new JsonRpcSerializer(scheme, settings);
+        }
+
+        private static IReadOnlyDictionary<Type, JsonRpcMethodScheme> CreateSignedResultMethodSchemeBindings()
+        {
+            return new Dictionary<Type, JsonRpcMethodScheme>(6)
+            {
+                [typeof(RpcSignedRandomResult<RpcSignedIntegersRandom, int>)] =
+                    new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedIntegersRandom, int>), typeof(object[])),
+                [typeof(RpcSignedRandomResult<RpcSignedDecimalFractionsRandom, decimal>)] =
+                    new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedDecimalFractionsRandom, decimal>), typeof(object[])),
+                [typeof(RpcSignedRandomResult<RpcSignedGaussiansRandom, decimal>)] =
+                    new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedGaussiansRandom, decimal>), typeof(object[])),
+                [typeof(RpcSignedRandomResult<RpcSignedStringsRandom, string>)] =
+                    new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedStringsRandom, string>), typeof(object[])),
+                [typeof(RpcSignedRandomResult<RpcSignedUuidsRandom, Guid>)] =
+                    new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedUuidsRandom, Guid>), typeof(object[])),
+                [typeof(RpcSignedRandomResult<RpcSignedBlobsRandom, string>)] =
+                    new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedBlobsRandom, string>), typeof(object[]))
+            };
         }
 
         private static ResourceManager CreateResourceManager()
