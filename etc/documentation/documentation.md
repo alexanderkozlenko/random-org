@@ -1,7 +1,7 @@
 The client supports all RANDOM.ORG [Core API v2](https://api.random.org/json-rpc/2) methods and provides operation cancellation via a [`CancellationToken`](https://docs.microsoft.com/en-us/dotnet/api/system.threading.cancellationtoken?view=netstandard-1.1).
 
 ```cs
-using (var client = new RandomOrgClient("00000000-0000-0000-0000-000000000000"))
+using (var client = new RandomOrgClient("YOUR_API_KEY_HERE"))
 {
     // Get current API key's status and available bits
 

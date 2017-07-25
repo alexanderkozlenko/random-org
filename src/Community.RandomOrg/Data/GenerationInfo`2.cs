@@ -1,4 +1,6 @@
-﻿namespace Community.RandomOrg.Data
+﻿using System;
+
+namespace Community.RandomOrg.Data
 {
     /// <summary>Encapsulates random data generation information.</summary>
     /// <typeparam name="TRandom">The type of random data container.</typeparam>
@@ -8,6 +10,11 @@
     {
         internal GenerationInfo(TRandom random, long bitsUsed, long bitsLeft, long requestsLeft)
         {
+            if (random == null)
+            {
+                throw new ArgumentNullException(nameof(random));
+            }
+
             Random = random;
             BitsUsed = bitsUsed;
             BitsLeft = bitsLeft;

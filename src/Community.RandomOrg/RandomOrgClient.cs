@@ -14,7 +14,7 @@ using Community.RandomOrg.Data;
 namespace Community.RandomOrg
 {
     /// <summary>A RANDOM.ORG service client.</summary>
-    public sealed partial class RandomOrgClient : IDisposable
+    public sealed partial class RandomOrgClient : IRandomOrgClient
     {
         private const string _RPC_GENERATE_SIMPLE_INTEGERS = "generateIntegers";
         private const string _RPC_GENERATE_SIMPLE_DECIMAL_FRACTIONS = "generateDecimalFractions";
