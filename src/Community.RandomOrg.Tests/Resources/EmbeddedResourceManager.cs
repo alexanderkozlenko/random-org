@@ -27,14 +27,18 @@ namespace Community.RandomOrg.Tests.Resources
         public static string GetString(string name)
         {
             if (name == null)
+            {
                 throw new ArgumentNullException(nameof(name));
+            }
 
             using (var bufferStream = new MemoryStream())
             {
                 var resourceStream = _assembly.GetManifestResourceStream(FormattableString.Invariant($"{_assemblyName}.{name}"));
 
                 if (resourceStream == null)
+                {
                     throw new InvalidOperationException(FormattableString.Invariant($"The specified resource \"{name}\" is not found"));
+                }
 
                 resourceStream.CopyTo(bufferStream);
 

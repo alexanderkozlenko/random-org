@@ -22,12 +22,7 @@ namespace Community.RandomOrg.Tests.Stubbing
         /// <exception cref="ArgumentNullException"><paramref name="handler" /> is <see langword="null" />.</exception>
         public HttpMessageHandlerStub(Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>> handler)
         {
-            if (handler == null)
-            {
-                throw new ArgumentNullException(nameof(handler));
-            }
-
-            _messageHandler = handler;
+            _messageHandler = handler ?? throw new ArgumentNullException(nameof(handler));
         }
 
         /// <summary>Initializes a new instance of the <see cref="HttpMessageHandlerStub" /> class.</summary>
@@ -36,17 +31,8 @@ namespace Community.RandomOrg.Tests.Stubbing
         /// <exception cref="ArgumentNullException"><paramref name="handler" /> or <paramref name="mediaType" /> is <see langword="null" />.</exception>
         public HttpMessageHandlerStub(Func<string, Task<string>> handler, string mediaType)
         {
-            if (handler == null)
-            {
-                throw new ArgumentNullException(nameof(handler));
-            }
-            if (mediaType == null)
-            {
-                throw new ArgumentNullException(nameof(mediaType));
-            }
-
-            _contentHandler = handler;
-            _mediaType = mediaType;
+            _contentHandler = handler ?? throw new ArgumentNullException(nameof(handler)); ;
+            _mediaType = mediaType ?? throw new ArgumentNullException(nameof(mediaType));
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)

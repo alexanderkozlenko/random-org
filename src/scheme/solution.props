@@ -4,5 +4,6 @@
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)open.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>True</SignAssembly>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 </Project>

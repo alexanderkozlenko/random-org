@@ -856,7 +856,7 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentException(_resourceManager.GetString("VerifySignature.DataIsEmptySequence"), nameof(random));
             }
-            if (random.CompletionTime == default(DateTime))
+            if (random.CompletionTime == default)
             {
                 throw new ArgumentException(_resourceManager.GetString("VerifySignature.CompletionTimeIsNotSpecified"), nameof(random));
             }
