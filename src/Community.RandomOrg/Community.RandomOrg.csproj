@@ -4,7 +4,6 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
     <BaseIntermediateOutputPath>$(RepositoryPath)\bin\obj\$(AssemblyName)\</BaseIntermediateOutputPath>
-    <OutputPath>$(RepositoryPath)\bin\bin\$(AssemblyName)\$(Configuration)\</OutputPath>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">

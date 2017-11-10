@@ -2,6 +2,7 @@
   <PropertyGroup>
     <RepositoryPath>$(MSBuildThisFileDirectory)..\..</RepositoryPath>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)open.snk</AssemblyOriginatorKeyFile>
+    <OutputPath>$(RepositoryPath)\bin\bin\$(AssemblyName)\$(Configuration)\</OutputPath>
     <SignAssembly>True</SignAssembly>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <LangVersion>latest</LangVersion>
