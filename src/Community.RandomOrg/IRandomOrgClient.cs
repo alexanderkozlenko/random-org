@@ -9,13 +9,10 @@ namespace Community.RandomOrg
     public interface IRandomOrgClient : IDisposable
     {
         /// <summary>Returns information related to the usage of a given API key as an asynchronous operation.</summary>
-        /// <returns>A <see cref="RandomUsage" /> instance.</returns>
-        Task<RandomUsage> GetUsageAsync();
-
-        /// <summary>Returns information related to the usage of a given API key as an asynchronous operation.</summary>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>A <see cref="RandomUsage" /> instance.</returns>
-        Task<RandomUsage> GetUsageAsync(CancellationToken cancellationToken);
+        Task<RandomUsage> GetUsageAsync(
+            CancellationToken cancellationToken);
 
         /// <summary>Generates true random integers within a user-defined range as an asynchronous operation.</summary>
         /// <param name="count">How many random integers to generate. Must be within the [1,1e4] range.</param>

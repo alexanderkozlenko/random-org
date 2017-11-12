@@ -103,14 +103,6 @@ namespace Community.RandomOrg
         }
 
         /// <summary>Returns information related to the usage of a given API key as an asynchronous operation.</summary>
-        /// <returns>A <see cref="RandomUsage" /> instance.</returns>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        public Task<RandomUsage> GetUsageAsync()
-        {
-            return GetUsageAsync(CancellationToken.None);
-        }
-
-        /// <summary>Returns information related to the usage of a given API key as an asynchronous operation.</summary>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>A <see cref="RandomUsage" /> instance.</returns>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
@@ -138,7 +130,6 @@ namespace Community.RandomOrg
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void TransferValues<T>(SignedRandom<T> source, RpcSignedRandom<T> target)
         {
             target.Count = source.Data.Count;
@@ -151,7 +142,6 @@ namespace Community.RandomOrg
             target.License.InfoUrl = source.License.InfoUrl;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void TransferValues<T>(RpcSignedRandom<T> source, SignedRandom<T> target)
         {
             target.ApiKeyHash = source.ApiKeyHash;
@@ -164,7 +154,6 @@ namespace Community.RandomOrg
             target.License.InfoUrl = source.License.InfoUrl;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void TransferValues<T>(RpcRandom<T> source, Random<T> target)
         {
             target.Data = source.Data;
@@ -224,7 +213,6 @@ namespace Community.RandomOrg
         {
             var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString("D")), @params);
             var httpRequestString = _jsonRpcSerializer.SerializeRequest(jsonRpcRequest);
-
             var httpResponseString = default(string);
 
             using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))

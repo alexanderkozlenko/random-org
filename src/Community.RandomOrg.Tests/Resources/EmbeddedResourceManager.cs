@@ -20,7 +20,7 @@ namespace Community.RandomOrg.Tests.Resources
         }
 
         /// <summary>Returns the value of the specified embedded string resource.</summary>
-        /// <param name="name">The name of the embedded resource to retrieve. </param>
+        /// <param name="name">The name of the embedded resource to retrieve.</param>
         /// <returns>The value of the embedded resource.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="name" /> is <see langword="null" />.</exception>
         /// <exception cref="InvalidOperationException">The specified embedded resource is not found.</exception>
