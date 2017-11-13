@@ -3,6 +3,7 @@ using System.Data.JsonRpc;
 using System.Threading;
 using System.Threading.Tasks;
 using Community.RandomOrg.Data;
+using Community.RandomOrg.Resources;
 
 namespace Community.RandomOrg
 {
@@ -23,15 +24,15 @@ namespace Community.RandomOrg
         {
             if ((count < 1) || (count > 10000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, _resourceManager.GetString("Random.Integers.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Integers.CountIsInvalid"));
             }
             if ((minimum < -1000000000) || (minimum > 1000000000))
             {
-                throw new ArgumentOutOfRangeException(nameof(minimum), minimum, _resourceManager.GetString("Random.Integers.MinimumIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(minimum), minimum, Strings.GetString("Random.Integers.MinimumIsInvalid"));
             }
             if ((maximum < -1000000000) || (maximum > 1000000000))
             {
-                throw new ArgumentOutOfRangeException(nameof(maximum), maximum, _resourceManager.GetString("Random.Integers.MaximumIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(maximum), maximum, Strings.GetString("Random.Integers.MaximumIsInvalid"));
             }
 
             EnsureApiKeyIsSpecified();
@@ -70,11 +71,11 @@ namespace Community.RandomOrg
         {
             if ((count < 1) || (count > 10000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, _resourceManager.GetString("Random.DecimalFractions.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.DecimalFractions.CountIsInvalid"));
             }
             if ((decimalPlaces < 1) || (decimalPlaces > 20))
             {
-                throw new ArgumentOutOfRangeException(nameof(decimalPlaces), decimalPlaces, _resourceManager.GetString("Random.DecimalFractions.DecimalPlacesIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(decimalPlaces), decimalPlaces, Strings.GetString("Random.DecimalFractions.DecimalPlacesIsInvalid"));
             }
 
             EnsureApiKeyIsSpecified();
@@ -113,19 +114,19 @@ namespace Community.RandomOrg
         {
             if ((count < 1) || (count > 10000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, _resourceManager.GetString("Random.Gaussians.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Gaussians.CountIsInvalid"));
             }
             if ((mean < -1000000) || (mean > 1000000))
             {
-                throw new ArgumentOutOfRangeException(nameof(mean), mean, _resourceManager.GetString("Random.Gaussians.MeanIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(mean), mean, Strings.GetString("Random.Gaussians.MeanIsInvalid"));
             }
             if ((standardDeviation < -1000000) || (standardDeviation > 1000000))
             {
-                throw new ArgumentOutOfRangeException(nameof(standardDeviation), standardDeviation, _resourceManager.GetString("Random.Gaussians.StandardDeviationIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(standardDeviation), standardDeviation, Strings.GetString("Random.Gaussians.StandardDeviationIsInvalid"));
             }
             if ((significantDigits < 2) || (significantDigits > 20))
             {
-                throw new ArgumentOutOfRangeException(nameof(significantDigits), significantDigits, _resourceManager.GetString("Random.Gaussians.SignificantDigitsIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(significantDigits), significantDigits, Strings.GetString("Random.Gaussians.SignificantDigitsIsInvalid"));
             }
 
             EnsureApiKeyIsSpecified();
@@ -167,11 +168,11 @@ namespace Community.RandomOrg
         {
             if ((count < 1) || (count > 10000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, _resourceManager.GetString("Random.Strings.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Strings.CountIsInvalid"));
             }
             if ((length < 1) || (length > 20))
             {
-                throw new ArgumentOutOfRangeException(nameof(length), length, _resourceManager.GetString("Random.Strings.LengthIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(length), length, Strings.GetString("Random.Strings.LengthIsInvalid"));
             }
             if (characters == null)
             {
@@ -179,7 +180,7 @@ namespace Community.RandomOrg
             }
             if ((characters.Length < 1) || (characters.Length > 80))
             {
-                throw new ArgumentException(_resourceManager.GetString("Random.Strings.CharactersNumberIsInvalid"), nameof(characters));
+                throw new ArgumentException(Strings.GetString("Random.Strings.CharactersNumberIsInvalid"), nameof(characters));
             }
 
             EnsureApiKeyIsSpecified();
@@ -216,7 +217,7 @@ namespace Community.RandomOrg
         {
             if ((count < 1) || (count > 1000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, _resourceManager.GetString("Random.Uuids.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Uuids.CountIsInvalid"));
             }
 
             EnsureApiKeyIsSpecified();
@@ -251,19 +252,19 @@ namespace Community.RandomOrg
         {
             if ((count < 1) || (count > 100))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, _resourceManager.GetString("Random.Blobs.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Blobs.CountIsInvalid"));
             }
             if ((size < 1) || (size > 1048576))
             {
-                throw new ArgumentOutOfRangeException(nameof(size), size, _resourceManager.GetString("Random.Blobs.SizeIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("Random.Blobs.SizeIsInvalid"));
             }
             if (size % 8 != 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(size), size, _resourceManager.GetString("Random.Blobs.SizeDivisionIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("Random.Blobs.SizeDivisionIsInvalid"));
             }
             if (count * size > 1048576)
             {
-                throw new ArgumentOutOfRangeException(nameof(size), size, _resourceManager.GetString("Random.Blobs.TotalSizeIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("Random.Blobs.TotalSizeIsInvalid"));
             }
 
             EnsureApiKeyIsSpecified();
@@ -312,19 +313,19 @@ namespace Community.RandomOrg
         {
             if ((count < 1) || (count > 10000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, _resourceManager.GetString("Random.Integers.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Integers.CountIsInvalid"));
             }
             if ((minimum < -1000000000) || (minimum > 1000000000))
             {
-                throw new ArgumentOutOfRangeException(nameof(minimum), minimum, _resourceManager.GetString("Random.Integers.MinimumIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(minimum), minimum, Strings.GetString("Random.Integers.MinimumIsInvalid"));
             }
             if ((maximum < -1000000000) || (maximum > 1000000000))
             {
-                throw new ArgumentOutOfRangeException(nameof(maximum), maximum, _resourceManager.GetString("Random.Integers.MaximumIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(maximum), maximum, Strings.GetString("Random.Integers.MaximumIsInvalid"));
             }
             if ((userData != null) && (userData.Length > 1000))
             {
-                throw new ArgumentException(_resourceManager.GetString("Random.UserData.LengthIsInvalid"), nameof(userData));
+                throw new ArgumentException(Strings.GetString("Random.UserData.LengthIsInvalid"), nameof(userData));
             }
 
             EnsureApiKeyIsSpecified();
@@ -370,15 +371,15 @@ namespace Community.RandomOrg
         {
             if ((count < 1) || (count > 10000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, _resourceManager.GetString("Random.DecimalFractions.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.DecimalFractions.CountIsInvalid"));
             }
             if ((decimalPlaces < 1) || (decimalPlaces > 20))
             {
-                throw new ArgumentOutOfRangeException(nameof(decimalPlaces), decimalPlaces, _resourceManager.GetString("Random.DecimalFractions.DecimalPlacesIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(decimalPlaces), decimalPlaces, Strings.GetString("Random.DecimalFractions.DecimalPlacesIsInvalid"));
             }
             if ((userData != null) && (userData.Length > 1000))
             {
-                throw new ArgumentException(_resourceManager.GetString("Random.UserData.LengthIsInvalid"), nameof(userData));
+                throw new ArgumentException(Strings.GetString("Random.UserData.LengthIsInvalid"), nameof(userData));
             }
 
             EnsureApiKeyIsSpecified();
@@ -423,23 +424,23 @@ namespace Community.RandomOrg
         {
             if ((count < 1) || (count > 10000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, _resourceManager.GetString("Random.Gaussians.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Gaussians.CountIsInvalid"));
             }
             if ((mean < -1000000) || (mean > 1000000))
             {
-                throw new ArgumentOutOfRangeException(nameof(mean), mean, _resourceManager.GetString("Random.Gaussians.MeanIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(mean), mean, Strings.GetString("Random.Gaussians.MeanIsInvalid"));
             }
             if ((standardDeviation < -1000000) || (standardDeviation > 1000000))
             {
-                throw new ArgumentOutOfRangeException(nameof(standardDeviation), standardDeviation, _resourceManager.GetString("Random.Gaussians.StandardDeviationIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(standardDeviation), standardDeviation, Strings.GetString("Random.Gaussians.StandardDeviationIsInvalid"));
             }
             if ((significantDigits < 2) || (significantDigits > 20))
             {
-                throw new ArgumentOutOfRangeException(nameof(significantDigits), significantDigits, _resourceManager.GetString("Random.Gaussians.SignificantDigitsIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(significantDigits), significantDigits, Strings.GetString("Random.Gaussians.SignificantDigitsIsInvalid"));
             }
             if ((userData != null) && (userData.Length > 1000))
             {
-                throw new ArgumentException(_resourceManager.GetString("Random.UserData.LengthIsInvalid"), nameof(userData));
+                throw new ArgumentException(Strings.GetString("Random.UserData.LengthIsInvalid"), nameof(userData));
             }
 
             EnsureApiKeyIsSpecified();
@@ -488,11 +489,11 @@ namespace Community.RandomOrg
         {
             if ((count < 1) || (count > 10000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, _resourceManager.GetString("Random.Strings.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Strings.CountIsInvalid"));
             }
             if ((length < 1) || (length > 20))
             {
-                throw new ArgumentOutOfRangeException(nameof(length), length, _resourceManager.GetString("Random.Strings.LengthIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(length), length, Strings.GetString("Random.Strings.LengthIsInvalid"));
             }
             if (characters == null)
             {
@@ -500,11 +501,11 @@ namespace Community.RandomOrg
             }
             if ((characters.Length < 1) || (characters.Length > 80))
             {
-                throw new ArgumentException(_resourceManager.GetString("Random.Strings.CharactersNumberIsInvalid"), nameof(characters));
+                throw new ArgumentException(Strings.GetString("Random.Strings.CharactersNumberIsInvalid"), nameof(characters));
             }
             if ((userData != null) && (userData.Length > 1000))
             {
-                throw new ArgumentException(_resourceManager.GetString("Random.UserData.LengthIsInvalid"), nameof(userData));
+                throw new ArgumentException(Strings.GetString("Random.UserData.LengthIsInvalid"), nameof(userData));
             }
 
             EnsureApiKeyIsSpecified();
@@ -548,11 +549,11 @@ namespace Community.RandomOrg
         {
             if ((count < 1) || (count > 1000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, _resourceManager.GetString("Random.Uuids.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Uuids.CountIsInvalid"));
             }
             if ((userData != null) && (userData.Length > 1000))
             {
-                throw new ArgumentException(_resourceManager.GetString("Random.UserData.LengthIsInvalid"), nameof(userData));
+                throw new ArgumentException(Strings.GetString("Random.UserData.LengthIsInvalid"), nameof(userData));
             }
 
             EnsureApiKeyIsSpecified();
@@ -589,23 +590,23 @@ namespace Community.RandomOrg
         {
             if ((count < 1) || (count > 100))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, _resourceManager.GetString("Random.Blobs.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Blobs.CountIsInvalid"));
             }
             if ((size < 1) || (size > 1048576))
             {
-                throw new ArgumentOutOfRangeException(nameof(size), size, _resourceManager.GetString("Random.Blobs.SizeIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("Random.Blobs.SizeIsInvalid"));
             }
             if (size % 8 != 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(size), size, _resourceManager.GetString("Random.Blobs.SizeDivisionIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("Random.Blobs.SizeDivisionIsInvalid"));
             }
             if (count * size > 1048576)
             {
-                throw new ArgumentOutOfRangeException(nameof(size), size, _resourceManager.GetString("Random.Blobs.TotalSizeIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("Random.Blobs.TotalSizeIsInvalid"));
             }
             if ((userData != null) && (userData.Length > 1000))
             {
-                throw new ArgumentException(_resourceManager.GetString("Random.UserData.LengthIsInvalid"), nameof(userData));
+                throw new ArgumentException(Strings.GetString("Random.UserData.LengthIsInvalid"), nameof(userData));
             }
 
             EnsureApiKeyIsSpecified();
@@ -702,7 +703,7 @@ namespace Community.RandomOrg
             catch (JsonRpcException ex)
                 when (ex.Type == JsonRpcExceptionType.GenericError)
             {
-                throw new InvalidOperationException(_resourceManager.GetString("GetResult.InvalidRandomDataType"), ex);
+                throw new InvalidOperationException(Strings.GetString("GetResult.InvalidRandomDataType"), ex);
             }
 
             var generationInfo = default(SignedGenerationInfo<TRandom, TValue>);
@@ -842,31 +843,31 @@ namespace Community.RandomOrg
             }
             if (random.ApiKeyHash == null)
             {
-                throw new ArgumentException(_resourceManager.GetString("VerifySignature.ApiKeyHashIsNotSpecified"), nameof(random));
+                throw new ArgumentException(Strings.GetString("VerifySignature.ApiKeyHashIsNotSpecified"), nameof(random));
             }
             if (random.ApiKeyHash.Length != 64)
             {
-                throw new ArgumentException(_resourceManager.GetString("VerifySignature.ApiKeyHashLengthIsInvalid"), nameof(random));
+                throw new ArgumentException(Strings.GetString("VerifySignature.ApiKeyHashLengthIsInvalid"), nameof(random));
             }
             if (random.Data == null)
             {
-                throw new ArgumentException(_resourceManager.GetString("VerifySignature.DataIsNotSpecified"), nameof(random));
+                throw new ArgumentException(Strings.GetString("VerifySignature.DataIsNotSpecified"), nameof(random));
             }
             if (random.Data.Count == 0)
             {
-                throw new ArgumentException(_resourceManager.GetString("VerifySignature.DataIsEmptySequence"), nameof(random));
+                throw new ArgumentException(Strings.GetString("VerifySignature.DataIsEmptySequence"), nameof(random));
             }
             if (random.CompletionTime == default)
             {
-                throw new ArgumentException(_resourceManager.GetString("VerifySignature.CompletionTimeIsNotSpecified"), nameof(random));
+                throw new ArgumentException(Strings.GetString("VerifySignature.CompletionTimeIsNotSpecified"), nameof(random));
             }
             if (random.SerialNumber == 0L)
             {
-                throw new ArgumentException(_resourceManager.GetString("VerifySignature.SerialNumberIsNotSpecified"), nameof(random));
+                throw new ArgumentException(Strings.GetString("VerifySignature.SerialNumberIsNotSpecified"), nameof(random));
             }
             if (signature.Length == 0)
             {
-                throw new ArgumentException(_resourceManager.GetString("VerifySignature.SignatureLengthIsInvalid"), nameof(signature));
+                throw new ArgumentException(Strings.GetString("VerifySignature.SignatureLengthIsInvalid"), nameof(signature));
             }
 
             var randomType = random.GetType();
@@ -878,15 +879,15 @@ namespace Community.RandomOrg
 
                 if ((typedRandom.Data.Count < 1) || (typedRandom.Data.Count > 10000))
                 {
-                    throw new ArgumentException(_resourceManager.GetString("Random.Integers.CountIsInvalid"), nameof(random));
+                    throw new ArgumentException(Strings.GetString("Random.Integers.CountIsInvalid"), nameof(random));
                 }
                 if ((typedRandom.Minimum < -1000000000) || (typedRandom.Minimum > 1000000000))
                 {
-                    throw new ArgumentException(_resourceManager.GetString("Random.Integers.MinimumIsInvalid"), nameof(random));
+                    throw new ArgumentException(Strings.GetString("Random.Integers.MinimumIsInvalid"), nameof(random));
                 }
                 if ((typedRandom.Maximum < -1000000000) || (typedRandom.Maximum > 1000000000))
                 {
-                    throw new ArgumentException(_resourceManager.GetString("Random.Integers.MaximumIsInvalid"), nameof(random));
+                    throw new ArgumentException(Strings.GetString("Random.Integers.MaximumIsInvalid"), nameof(random));
                 }
 
                 var rpcRandom = new RpcSignedIntegersRandom
@@ -895,7 +896,7 @@ namespace Community.RandomOrg
                     Minimum = typedRandom.Minimum,
                     Maximum = typedRandom.Maximum,
                     Replacement = typedRandom.Replacement,
-                    Base = 10
+                    Base = 10L
                 };
 
                 TransferValues(typedRandom, rpcRandom);
@@ -911,11 +912,11 @@ namespace Community.RandomOrg
 
                 if ((typedRandom.Data.Count < 1) || (typedRandom.Data.Count > 10000))
                 {
-                    throw new ArgumentException(_resourceManager.GetString("Random.DecimalFractions.CountIsInvalid"), nameof(random));
+                    throw new ArgumentException(Strings.GetString("Random.DecimalFractions.CountIsInvalid"), nameof(random));
                 }
                 if ((typedRandom.DecimalPlaces < 1) || (typedRandom.DecimalPlaces > 20))
                 {
-                    throw new ArgumentException(_resourceManager.GetString("Random.DecimalFractions.DecimalPlacesIsInvalid"), nameof(random));
+                    throw new ArgumentException(Strings.GetString("Random.DecimalFractions.DecimalPlacesIsInvalid"), nameof(random));
                 }
 
                 var rpcRandom = new RpcSignedDecimalFractionsRandom
@@ -938,19 +939,19 @@ namespace Community.RandomOrg
 
                 if ((typedRandom.Data.Count < 1) || (typedRandom.Data.Count > 10000))
                 {
-                    throw new ArgumentException(_resourceManager.GetString("Random.Gaussians.CountIsInvalid"), nameof(random));
+                    throw new ArgumentException(Strings.GetString("Random.Gaussians.CountIsInvalid"), nameof(random));
                 }
                 if ((typedRandom.Mean < -1000000) || (typedRandom.Mean > 1000000))
                 {
-                    throw new ArgumentException(_resourceManager.GetString("Random.Gaussians.MeanIsInvalid"), nameof(random));
+                    throw new ArgumentException(Strings.GetString("Random.Gaussians.MeanIsInvalid"), nameof(random));
                 }
                 if ((typedRandom.StandardDeviation < -1000000) || (typedRandom.StandardDeviation > 1000000))
                 {
-                    throw new ArgumentException(_resourceManager.GetString("Random.Gaussians.StandardDeviationIsInvalid"), nameof(random));
+                    throw new ArgumentException(Strings.GetString("Random.Gaussians.StandardDeviationIsInvalid"), nameof(random));
                 }
                 if ((typedRandom.SignificantDigits < 2) || (typedRandom.SignificantDigits > 20))
                 {
-                    throw new ArgumentException(_resourceManager.GetString("Random.Gaussians.SignificantDigitsIsInvalid"), nameof(random));
+                    throw new ArgumentException(Strings.GetString("Random.Gaussians.SignificantDigitsIsInvalid"), nameof(random));
                 }
 
                 var rpcRandom = new RpcSignedGaussiansRandom
@@ -974,26 +975,26 @@ namespace Community.RandomOrg
 
                 if ((typedRandom.Data.Count < 1) || (typedRandom.Data.Count > 10000))
                 {
-                    throw new ArgumentException(_resourceManager.GetString("Random.Strings.CountIsInvalid"), nameof(random));
+                    throw new ArgumentException(Strings.GetString("Random.Strings.CountIsInvalid"), nameof(random));
                 }
                 if ((typedRandom.Length < 1) || (typedRandom.Length > 20))
                 {
-                    throw new ArgumentException(_resourceManager.GetString("Random.Strings.LengthIsInvalid"), nameof(random));
+                    throw new ArgumentException(Strings.GetString("Random.Strings.LengthIsInvalid"), nameof(random));
                 }
                 if (typedRandom.Characters == null)
                 {
-                    throw new ArgumentException(_resourceManager.GetString("Random.Strings.CharactersIsNotSpecified"), nameof(random));
+                    throw new ArgumentException(Strings.GetString("Random.Strings.CharactersIsNotSpecified"), nameof(random));
                 }
                 if ((typedRandom.Characters.Length < 1) || (typedRandom.Characters.Length > 80))
                 {
-                    throw new ArgumentException(_resourceManager.GetString("Random.Strings.CharactersNumberIsInvalid"), nameof(random));
+                    throw new ArgumentException(Strings.GetString("Random.Strings.CharactersNumberIsInvalid"), nameof(random));
                 }
 
                 for (var i = 0; i < typedRandom.Data.Count; i++)
                 {
                     if (typedRandom.Data[i] == null)
                     {
-                        throw new ArgumentException(string.Format(_resourceManager.GetString("Random.Strings.ValueIsNotSpecified"), i), nameof(random));
+                        throw new ArgumentException(string.Format(Strings.GetString("Random.Strings.ValueIsNotSpecified"), i), nameof(random));
                     }
                 }
 
@@ -1018,7 +1019,7 @@ namespace Community.RandomOrg
 
                 if ((typedRandom.Data.Count < 1) || (typedRandom.Data.Count > 1000))
                 {
-                    throw new ArgumentException(_resourceManager.GetString("Random.Uuids.CountIsInvalid"), nameof(random));
+                    throw new ArgumentException(Strings.GetString("Random.Uuids.CountIsInvalid"), nameof(random));
                 }
 
                 var rpcRandom = new RpcSignedUuidsRandom
@@ -1039,19 +1040,19 @@ namespace Community.RandomOrg
 
                 if ((typedRandom.Data.Count < 1) || (typedRandom.Data.Count > 100))
                 {
-                    throw new ArgumentException(_resourceManager.GetString("Random.Blobs.CountIsInvalid"), nameof(random));
+                    throw new ArgumentException(Strings.GetString("Random.Blobs.CountIsInvalid"), nameof(random));
                 }
                 if ((typedRandom.Size < 1) || (typedRandom.Size > 1048576))
                 {
-                    throw new ArgumentException(_resourceManager.GetString("Random.Blobs.SizeIsInvalid"), nameof(random));
+                    throw new ArgumentException(Strings.GetString("Random.Blobs.SizeIsInvalid"), nameof(random));
                 }
                 if (typedRandom.Size % 8 != 0)
                 {
-                    throw new ArgumentException(_resourceManager.GetString("Random.Blobs.SizeDivisionIsInvalid"), nameof(random));
+                    throw new ArgumentException(Strings.GetString("Random.Blobs.SizeDivisionIsInvalid"), nameof(random));
                 }
                 if (typedRandom.Data.Count * typedRandom.Size > 1048576)
                 {
-                    throw new ArgumentException(_resourceManager.GetString("Random.Blobs.TotalSizeIsInvalid"), nameof(random));
+                    throw new ArgumentException(Strings.GetString("Random.Blobs.TotalSizeIsInvalid"), nameof(random));
                 }
 
                 var rpcRandom = new RpcSignedBlobsRandom
@@ -1067,7 +1068,7 @@ namespace Community.RandomOrg
 
                 var rpcData = new string[typedRandom.Data.Count];
 
-                for (var i = 0; i < typedRandom.Data.Count; i++)
+                for (var i = 0; i < rpcData.Length; i++)
                 {
                     rpcData[i] = Convert.ToBase64String(typedRandom.Data[i]);
                 }
@@ -1081,7 +1082,7 @@ namespace Community.RandomOrg
             }
             else
             {
-                throw new NotSupportedException();
+                throw new NotSupportedException(Strings.GetString("VerifySignature.RandomTypeIsInvalid"));
             }
 
             @params.Signature = signature;

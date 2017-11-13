@@ -4,12 +4,11 @@ using System.Data.JsonRpc;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Reflection;
-using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Community.RandomOrg.Data;
+using Community.RandomOrg.Resources;
 
 namespace Community.RandomOrg
 {
@@ -34,7 +33,6 @@ namespace Community.RandomOrg
 
         private static readonly MediaTypeHeaderValue _httpMediaTypeHeader = new MediaTypeHeaderValue("application/json");
         private static readonly JsonRpcSerializer _jsonRpcSerializer = CreateJsonRpcSerializer();
-        private static readonly ResourceManager _resourceManager = CreateResourceManager();
         private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/2/invoke", UriKind.Absolute);
         private static readonly IReadOnlyDictionary<Type, JsonRpcMethodScheme> _signedResultMethodSchemeBindings = CreateSignedResultMethodSchemeBindings();
 
@@ -58,7 +56,7 @@ namespace Community.RandomOrg
             }
             if (!Guid.TryParseExact(apiKey, "D", out var _))
             {
-                throw new ArgumentException(_resourceManager.GetString("Client.ApiKeyFormatIsInvalid"), nameof(apiKey));
+                throw new ArgumentException(Strings.GetString("Client.ApiKeyFormatIsInvalid"), nameof(apiKey));
             }
 
             _apiKey = apiKey;
@@ -95,7 +93,7 @@ namespace Community.RandomOrg
             }
             if (!Guid.TryParseExact(apiKey, "D", out var _))
             {
-                throw new ArgumentException(_resourceManager.GetString("Client.ApiKeyFormatIsInvalid"), nameof(apiKey));
+                throw new ArgumentException(Strings.GetString("Client.ApiKeyFormatIsInvalid"), nameof(apiKey));
             }
 
             _apiKey = apiKey;
@@ -126,7 +124,7 @@ namespace Community.RandomOrg
         {
             if (_apiKey == null)
             {
-                throw new InvalidOperationException(_resourceManager.GetString("Client.ApiKeyIsRequired"));
+                throw new InvalidOperationException(Strings.GetString("Client.ApiKeyIsRequired"));
             }
         }
 
@@ -230,25 +228,25 @@ namespace Community.RandomOrg
 
                     if (contentType == null)
                     {
-                        throw new HttpRequestException(_resourceManager.GetString("Service.ContentTypeIsNotSpecified"));
+                        throw new HttpRequestException(Strings.GetString("Service.ContentTypeIsNotSpecified"));
                     }
                     if (string.Compare(contentType.MediaType, _httpMediaTypeHeader.MediaType, StringComparison.OrdinalIgnoreCase) != 0)
                     {
-                        throw new HttpRequestException(_resourceManager.GetString("Service.ContentTypeIsInvalid"));
+                        throw new HttpRequestException(Strings.GetString("Service.ContentTypeIsInvalid"));
                     }
 
                     var contentLength = httpResponseMessage.Content.Headers.ContentLength;
 
                     if (contentLength == null)
                     {
-                        throw new HttpRequestException(_resourceManager.GetString("Service.ContentLengthIsNotSpecified"));
+                        throw new HttpRequestException(Strings.GetString("Service.ContentLengthIsNotSpecified"));
                     }
 
                     httpResponseString = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                     if (httpResponseString?.Length != contentLength)
                     {
-                        throw new HttpRequestException(_resourceManager.GetString("Service.ContentLengthIsInvalid"));
+                        throw new HttpRequestException(Strings.GetString("Service.ContentLengthIsInvalid"));
                     }
                 }
             }
@@ -290,7 +288,7 @@ namespace Community.RandomOrg
             }
             if (jsonRpcRequest.Id != jsonRpcResponse.Id)
             {
-                throw new JsonRpcException(_resourceManager.GetString("Service.MessageIdentifierIsInvalid"));
+                throw new JsonRpcException(Strings.GetString("Service.MessageIdentifierIsInvalid"));
             }
 
             return jsonRpcResponse.Result;
@@ -373,13 +371,6 @@ namespace Community.RandomOrg
                 [typeof(RpcSignedRandomResult<RpcSignedBlobsRandom, string>)] =
                     new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedBlobsRandom, string>), typeof(object[]))
             };
-        }
-
-        private static ResourceManager CreateResourceManager()
-        {
-            var assembly = typeof(RandomOrgClient).GetTypeInfo().Assembly;
-
-            return new ResourceManager($"{assembly.GetName().Name}.Resources.Strings", assembly);
         }
 
         /// <summary>Releases all resources used by the current instance of the <see cref="RandomOrgClient" />.</summary>
