@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.JsonRpc;
+using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -104,6 +105,7 @@ namespace Community.RandomOrg
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>A <see cref="RandomUsage" /> instance.</returns>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<RandomUsage> GetUsageAsync(CancellationToken cancellationToken)
         {
@@ -222,7 +224,15 @@ namespace Community.RandomOrg
 
                 using (var httpResponseMessage = await _httpMessageInvoker.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false))
                 {
-                    httpResponseMessage.EnsureSuccessStatusCode();
+                    if (!httpResponseMessage.IsSuccessStatusCode)
+                    {
+                        httpResponseMessage.Dispose();
+
+                        throw new RandomOrgHttpRequestException(
+                            string.Format(CultureInfo.InvariantCulture, Strings.GetString("Service.HttpStatusCodeIsInvalid"), (int)httpResponseMessage.StatusCode, httpResponseMessage.ReasonPhrase),
+                            httpResponseMessage.StatusCode,
+                            httpResponseMessage.ReasonPhrase);
+                    }
 
                     var contentType = httpResponseMessage.Content.Headers.ContentType;
 

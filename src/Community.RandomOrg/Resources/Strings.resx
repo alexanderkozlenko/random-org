@@ -201,6 +201,9 @@
   <data name="Service.ContentTypeIsNotSpecified" xml:space="preserve">
     <value>The content type of service response is not specified</value>
   </data>
+  <data name="Service.HttpStatusCodeIsInvalid" xml:space="preserve">
+    <value>Response status code does not indicate success: {0} ({1})</value>
+  </data>
   <data name="Service.MessageIdentifierIsInvalid" xml:space="preserve">
     <value>The service message identifier is invalid</value>
   </data>

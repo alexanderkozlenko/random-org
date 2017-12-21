@@ -18,6 +18,7 @@ namespace Community.RandomOrg
         /// <returns>A <see cref="SimpleGenerationInfo{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="minimum" />, or <paramref name="maximum" /> is outside the allowable range of values.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<SimpleGenerationInfo<int>> GenerateIntegersAsync(
             int count, int minimum, int maximum, bool replacement, CancellationToken cancellationToken)
@@ -65,6 +66,7 @@ namespace Community.RandomOrg
         /// <returns>A <see cref="SimpleGenerationInfo{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="decimalPlaces" /> is outside the allowable range of values.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<SimpleGenerationInfo<decimal>> GenerateDecimalFractionsAsync(
             int count, int decimalPlaces, bool replacement, CancellationToken cancellationToken)
@@ -108,6 +110,7 @@ namespace Community.RandomOrg
         /// <returns>A <see cref="SimpleGenerationInfo{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="mean" />, <paramref name="standardDeviation" />, or <paramref name="significantDigits" /> is outside the allowable range of values.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<SimpleGenerationInfo<decimal>> GenerateGaussiansAsync(
             int count, decimal mean, decimal standardDeviation, int significantDigits, CancellationToken cancellationToken)
@@ -162,6 +165,7 @@ namespace Community.RandomOrg
         /// <exception cref="ArgumentNullException"><paramref name="characters" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException"><paramref name="characters" /> contains invalid number of characters .</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<SimpleGenerationInfo<string>> GenerateStringsAsync(
             int count, int length, string characters, bool replacement, CancellationToken cancellationToken)
@@ -211,6 +215,7 @@ namespace Community.RandomOrg
         /// <returns>A <see cref="SimpleGenerationInfo{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> is outside the allowable range of values.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<SimpleGenerationInfo<Guid>> GenerateUuidsAsync(
             int count, CancellationToken cancellationToken)
@@ -246,6 +251,7 @@ namespace Community.RandomOrg
         /// <returns>A <see cref="SimpleGenerationInfo{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="size" /> is outside the allowable range of values.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<SimpleGenerationInfo<byte[]>> GenerateBlobsAsync(
             int count, int size, CancellationToken cancellationToken)
@@ -307,6 +313,7 @@ namespace Community.RandomOrg
         /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="minimum" />, or <paramref name="maximum" /> is outside the allowable range of values.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<SignedGenerationInfo<SignedIntegersRandom, int>> GenerateSignedIntegersAsync(
             int count, int minimum, int maximum, bool replacement, string userData, CancellationToken cancellationToken)
@@ -365,6 +372,7 @@ namespace Community.RandomOrg
         /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="decimalPlaces" /> is outside the allowable range of values.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<SignedGenerationInfo<SignedDecimalFractionsRandom, decimal>> GenerateSignedDecimalFractionsAsync(
             int count, int decimalPlaces, bool replacement, string userData, CancellationToken cancellationToken)
@@ -418,6 +426,7 @@ namespace Community.RandomOrg
         /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="mean" />, <paramref name="standardDeviation" />, or <paramref name="significantDigits" /> is outside the allowable range of values.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<SignedGenerationInfo<SignedGaussiansRandom, decimal>> GenerateSignedGaussiansAsync(
             int count, decimal mean, decimal standardDeviation, int significantDigits, string userData, CancellationToken cancellationToken)
@@ -483,6 +492,7 @@ namespace Community.RandomOrg
         /// <exception cref="ArgumentNullException"><paramref name="characters" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException"><paramref name="characters" /> contains invalid number of characters .</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<SignedGenerationInfo<SignedStringsRandom, string>> GenerateSignedStringsAsync(
             int count, int length, string characters, bool replacement, string userData, CancellationToken cancellationToken)
@@ -543,6 +553,7 @@ namespace Community.RandomOrg
         /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> is outside the allowable range of values.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<SignedGenerationInfo<SignedUuidsRandom, Guid>> GenerateSignedUuidsAsync(
             int count, string userData, CancellationToken cancellationToken)
@@ -584,6 +595,7 @@ namespace Community.RandomOrg
         /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="size" /> is outside the allowable range of values.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<SignedGenerationInfo<SignedBlobsRandom, byte[]>> GenerateSignedBlobsAsync(
             int count, int size, string userData, CancellationToken cancellationToken)
@@ -653,6 +665,7 @@ namespace Community.RandomOrg
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
         /// <exception cref="InvalidOperationException">An error occurred during random container conversion.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         public async Task<SignedGenerationInfo<TRandom, TValue>> GetResultAsync<TRandom, TValue>(

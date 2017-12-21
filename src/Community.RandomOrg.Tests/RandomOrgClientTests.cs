@@ -861,6 +861,7 @@ namespace Community.RandomOrg.Tests
                         {
                             RequestMessage = requestMessage,
                             StatusCode = HttpStatusCode.BadRequest,
+                            ReasonPhrase = "BAD_REQUEST",
                             Content = new StringContent(responseContent, Encoding.UTF8, _HTTP_MEDIA_TYPE),
                             Version = new Version(1, 1)
                         };
@@ -873,8 +874,11 @@ namespace Community.RandomOrg.Tests
 
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
-                await Assert.ThrowsAsync<HttpRequestException>(
+                var exception = await Assert.ThrowsAsync<RandomOrgHttpRequestException>(
                     () => client.GetUsageAsync(CancellationToken.None));
+
+                Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
+                Assert.Equal("BAD_REQUEST", exception.ReasonPhrase);
             }
         }
 
