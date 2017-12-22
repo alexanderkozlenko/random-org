@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="$(MSBuildThisFileDirectory)../solution.props" />
   <PropertyGroup>
     <TargetFramework>netcoreapp2.0</TargetFramework>
     <OutputPath>$(RepositoryPath)/bin/bin/$(AssemblyName)/$(Configuration)/</OutputPath>
