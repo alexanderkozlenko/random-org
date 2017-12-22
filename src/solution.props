@@ -1,0 +1,6 @@
+﻿<Project>
+  <PropertyGroup>
+    <RepositoryPath>$(MSBuildThisFileDirectory)..</RepositoryPath>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
+</Project>

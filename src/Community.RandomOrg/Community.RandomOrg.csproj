@@ -1,13 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Import Project="..\scheme\solution.props" />
-  <Import Project="..\scheme\solution.package.props" />
+  <Import Project="$(MSBuildThisFileDirectory)../solution.props" />
+  <PropertyGroup>
+    <VersionPrefix>1.1.7</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
+    <Product><![CDATA[Community.RandomOrg]]></Product>
+    <Description><![CDATA[A client for the RANDOM.ORG service]]></Description>
+    <Authors><![CDATA[Alexander Kozlenko]]></Authors>
+    <Copyright><![CDATA[© Alexander Kozlenko. All rights reserved.]]></Copyright>
+    <PackageTags><![CDATA[random random.org]]></PackageTags>
+    <PackageProjectUrl>https://github.com/alexanderkozlenko/random-org</PackageProjectUrl>
+    <PackageLicenseUrl>https://raw.github.com/alexanderkozlenko/random-org/master/LICENSE</PackageLicenseUrl>
+  </PropertyGroup>
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
-    <BaseIntermediateOutputPath>$(RepositoryPath)\bin\obj\$(AssemblyName)\</BaseIntermediateOutputPath>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <OutputPath>$(RepositoryPath)/bin/bin/$(AssemblyName)/$(Configuration)/</OutputPath>
+    <BaseIntermediateOutputPath>$(RepositoryPath)/bin/obj/$(AssemblyName)/</BaseIntermediateOutputPath>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)../solution.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>True</SignAssembly>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <DebugType>none</DebugType>
   </PropertyGroup>
   <ItemGroup>

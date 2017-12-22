@@ -1,1 +1,1 @@
-@powershell -NoProfile -ExecutionPolicy Unrestricted -Command "%~dp0etc\scripts\build.ps1"
+@powershell -noninteractive -noprofile -executionpolicy unrestricted -file "%~dp0build.ps1" -configuration:release

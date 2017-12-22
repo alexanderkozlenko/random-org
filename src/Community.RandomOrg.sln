@@ -1,15 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.15
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.RandomOrg", "Community.RandomOrg\Community.RandomOrg.csproj", "{436DD069-130D-4D63-BDDF-4B78B770AB82}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "scheme", "scheme", "{55ACC44B-59E7-4E91-8748-5F6450FFA011}"
-	ProjectSection(SolutionItems) = preProject
-		scheme\solution.package.props = scheme\solution.package.props
-		scheme\solution.props = scheme\solution.props
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.RandomOrg.Tests", "Community.RandomOrg.Tests\Community.RandomOrg.Tests.csproj", "{C422E691-40D4-47C4-A60E-40DFB6F967D5}"
 EndProject
@@ -50,5 +44,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {518B8689-9A00-4BBA-90F2-DF13950F4D98}
 	EndGlobalSection
 EndGlobal
