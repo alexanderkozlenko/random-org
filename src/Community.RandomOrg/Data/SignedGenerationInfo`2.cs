@@ -27,6 +27,9 @@ namespace Community.RandomOrg.Data
         }
 
         /// <summary>Gets the signature of the random object, signed with RANDOM.ORG's private key.</summary>
-        public byte[] Signature { get; }
+        public byte[] Signature
+        {
+            get;
+        }
     }
 }

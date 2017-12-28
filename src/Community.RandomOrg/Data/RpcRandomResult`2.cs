@@ -8,19 +8,39 @@ namespace Community.RandomOrg.Data
         where TRandom : RpcRandom<TValue>
     {
         [JsonProperty("random")]
-        public TRandom Random { get; set; }
+        public TRandom Random
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("bitsLeft")]
-        public long BitsLeft { get; set; }
+        public long BitsLeft
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("requestsLeft")]
-        public long RequestsLeft { get; set; }
+        public long RequestsLeft
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("bitsUsed")]
-        public long BitsUsed { get; set; }
+        public long BitsUsed
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("advisoryDelay")]
         [JsonConverter(typeof(RandomTimeIntervalConverter))]
-        public TimeSpan AdvisoryDelay { get; set; }
+        public TimeSpan AdvisoryDelay
+        {
+            get;
+            set;
+        }
     }
 }

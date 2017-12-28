@@ -8,21 +8,45 @@ namespace Community.RandomOrg.Data
     {
         [JsonProperty("status")]
         [JsonConverter(typeof(ApiKeyStatusConverter))]
-        public ApiKeyStatus Status { get; set; }
+        public ApiKeyStatus Status
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("bitsLeft")]
-        public long BitsLeft { get; set; }
+        public long BitsLeft
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("requestsLeft")]
-        public long RequestsLeft { get; set; }
+        public long RequestsLeft
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("creationTime")]
-        public DateTime CreationTime { get; set; }
+        public DateTime CreationTime
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("totalBits")]
-        public long TotalBits { get; set; }
+        public long TotalBits
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("totalRequests")]
-        public long TotalRequests { get; set; }
+        public long TotalRequests
+        {
+            get;
+            set;
+        }
     }
 }

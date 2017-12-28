@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <VersionPrefix>1.1.8</VersionPrefix>
-    <VersionSuffix></VersionSuffix>
+    <Version>1.1.9</Version>
     <Product><![CDATA[Community.RandomOrg]]></Product>
     <Description><![CDATA[A client for the RANDOM.ORG service]]></Description>
     <Authors><![CDATA[Alexander Kozlenko]]></Authors>
@@ -16,14 +15,14 @@
     <BaseIntermediateOutputPath>$(RepositoryPath)/bin/obj/$(AssemblyName)/</BaseIntermediateOutputPath>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)../solution.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>True</SignAssembly>
-    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <DebugType>none</DebugType>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="System.Buffers" Version="4.4.0" />
-    <PackageReference Include="System.Data.JsonRpc" Version="1.3.2" />
+    <PackageReference Include="System.Data.JsonRpc" Version="1.4.0" />
   </ItemGroup>
 </Project>

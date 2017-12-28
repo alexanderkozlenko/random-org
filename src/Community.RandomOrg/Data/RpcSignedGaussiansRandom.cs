@@ -7,13 +7,25 @@ namespace Community.RandomOrg.Data
     {
         [JsonProperty("mean")]
         [JsonConverter(typeof(RandomDecimalConverter))]
-        public decimal Mean { get; set; }
+        public decimal Mean
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("standardDeviation")]
         [JsonConverter(typeof(RandomDecimalConverter))]
-        public decimal StandardDeviation { get; set; }
+        public decimal StandardDeviation
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("significantDigits")]
-        public long SignificantDigits { get; set; }
+        public long SignificantDigits
+        {
+            get;
+            set;
+        }
     }
 }

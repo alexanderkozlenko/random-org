@@ -16,21 +16,39 @@ namespace Community.RandomOrg.Data
         }
 
         /// <summary>Gets the API key's current status.</summary>
-        public ApiKeyStatus Status { get; }
+        public ApiKeyStatus Status
+        {
+            get;
+        }
 
         /// <summary>Gets the timestamp at which the API key was created.</summary>
-        public DateTime CreationTime { get; }
+        public DateTime CreationTime
+        {
+            get;
+        }
 
         /// <summary>Gets an integer containing the (estimated) number of remaining true random bits available to the client.</summary>
-        public long BitsLeft { get; }
+        public long BitsLeft
+        {
+            get;
+        }
 
         /// <summary>Gets an integer containing the (estimated) number of remaining API requests available to the client.</summary>
-        public long RequestsLeft { get; }
+        public long RequestsLeft
+        {
+            get;
+        }
 
         /// <summary>Gets an integer containing the number of bits used by this API key since it was created.</summary>
-        public long TotalBits { get; }
+        public long TotalBits
+        {
+            get;
+        }
 
         /// <summary>Gets an integer containing the number of requests used by this API key since it was created.</summary>
-        public long TotalRequests { get; }
+        public long TotalRequests
+        {
+            get;
+        }
     }
 }

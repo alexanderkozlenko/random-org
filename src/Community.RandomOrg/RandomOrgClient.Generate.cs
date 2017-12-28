@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Data.JsonRpc;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Community.RandomOrg.Data;
@@ -17,38 +17,45 @@ namespace Community.RandomOrg
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>A <see cref="SimpleGenerationInfo{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="minimum" />, or <paramref name="maximum" /> is outside the allowable range of values.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
+        /// <exception cref="InvalidOperationException">The API key is not specified.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgRequestException">An HTTP error occurred during service method invocation.</exception>
         public async Task<SimpleGenerationInfo<int>> GenerateIntegersAsync(
             int count, int minimum, int maximum, bool replacement, CancellationToken cancellationToken)
         {
             if ((count < 1) || (count > 10000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Integers.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("random.integer.count.invalid_range"));
             }
             if ((minimum < -1000000000) || (minimum > 1000000000))
             {
-                throw new ArgumentOutOfRangeException(nameof(minimum), minimum, Strings.GetString("Random.Integers.MinimumIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(minimum), minimum, Strings.GetString("random.integer.lower_boundary.invalid_range"));
             }
             if ((maximum < -1000000000) || (maximum > 1000000000))
             {
-                throw new ArgumentOutOfRangeException(nameof(maximum), maximum, Strings.GetString("Random.Integers.MaximumIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(maximum), maximum, Strings.GetString("random.integer.upper_boundary.invalid_range"));
+            }
+            if (_apiKey == null)
+            {
+                throw new InvalidOperationException(Strings.GetString("client.api_key.required"));
             }
 
-            EnsureApiKeyIsSpecified();
-
-            var @params = new RpcGenerateIntegersParams
+            var @params = new Dictionary<string, object>(5, StringComparer.Ordinal)
             {
-                ApiKey = _apiKey,
-                Count = count,
-                Minimum = minimum,
-                Maximum = maximum,
-                Replacement = replacement
+                ["apiKey"] = _apiKey,
+                ["n"] = count,
+                ["min"] = minimum,
+                ["max"] = maximum
             };
 
+            if (!replacement)
+            {
+                @params["replacement"] = replacement;
+            }
+
             var result = await InvokeRandomOrgMethod<RpcSimpleRandomResult<int>, RpcSimpleRandom<int>, int>(
-                _RPC_GENERATE_SIMPLE_INTEGERS, @params, cancellationToken).ConfigureAwait(false);
+                "generateIntegers", @params, cancellationToken).ConfigureAwait(false);
 
             var random = new SimpleRandom<int>();
 
@@ -65,33 +72,40 @@ namespace Community.RandomOrg
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>A <see cref="SimpleGenerationInfo{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="decimalPlaces" /> is outside the allowable range of values.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
+        /// <exception cref="InvalidOperationException">The API key is not specified.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgRequestException">An HTTP error occurred during service method invocation.</exception>
         public async Task<SimpleGenerationInfo<decimal>> GenerateDecimalFractionsAsync(
             int count, int decimalPlaces, bool replacement, CancellationToken cancellationToken)
         {
             if ((count < 1) || (count > 10000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.DecimalFractions.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("random.decimal_fraction.count.invalid_range"));
             }
             if ((decimalPlaces < 1) || (decimalPlaces > 20))
             {
-                throw new ArgumentOutOfRangeException(nameof(decimalPlaces), decimalPlaces, Strings.GetString("Random.DecimalFractions.DecimalPlacesIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(decimalPlaces), decimalPlaces, Strings.GetString("random.decimal_fraction.decimal_places.invalid_range"));
+            }
+            if (_apiKey == null)
+            {
+                throw new InvalidOperationException(Strings.GetString("client.api_key.required"));
             }
 
-            EnsureApiKeyIsSpecified();
-
-            var @params = new RpcGenerateDecimalFractionsParams
+            var @params = new Dictionary<string, object>(4, StringComparer.Ordinal)
             {
-                ApiKey = _apiKey,
-                Count = count,
-                DecimalPlaces = decimalPlaces,
-                Replacement = replacement
+                ["apiKey"] = _apiKey,
+                ["n"] = count,
+                ["decimalPlaces"] = decimalPlaces
             };
 
+            if (!replacement)
+            {
+                @params["replacement"] = replacement;
+            }
+
             var result = await InvokeRandomOrgMethod<RpcSimpleRandomResult<decimal>, RpcSimpleRandom<decimal>, decimal>(
-                _RPC_GENERATE_SIMPLE_DECIMAL_FRACTIONS, @params, cancellationToken).ConfigureAwait(false);
+                "generateDecimalFractions", @params, cancellationToken).ConfigureAwait(false);
 
             var random = new SimpleRandom<decimal>();
 
@@ -109,42 +123,45 @@ namespace Community.RandomOrg
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>A <see cref="SimpleGenerationInfo{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="mean" />, <paramref name="standardDeviation" />, or <paramref name="significantDigits" /> is outside the allowable range of values.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
+        /// <exception cref="InvalidOperationException">The API key is not specified.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgRequestException">An HTTP error occurred during service method invocation.</exception>
         public async Task<SimpleGenerationInfo<decimal>> GenerateGaussiansAsync(
             int count, decimal mean, decimal standardDeviation, int significantDigits, CancellationToken cancellationToken)
         {
             if ((count < 1) || (count > 10000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Gaussians.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("random.gaussian.count.invalid_range"));
             }
             if ((mean < -1000000) || (mean > 1000000))
             {
-                throw new ArgumentOutOfRangeException(nameof(mean), mean, Strings.GetString("Random.Gaussians.MeanIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(mean), mean, Strings.GetString("random.gaussian.mean.invalid_range"));
             }
             if ((standardDeviation < -1000000) || (standardDeviation > 1000000))
             {
-                throw new ArgumentOutOfRangeException(nameof(standardDeviation), standardDeviation, Strings.GetString("Random.Gaussians.StandardDeviationIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(standardDeviation), standardDeviation, Strings.GetString("random.gaussian.standard_deviation.invalid_range"));
             }
             if ((significantDigits < 2) || (significantDigits > 20))
             {
-                throw new ArgumentOutOfRangeException(nameof(significantDigits), significantDigits, Strings.GetString("Random.Gaussians.SignificantDigitsIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(significantDigits), significantDigits, Strings.GetString("random.gaussian.significant_digits.invalid_range"));
+            }
+            if (_apiKey == null)
+            {
+                throw new InvalidOperationException(Strings.GetString("client.api_key.required"));
             }
 
-            EnsureApiKeyIsSpecified();
-
-            var @params = new RpcGenerateGaussiansParams
+            var @params = new Dictionary<string, object>(5, StringComparer.Ordinal)
             {
-                ApiKey = _apiKey,
-                Count = count,
-                Mean = mean,
-                StandardDeviation = standardDeviation,
-                SignificantDigits = significantDigits
+                ["apiKey"] = _apiKey,
+                ["n"] = count,
+                ["mean"] = RandomOrgConvert.ToObject(mean),
+                ["standardDeviation"] = RandomOrgConvert.ToObject(standardDeviation),
+                ["significantDigits"] = significantDigits
             };
 
             var result = await InvokeRandomOrgMethod<RpcSimpleRandomResult<decimal>, RpcSimpleRandom<decimal>, decimal>(
-                _RPC_GENERATE_SIMPLE_GAUSSIANS, @params, cancellationToken).ConfigureAwait(false);
+                "generateGaussians", @params, cancellationToken).ConfigureAwait(false);
 
             var random = new SimpleRandom<decimal>();
 
@@ -164,19 +181,20 @@ namespace Community.RandomOrg
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="length" /> is outside the allowable range of values.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="characters" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException"><paramref name="characters" /> contains invalid number of characters .</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
+        /// <exception cref="InvalidOperationException">The API key is not specified.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgRequestException">An HTTP error occurred during service method invocation.</exception>
         public async Task<SimpleGenerationInfo<string>> GenerateStringsAsync(
             int count, int length, string characters, bool replacement, CancellationToken cancellationToken)
         {
             if ((count < 1) || (count > 10000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Strings.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("random.string.count.invalid_range"));
             }
             if ((length < 1) || (length > 20))
             {
-                throw new ArgumentOutOfRangeException(nameof(length), length, Strings.GetString("Random.Strings.LengthIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(length), length, Strings.GetString("random.string.length.invalid_range"));
             }
             if (characters == null)
             {
@@ -184,22 +202,28 @@ namespace Community.RandomOrg
             }
             if ((characters.Length < 1) || (characters.Length > 80))
             {
-                throw new ArgumentException(Strings.GetString("Random.Strings.CharactersNumberIsInvalid"), nameof(characters));
+                throw new ArgumentException(Strings.GetString("random.string.characters.length.invalid_range"), nameof(characters));
+            }
+            if (_apiKey == null)
+            {
+                throw new InvalidOperationException(Strings.GetString("client.api_key.required"));
             }
 
-            EnsureApiKeyIsSpecified();
-
-            var @params = new RpcGenerateStringsParams
+            var @params = new Dictionary<string, object>(5, StringComparer.Ordinal)
             {
-                ApiKey = _apiKey,
-                Count = count,
-                Length = length,
-                Characters = characters,
-                Replacement = replacement
+                ["apiKey"] = _apiKey,
+                ["n"] = count,
+                ["length"] = length,
+                ["characters"] = characters
             };
 
+            if (!replacement)
+            {
+                @params["replacement"] = replacement;
+            }
+
             var result = await InvokeRandomOrgMethod<RpcSimpleRandomResult<string>, RpcSimpleRandom<string>, string>(
-                _RPC_GENERATE_SIMPLE_STRINGS, @params, cancellationToken).ConfigureAwait(false);
+                "generateStrings", @params, cancellationToken).ConfigureAwait(false);
 
             var random = new SimpleRandom<string>();
 
@@ -214,27 +238,30 @@ namespace Community.RandomOrg
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>A <see cref="SimpleGenerationInfo{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> is outside the allowable range of values.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
+        /// <exception cref="InvalidOperationException">The API key is not specified.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgRequestException">An HTTP error occurred during service method invocation.</exception>
         public async Task<SimpleGenerationInfo<Guid>> GenerateUuidsAsync(
             int count, CancellationToken cancellationToken)
         {
             if ((count < 1) || (count > 1000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Uuids.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("random.uuid.count.invalid_range"));
+            }
+            if (_apiKey == null)
+            {
+                throw new InvalidOperationException(Strings.GetString("client.api_key.required"));
             }
 
-            EnsureApiKeyIsSpecified();
-
-            var @params = new RpcGenerateUuidsParams
+            var @params = new Dictionary<string, object>(2, StringComparer.Ordinal)
             {
-                ApiKey = _apiKey,
-                Count = count
+                ["apiKey"] = _apiKey,
+                ["n"] = count,
             };
 
             var result = await InvokeRandomOrgMethod<RpcSimpleRandomResult<Guid>, RpcSimpleRandom<Guid>, Guid>(
-                _RPC_GENERATE_SIMPLE_UUIDS, @params, cancellationToken).ConfigureAwait(false);
+                "generateUUIDs", @params, cancellationToken).ConfigureAwait(false);
 
             var random = new SimpleRandom<Guid>();
 
@@ -250,40 +277,43 @@ namespace Community.RandomOrg
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>A <see cref="SimpleGenerationInfo{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="size" /> is outside the allowable range of values.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
+        /// <exception cref="InvalidOperationException">The API key is not specified.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgRequestException">An HTTP error occurred during service method invocation.</exception>
         public async Task<SimpleGenerationInfo<byte[]>> GenerateBlobsAsync(
             int count, int size, CancellationToken cancellationToken)
         {
             if ((count < 1) || (count > 100))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Blobs.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("random.blob.count.invalid_range"));
             }
             if ((size < 1) || (size > 1048576))
             {
-                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("Random.Blobs.SizeIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("random.blob.size.invalid_range"));
             }
             if (size % 8 != 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("Random.Blobs.SizeDivisionIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("random.blob.size.invalid_division"));
             }
             if (count * size > 1048576)
             {
-                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("Random.Blobs.TotalSizeIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("random.blob.invalid_total_size"));
+            }
+            if (_apiKey == null)
+            {
+                throw new InvalidOperationException(Strings.GetString("client.api_key.required"));
             }
 
-            EnsureApiKeyIsSpecified();
-
-            var @params = new RpcGenerateBlobsParams
+            var @params = new Dictionary<string, object>(3, StringComparer.Ordinal)
             {
-                ApiKey = _apiKey,
-                Count = count,
-                Size = size
+                ["apiKey"] = _apiKey,
+                ["n"] = count,
+                ["size"] = size
             };
 
             var result = await InvokeRandomOrgMethod<RpcSimpleRandomResult<string>, RpcSimpleRandom<string>, string>(
-                _RPC_GENERATE_SIMPLE_BLOBS, @params, cancellationToken).ConfigureAwait(false);
+                "generateBlobs", @params, cancellationToken).ConfigureAwait(false);
 
             var random = new SimpleRandom<byte[]>
             {
@@ -312,43 +342,53 @@ namespace Community.RandomOrg
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="minimum" />, or <paramref name="maximum" /> is outside the allowable range of values.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
+        /// <exception cref="InvalidOperationException">The API key is not specified.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgRequestException">An HTTP error occurred during service method invocation.</exception>
         public async Task<SignedGenerationInfo<SignedIntegersRandom, int>> GenerateSignedIntegersAsync(
             int count, int minimum, int maximum, bool replacement, string userData, CancellationToken cancellationToken)
         {
             if ((count < 1) || (count > 10000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Integers.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("random.integer.count.invalid_range"));
             }
             if ((minimum < -1000000000) || (minimum > 1000000000))
             {
-                throw new ArgumentOutOfRangeException(nameof(minimum), minimum, Strings.GetString("Random.Integers.MinimumIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(minimum), minimum, Strings.GetString("random.integer.lower_boundary.invalid_range"));
             }
             if ((maximum < -1000000000) || (maximum > 1000000000))
             {
-                throw new ArgumentOutOfRangeException(nameof(maximum), maximum, Strings.GetString("Random.Integers.MaximumIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(maximum), maximum, Strings.GetString("random.integer.upper_boundary.invalid_range"));
             }
             if ((userData != null) && (userData.Length > 1000))
             {
-                throw new ArgumentException(Strings.GetString("Random.UserData.LengthIsInvalid"), nameof(userData));
+                throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
+            }
+            if (_apiKey == null)
+            {
+                throw new InvalidOperationException(Strings.GetString("client.api_key.required"));
             }
 
-            EnsureApiKeyIsSpecified();
-
-            var @params = new RpcGenerateIntegersParams
+            var @params = new Dictionary<string, object>(6, StringComparer.Ordinal)
             {
-                ApiKey = _apiKey,
-                UserData = userData,
-                Count = count,
-                Minimum = minimum,
-                Maximum = maximum,
-                Replacement = replacement
+                ["apiKey"] = _apiKey,
+                ["n"] = count,
+                ["min"] = minimum,
+                ["max"] = maximum
             };
 
+            if (!replacement)
+            {
+                @params["replacement"] = replacement;
+            }
+            if (userData != null)
+            {
+                @params["userData"] = userData;
+            }
+
             var result = await InvokeRandomOrgMethod<RpcSignedRandomResult<RpcSignedIntegersRandom, int>, RpcSignedIntegersRandom, int>(
-                _RPC_GENERATE_SIGNED_INTEGERS, @params, cancellationToken).ConfigureAwait(false);
+                "generateSignedIntegers", @params, cancellationToken).ConfigureAwait(false);
 
             var random = new SignedIntegersRandom
             {
@@ -371,38 +411,48 @@ namespace Community.RandomOrg
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="decimalPlaces" /> is outside the allowable range of values.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
+        /// <exception cref="InvalidOperationException">The API key is not specified.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgRequestException">An HTTP error occurred during service method invocation.</exception>
         public async Task<SignedGenerationInfo<SignedDecimalFractionsRandom, decimal>> GenerateSignedDecimalFractionsAsync(
             int count, int decimalPlaces, bool replacement, string userData, CancellationToken cancellationToken)
         {
             if ((count < 1) || (count > 10000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.DecimalFractions.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("random.decimal_fraction.count.invalid_range"));
             }
             if ((decimalPlaces < 1) || (decimalPlaces > 20))
             {
-                throw new ArgumentOutOfRangeException(nameof(decimalPlaces), decimalPlaces, Strings.GetString("Random.DecimalFractions.DecimalPlacesIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(decimalPlaces), decimalPlaces, Strings.GetString("random.decimal_fraction.decimal_places.invalid_range"));
             }
             if ((userData != null) && (userData.Length > 1000))
             {
-                throw new ArgumentException(Strings.GetString("Random.UserData.LengthIsInvalid"), nameof(userData));
+                throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
+            }
+            if (_apiKey == null)
+            {
+                throw new InvalidOperationException(Strings.GetString("client.api_key.required"));
             }
 
-            EnsureApiKeyIsSpecified();
-
-            var @params = new RpcGenerateDecimalFractionsParams
+            var @params = new Dictionary<string, object>(5, StringComparer.Ordinal)
             {
-                ApiKey = _apiKey,
-                UserData = userData,
-                Count = count,
-                DecimalPlaces = decimalPlaces,
-                Replacement = replacement
+                ["apiKey"] = _apiKey,
+                ["n"] = count,
+                ["decimalPlaces"] = decimalPlaces
             };
 
+            if (!replacement)
+            {
+                @params["replacement"] = replacement;
+            }
+            if (userData != null)
+            {
+                @params["userData"] = userData;
+            }
+
             var result = await InvokeRandomOrgMethod<RpcSignedRandomResult<RpcSignedDecimalFractionsRandom, decimal>, RpcSignedDecimalFractionsRandom, decimal>(
-                _RPC_GENERATE_SIGNED_DECIMAL_FRACTIONS, @params, cancellationToken).ConfigureAwait(false);
+                "generateSignedDecimalFractions", @params, cancellationToken).ConfigureAwait(false);
 
             var random = new SignedDecimalFractionsRandom
             {
@@ -425,47 +475,54 @@ namespace Community.RandomOrg
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="mean" />, <paramref name="standardDeviation" />, or <paramref name="significantDigits" /> is outside the allowable range of values.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
+        /// <exception cref="InvalidOperationException">The API key is not specified.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgRequestException">An HTTP error occurred during service method invocation.</exception>
         public async Task<SignedGenerationInfo<SignedGaussiansRandom, decimal>> GenerateSignedGaussiansAsync(
             int count, decimal mean, decimal standardDeviation, int significantDigits, string userData, CancellationToken cancellationToken)
         {
             if ((count < 1) || (count > 10000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Gaussians.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("random.gaussian.count.invalid_range"));
             }
             if ((mean < -1000000) || (mean > 1000000))
             {
-                throw new ArgumentOutOfRangeException(nameof(mean), mean, Strings.GetString("Random.Gaussians.MeanIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(mean), mean, Strings.GetString("random.gaussian.mean.invalid_range"));
             }
             if ((standardDeviation < -1000000) || (standardDeviation > 1000000))
             {
-                throw new ArgumentOutOfRangeException(nameof(standardDeviation), standardDeviation, Strings.GetString("Random.Gaussians.StandardDeviationIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(standardDeviation), standardDeviation, Strings.GetString("random.gaussian.standard_deviation.invalid_range"));
             }
             if ((significantDigits < 2) || (significantDigits > 20))
             {
-                throw new ArgumentOutOfRangeException(nameof(significantDigits), significantDigits, Strings.GetString("Random.Gaussians.SignificantDigitsIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(significantDigits), significantDigits, Strings.GetString("random.gaussian.significant_digits.invalid_range"));
             }
             if ((userData != null) && (userData.Length > 1000))
             {
-                throw new ArgumentException(Strings.GetString("Random.UserData.LengthIsInvalid"), nameof(userData));
+                throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
+            }
+            if (_apiKey == null)
+            {
+                throw new InvalidOperationException(Strings.GetString("client.api_key.required"));
             }
 
-            EnsureApiKeyIsSpecified();
-
-            var @params = new RpcGenerateGaussiansParams
+            var @params = new Dictionary<string, object>(6, StringComparer.Ordinal)
             {
-                ApiKey = _apiKey,
-                UserData = userData,
-                Count = count,
-                Mean = mean,
-                StandardDeviation = standardDeviation,
-                SignificantDigits = significantDigits
+                ["apiKey"] = _apiKey,
+                ["n"] = count,
+                ["mean"] = RandomOrgConvert.ToObject(mean),
+                ["standardDeviation"] = RandomOrgConvert.ToObject(standardDeviation),
+                ["significantDigits"] = significantDigits
             };
 
+            if (userData != null)
+            {
+                @params["userData"] = userData;
+            }
+
             var result = await InvokeRandomOrgMethod<RpcSignedRandomResult<RpcSignedGaussiansRandom, decimal>, RpcSignedGaussiansRandom, decimal>(
-                _RPC_GENERATE_SIGNED_GAUSSIANS, @params, cancellationToken).ConfigureAwait(false);
+                "generateSignedGaussians", @params, cancellationToken).ConfigureAwait(false);
 
             var random = new SignedGaussiansRandom
             {
@@ -491,19 +548,20 @@ namespace Community.RandomOrg
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="length" /> is outside the allowable range of values.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="characters" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException"><paramref name="characters" /> contains invalid number of characters .</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
+        /// <exception cref="InvalidOperationException">The API key is not specified.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgRequestException">An HTTP error occurred during service method invocation.</exception>
         public async Task<SignedGenerationInfo<SignedStringsRandom, string>> GenerateSignedStringsAsync(
             int count, int length, string characters, bool replacement, string userData, CancellationToken cancellationToken)
         {
             if ((count < 1) || (count > 10000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Strings.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("random.string.count.invalid_range"));
             }
             if ((length < 1) || (length > 20))
             {
-                throw new ArgumentOutOfRangeException(nameof(length), length, Strings.GetString("Random.Strings.LengthIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(length), length, Strings.GetString("random.string.length.invalid_range"));
             }
             if (characters == null)
             {
@@ -511,27 +569,36 @@ namespace Community.RandomOrg
             }
             if ((characters.Length < 1) || (characters.Length > 80))
             {
-                throw new ArgumentException(Strings.GetString("Random.Strings.CharactersNumberIsInvalid"), nameof(characters));
+                throw new ArgumentException(Strings.GetString("random.string.characters.length.invalid_range"), nameof(characters));
             }
             if ((userData != null) && (userData.Length > 1000))
             {
-                throw new ArgumentException(Strings.GetString("Random.UserData.LengthIsInvalid"), nameof(userData));
+                throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
+            }
+            if (_apiKey == null)
+            {
+                throw new InvalidOperationException(Strings.GetString("client.api_key.required"));
             }
 
-            EnsureApiKeyIsSpecified();
-
-            var @params = new RpcGenerateStringsParams
+            var @params = new Dictionary<string, object>(6, StringComparer.Ordinal)
             {
-                ApiKey = _apiKey,
-                UserData = userData,
-                Count = count,
-                Length = length,
-                Characters = characters,
-                Replacement = replacement
+                ["apiKey"] = _apiKey,
+                ["n"] = count,
+                ["length"] = length,
+                ["characters"] = characters
             };
 
+            if (!replacement)
+            {
+                @params["replacement"] = replacement;
+            }
+            if (userData != null)
+            {
+                @params["userData"] = userData;
+            }
+
             var result = await InvokeRandomOrgMethod<RpcSignedRandomResult<RpcSignedStringsRandom, string>, RpcSignedStringsRandom, string>(
-                _RPC_GENERATE_SIGNED_STRINGS, @params, cancellationToken).ConfigureAwait(false);
+                "generateSignedStrings", @params, cancellationToken).ConfigureAwait(false);
 
             var random = new SignedStringsRandom
             {
@@ -552,32 +619,39 @@ namespace Community.RandomOrg
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> is outside the allowable range of values.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
+        /// <exception cref="InvalidOperationException">The API key is not specified.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgRequestException">An HTTP error occurred during service method invocation.</exception>
         public async Task<SignedGenerationInfo<SignedUuidsRandom, Guid>> GenerateSignedUuidsAsync(
             int count, string userData, CancellationToken cancellationToken)
         {
             if ((count < 1) || (count > 1000))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Uuids.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("random.uuid.count.invalid_range"));
             }
             if ((userData != null) && (userData.Length > 1000))
             {
-                throw new ArgumentException(Strings.GetString("Random.UserData.LengthIsInvalid"), nameof(userData));
+                throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
+            }
+            if (_apiKey == null)
+            {
+                throw new InvalidOperationException(Strings.GetString("client.api_key.required"));
             }
 
-            EnsureApiKeyIsSpecified();
-
-            var @params = new RpcGenerateUuidsParams
+            var @params = new Dictionary<string, object>(3, StringComparer.Ordinal)
             {
-                ApiKey = _apiKey,
-                UserData = userData,
-                Count = count
+                ["apiKey"] = _apiKey,
+                ["n"] = count,
             };
 
+            if (userData != null)
+            {
+                @params["userData"] = userData;
+            }
+
             var result = await InvokeRandomOrgMethod<RpcSignedRandomResult<RpcSignedUuidsRandom, Guid>, RpcSignedUuidsRandom, Guid>(
-                _RPC_GENERATE_SIGNED_UUIDS, @params, cancellationToken).ConfigureAwait(false);
+                "generateSignedUUIDs", @params, cancellationToken).ConfigureAwait(false);
 
             var random = new SignedUuidsRandom();
 
@@ -594,45 +668,52 @@ namespace Community.RandomOrg
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="size" /> is outside the allowable range of values.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
+        /// <exception cref="InvalidOperationException">The API key is not specified.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
+        /// <exception cref="RandomOrgRequestException">An HTTP error occurred during service method invocation.</exception>
         public async Task<SignedGenerationInfo<SignedBlobsRandom, byte[]>> GenerateSignedBlobsAsync(
             int count, int size, string userData, CancellationToken cancellationToken)
         {
             if ((count < 1) || (count > 100))
             {
-                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("Random.Blobs.CountIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("random.blob.count.invalid_range"));
             }
             if ((size < 1) || (size > 1048576))
             {
-                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("Random.Blobs.SizeIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("random.blob.size.invalid_range"));
             }
             if (size % 8 != 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("Random.Blobs.SizeDivisionIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("random.blob.size.invalid_division"));
             }
             if (count * size > 1048576)
             {
-                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("Random.Blobs.TotalSizeIsInvalid"));
+                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("random.blob.invalid_total_size"));
             }
             if ((userData != null) && (userData.Length > 1000))
             {
-                throw new ArgumentException(Strings.GetString("Random.UserData.LengthIsInvalid"), nameof(userData));
+                throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
+            }
+            if (_apiKey == null)
+            {
+                throw new InvalidOperationException(Strings.GetString("client.api_key.required"));
             }
 
-            EnsureApiKeyIsSpecified();
-
-            var @params = new RpcGenerateBlobsParams
+            var @params = new Dictionary<string, object>(4, StringComparer.Ordinal)
             {
-                ApiKey = _apiKey,
-                UserData = userData,
-                Count = count,
-                Size = size
+                ["apiKey"] = _apiKey,
+                ["n"] = count,
+                ["size"] = size
             };
 
+            if (userData != null)
+            {
+                @params["userData"] = userData;
+            }
+
             var result = await InvokeRandomOrgMethod<RpcSignedRandomResult<RpcSignedBlobsRandom, string>, RpcSignedBlobsRandom, string>(
-                _RPC_GENERATE_SIGNED_BLOBS, @params, cancellationToken).ConfigureAwait(false);
+                "generateSignedBlobs", @params, cancellationToken).ConfigureAwait(false);
 
             var random = new SignedBlobsRandom
             {
@@ -656,454 +737,6 @@ namespace Community.RandomOrg
 
             return new SignedGenerationInfo<SignedBlobsRandom, byte[]>(
                 random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature);
-        }
-
-        /// <summary>Retrieves previously generated signed results (which are stored for 24 hours) as an asynchronous operation.</summary>
-        /// <typeparam name="TRandom">The type of random data container.</typeparam>
-        /// <typeparam name="TValue">The type of random object.</typeparam>
-        /// <param name="serialNumber">The integer containing the serial number associated with this random information.</param>
-        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
-        /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgHttpRequestException">An HTTP error occurred during service method invocation.</exception>
-        /// <exception cref="InvalidOperationException">An error occurred during random container conversion.</exception>
-        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        public async Task<SignedGenerationInfo<TRandom, TValue>> GetResultAsync<TRandom, TValue>(
-            long serialNumber, CancellationToken cancellationToken)
-            where TRandom : SignedRandom<TValue>
-        {
-            EnsureApiKeyIsSpecified();
-
-            var @params = new RpcGetResultParams
-            {
-                ApiKey = _apiKey,
-                SerialNumber = serialNumber
-            };
-
-            var resultType = default(Type);
-
-            if (typeof(TRandom) == typeof(SignedIntegersRandom))
-            {
-                resultType = typeof(RpcSignedRandomResult<RpcSignedIntegersRandom, int>);
-            }
-            else if (typeof(TRandom) == typeof(SignedDecimalFractionsRandom))
-            {
-                resultType = typeof(RpcSignedRandomResult<RpcSignedDecimalFractionsRandom, decimal>);
-            }
-            else if (typeof(TRandom) == typeof(SignedGaussiansRandom))
-            {
-                resultType = typeof(RpcSignedRandomResult<RpcSignedGaussiansRandom, decimal>);
-            }
-            else if (typeof(TRandom) == typeof(SignedStringsRandom))
-            {
-                resultType = typeof(RpcSignedRandomResult<RpcSignedStringsRandom, string>);
-            }
-            else if (typeof(TRandom) == typeof(SignedUuidsRandom))
-            {
-                resultType = typeof(RpcSignedRandomResult<RpcSignedUuidsRandom, Guid>);
-            }
-            else if (typeof(TRandom) == typeof(SignedBlobsRandom))
-            {
-                resultType = typeof(RpcSignedRandomResult<RpcSignedBlobsRandom, string>);
-            }
-
-            var result = default(object);
-
-            try
-            {
-                result = await InvokeRandomOrgMethod(_RPC_GET_RESULT, @params, resultType, cancellationToken).ConfigureAwait(false);
-            }
-            catch (JsonRpcException ex)
-                when (ex.Type == JsonRpcExceptionType.GenericError)
-            {
-                throw new InvalidOperationException(Strings.GetString("GetResult.InvalidRandomDataType"), ex);
-            }
-
-            var generationInfo = default(SignedGenerationInfo<TRandom, TValue>);
-
-            if (typeof(TRandom) == typeof(SignedIntegersRandom))
-            {
-                var typedResult = (RpcSignedRandomResult<RpcSignedIntegersRandom, int>)result;
-
-                var typedRandom = new SignedIntegersRandom
-                {
-                    Minimum = (int)typedResult.Random.Minimum,
-                    Maximum = (int)typedResult.Random.Maximum,
-                    Replacement = typedResult.Random.Replacement
-                };
-
-                TransferValues(typedResult.Random, typedRandom);
-
-                var typedGenerationInfo = new SignedGenerationInfo<SignedIntegersRandom, int>(
-                    typedRandom, typedResult.BitsUsed, typedResult.BitsLeft, typedResult.RequestsLeft, typedResult.Signature);
-
-                generationInfo = (SignedGenerationInfo<TRandom, TValue>)(object)typedGenerationInfo;
-            }
-            else if (typeof(TRandom) == typeof(SignedDecimalFractionsRandom))
-            {
-                var typedResult = (RpcSignedRandomResult<RpcSignedDecimalFractionsRandom, decimal>)result;
-
-                var typedRandom = new SignedDecimalFractionsRandom
-                {
-                    DecimalPlaces = (int)typedResult.Random.DecimalPlaces,
-                    Replacement = typedResult.Random.Replacement
-                };
-
-                TransferValues(typedResult.Random, typedRandom);
-
-                var typedGenerationInfo = new SignedGenerationInfo<SignedDecimalFractionsRandom, decimal>(
-                    typedRandom, typedResult.BitsUsed, typedResult.BitsLeft, typedResult.RequestsLeft, typedResult.Signature);
-
-                generationInfo = (SignedGenerationInfo<TRandom, TValue>)(object)typedGenerationInfo;
-            }
-            else if (typeof(TRandom) == typeof(SignedGaussiansRandom))
-            {
-                var typedResult = (RpcSignedRandomResult<RpcSignedGaussiansRandom, decimal>)result;
-
-                var typedRandom = new SignedGaussiansRandom
-                {
-                    Mean = typedResult.Random.Mean,
-                    StandardDeviation = typedResult.Random.StandardDeviation,
-                    SignificantDigits = (int)typedResult.Random.SignificantDigits
-                };
-
-                TransferValues(typedResult.Random, typedRandom);
-
-                var typedGenerationInfo = new SignedGenerationInfo<SignedGaussiansRandom, decimal>(
-                    typedRandom, typedResult.BitsUsed, typedResult.BitsLeft, typedResult.RequestsLeft, typedResult.Signature);
-
-                generationInfo = (SignedGenerationInfo<TRandom, TValue>)(object)typedGenerationInfo;
-            }
-            else if (typeof(TRandom) == typeof(SignedStringsRandom))
-            {
-                var typedResult = (RpcSignedRandomResult<RpcSignedStringsRandom, string>)result;
-
-                var typedRandom = new SignedStringsRandom
-                {
-                    Length = (int)typedResult.Random.Length,
-                    Characters = typedResult.Random.Characters,
-                    Replacement = typedResult.Random.Replacement
-                };
-
-                TransferValues(typedResult.Random, typedRandom);
-
-                var typedGenerationInfo = new SignedGenerationInfo<SignedStringsRandom, string>(
-                    typedRandom, typedResult.BitsUsed, typedResult.BitsLeft, typedResult.RequestsLeft, typedResult.Signature);
-
-                generationInfo = (SignedGenerationInfo<TRandom, TValue>)(object)typedGenerationInfo;
-            }
-            else if (typeof(TRandom) == typeof(SignedUuidsRandom))
-            {
-                var typedResult = (RpcSignedRandomResult<RpcSignedUuidsRandom, Guid>)result;
-                var typedRandom = new SignedUuidsRandom();
-
-                TransferValues(typedResult.Random, typedRandom);
-
-                var typedGenerationInfo = new SignedGenerationInfo<SignedUuidsRandom, Guid>(
-                    typedRandom, typedResult.BitsUsed, typedResult.BitsLeft, typedResult.RequestsLeft, typedResult.Signature);
-
-                generationInfo = (SignedGenerationInfo<TRandom, TValue>)(object)typedGenerationInfo;
-            }
-            else if (typeof(TRandom) == typeof(SignedBlobsRandom))
-            {
-                var typedResult = (RpcSignedRandomResult<RpcSignedBlobsRandom, string>)result;
-
-                var typedRandom = new SignedBlobsRandom
-                {
-                    ApiKeyHash = typedResult.Random.ApiKeyHash,
-                    CompletionTime = typedResult.Random.CompletionTime,
-                    SerialNumber = typedResult.Random.SerialNumber,
-                    Size = (int)typedResult.Random.Size
-                };
-
-                var data = new byte[typedResult.Random.Data.Count][];
-
-                for (var i = 0; i < data.Length; i++)
-                {
-                    data[i] = Convert.FromBase64String(typedResult.Random.Data[i]);
-                }
-
-                typedRandom.Data = data;
-
-                var typedGenerationInfo = new SignedGenerationInfo<SignedBlobsRandom, byte[]>(
-                    typedRandom, typedResult.BitsUsed, typedResult.BitsLeft, typedResult.RequestsLeft, typedResult.Signature);
-
-                generationInfo = (SignedGenerationInfo<TRandom, TValue>)(object)typedGenerationInfo;
-            }
-
-            return generationInfo;
-        }
-
-        /// <summary>Verifies the signature of signed random objects and associated data.</summary>
-        /// <typeparam name="T">The type of random object.</typeparam>
-        /// <param name="random">The signed random objects and associated data.</param>
-        /// <param name="signature">The signature from the same response that the random data originates from.</param>
-        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
-        /// <returns>A value, indicating if the random objects are authentic.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="random" /> or <paramref name="signature" /> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentException"><paramref name="random" /> or <paramref name="signature" /> has invalid values.</exception>
-        /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        public async Task<bool> VerifySignatureAsync<T>(
-            SignedRandom<T> random, byte[] signature, CancellationToken cancellationToken)
-        {
-            if (random == null)
-            {
-                throw new ArgumentNullException(nameof(random));
-            }
-            if (signature == null)
-            {
-                throw new ArgumentNullException(nameof(signature));
-            }
-            if (random.ApiKeyHash == null)
-            {
-                throw new ArgumentException(Strings.GetString("VerifySignature.ApiKeyHashIsNotSpecified"), nameof(random));
-            }
-            if (random.ApiKeyHash.Length != 64)
-            {
-                throw new ArgumentException(Strings.GetString("VerifySignature.ApiKeyHashLengthIsInvalid"), nameof(random));
-            }
-            if (random.Data == null)
-            {
-                throw new ArgumentException(Strings.GetString("VerifySignature.DataIsNotSpecified"), nameof(random));
-            }
-            if (random.Data.Count == 0)
-            {
-                throw new ArgumentException(Strings.GetString("VerifySignature.DataIsEmptySequence"), nameof(random));
-            }
-            if (random.CompletionTime == default)
-            {
-                throw new ArgumentException(Strings.GetString("VerifySignature.CompletionTimeIsNotSpecified"), nameof(random));
-            }
-            if (random.SerialNumber == 0L)
-            {
-                throw new ArgumentException(Strings.GetString("VerifySignature.SerialNumberIsNotSpecified"), nameof(random));
-            }
-            if (signature.Length == 0)
-            {
-                throw new ArgumentException(Strings.GetString("VerifySignature.SignatureLengthIsInvalid"), nameof(signature));
-            }
-
-            var randomType = random.GetType();
-            var @params = default(RpcVerifyParams);
-
-            if (randomType == typeof(SignedIntegersRandom))
-            {
-                var typedRandom = (SignedIntegersRandom)(object)random;
-
-                if ((typedRandom.Data.Count < 1) || (typedRandom.Data.Count > 10000))
-                {
-                    throw new ArgumentException(Strings.GetString("Random.Integers.CountIsInvalid"), nameof(random));
-                }
-                if ((typedRandom.Minimum < -1000000000) || (typedRandom.Minimum > 1000000000))
-                {
-                    throw new ArgumentException(Strings.GetString("Random.Integers.MinimumIsInvalid"), nameof(random));
-                }
-                if ((typedRandom.Maximum < -1000000000) || (typedRandom.Maximum > 1000000000))
-                {
-                    throw new ArgumentException(Strings.GetString("Random.Integers.MaximumIsInvalid"), nameof(random));
-                }
-
-                var rpcRandom = new RpcSignedIntegersRandom
-                {
-                    Method = _RPC_GENERATE_SIGNED_INTEGERS,
-                    Minimum = typedRandom.Minimum,
-                    Maximum = typedRandom.Maximum,
-                    Replacement = typedRandom.Replacement,
-                    Base = 10L
-                };
-
-                TransferValues(typedRandom, rpcRandom);
-
-                @params = new RpcVerifyParams<RpcSignedIntegersRandom, int>
-                {
-                    Random = rpcRandom
-                };
-            }
-            else if (randomType == typeof(SignedDecimalFractionsRandom))
-            {
-                var typedRandom = (SignedDecimalFractionsRandom)(object)random;
-
-                if ((typedRandom.Data.Count < 1) || (typedRandom.Data.Count > 10000))
-                {
-                    throw new ArgumentException(Strings.GetString("Random.DecimalFractions.CountIsInvalid"), nameof(random));
-                }
-                if ((typedRandom.DecimalPlaces < 1) || (typedRandom.DecimalPlaces > 20))
-                {
-                    throw new ArgumentException(Strings.GetString("Random.DecimalFractions.DecimalPlacesIsInvalid"), nameof(random));
-                }
-
-                var rpcRandom = new RpcSignedDecimalFractionsRandom
-                {
-                    Method = _RPC_GENERATE_SIGNED_DECIMAL_FRACTIONS,
-                    DecimalPlaces = typedRandom.DecimalPlaces,
-                    Replacement = typedRandom.Replacement
-                };
-
-                TransferValues(typedRandom, rpcRandom);
-
-                @params = new RpcVerifyParams<RpcSignedDecimalFractionsRandom, decimal>
-                {
-                    Random = rpcRandom
-                };
-            }
-            else if (randomType == typeof(SignedGaussiansRandom))
-            {
-                var typedRandom = (SignedGaussiansRandom)(object)random;
-
-                if ((typedRandom.Data.Count < 1) || (typedRandom.Data.Count > 10000))
-                {
-                    throw new ArgumentException(Strings.GetString("Random.Gaussians.CountIsInvalid"), nameof(random));
-                }
-                if ((typedRandom.Mean < -1000000) || (typedRandom.Mean > 1000000))
-                {
-                    throw new ArgumentException(Strings.GetString("Random.Gaussians.MeanIsInvalid"), nameof(random));
-                }
-                if ((typedRandom.StandardDeviation < -1000000) || (typedRandom.StandardDeviation > 1000000))
-                {
-                    throw new ArgumentException(Strings.GetString("Random.Gaussians.StandardDeviationIsInvalid"), nameof(random));
-                }
-                if ((typedRandom.SignificantDigits < 2) || (typedRandom.SignificantDigits > 20))
-                {
-                    throw new ArgumentException(Strings.GetString("Random.Gaussians.SignificantDigitsIsInvalid"), nameof(random));
-                }
-
-                var rpcRandom = new RpcSignedGaussiansRandom
-                {
-                    Method = _RPC_GENERATE_SIGNED_GAUSSIANS,
-                    Mean = typedRandom.Mean,
-                    StandardDeviation = typedRandom.StandardDeviation,
-                    SignificantDigits = typedRandom.SignificantDigits
-                };
-
-                TransferValues(typedRandom, rpcRandom);
-
-                @params = new RpcVerifyParams<RpcSignedGaussiansRandom, decimal>
-                {
-                    Random = rpcRandom
-                };
-            }
-            else if (randomType == typeof(SignedStringsRandom))
-            {
-                var typedRandom = (SignedStringsRandom)(object)random;
-
-                if ((typedRandom.Data.Count < 1) || (typedRandom.Data.Count > 10000))
-                {
-                    throw new ArgumentException(Strings.GetString("Random.Strings.CountIsInvalid"), nameof(random));
-                }
-                if ((typedRandom.Length < 1) || (typedRandom.Length > 20))
-                {
-                    throw new ArgumentException(Strings.GetString("Random.Strings.LengthIsInvalid"), nameof(random));
-                }
-                if (typedRandom.Characters == null)
-                {
-                    throw new ArgumentException(Strings.GetString("Random.Strings.CharactersIsNotSpecified"), nameof(random));
-                }
-                if ((typedRandom.Characters.Length < 1) || (typedRandom.Characters.Length > 80))
-                {
-                    throw new ArgumentException(Strings.GetString("Random.Strings.CharactersNumberIsInvalid"), nameof(random));
-                }
-
-                for (var i = 0; i < typedRandom.Data.Count; i++)
-                {
-                    if (typedRandom.Data[i] == null)
-                    {
-                        throw new ArgumentException(string.Format(Strings.GetString("Random.Strings.ValueIsNotSpecified"), i), nameof(random));
-                    }
-                }
-
-                var rpcRandom = new RpcSignedStringsRandom
-                {
-                    Method = _RPC_GENERATE_SIGNED_STRINGS,
-                    Length = typedRandom.Length,
-                    Characters = typedRandom.Characters,
-                    Replacement = typedRandom.Replacement
-                };
-
-                TransferValues(typedRandom, rpcRandom);
-
-                @params = new RpcVerifyParams<RpcSignedStringsRandom, string>
-                {
-                    Random = rpcRandom
-                };
-            }
-            else if (randomType == typeof(SignedUuidsRandom))
-            {
-                var typedRandom = (SignedUuidsRandom)(object)random;
-
-                if ((typedRandom.Data.Count < 1) || (typedRandom.Data.Count > 1000))
-                {
-                    throw new ArgumentException(Strings.GetString("Random.Uuids.CountIsInvalid"), nameof(random));
-                }
-
-                var rpcRandom = new RpcSignedUuidsRandom
-                {
-                    Method = _RPC_GENERATE_SIGNED_UUIDS
-                };
-
-                TransferValues(typedRandom, rpcRandom);
-
-                @params = new RpcVerifyParams<RpcSignedUuidsRandom, Guid>
-                {
-                    Random = rpcRandom
-                };
-            }
-            else if (randomType == typeof(SignedBlobsRandom))
-            {
-                var typedRandom = (SignedBlobsRandom)(object)random;
-
-                if ((typedRandom.Data.Count < 1) || (typedRandom.Data.Count > 100))
-                {
-                    throw new ArgumentException(Strings.GetString("Random.Blobs.CountIsInvalid"), nameof(random));
-                }
-                if ((typedRandom.Size < 1) || (typedRandom.Size > 1048576))
-                {
-                    throw new ArgumentException(Strings.GetString("Random.Blobs.SizeIsInvalid"), nameof(random));
-                }
-                if (typedRandom.Size % 8 != 0)
-                {
-                    throw new ArgumentException(Strings.GetString("Random.Blobs.SizeDivisionIsInvalid"), nameof(random));
-                }
-                if (typedRandom.Data.Count * typedRandom.Size > 1048576)
-                {
-                    throw new ArgumentException(Strings.GetString("Random.Blobs.TotalSizeIsInvalid"), nameof(random));
-                }
-
-                var rpcRandom = new RpcSignedBlobsRandom
-                {
-                    Method = _RPC_GENERATE_SIGNED_BLOBS,
-                    Count = typedRandom.Data.Count,
-                    ApiKeyHash = typedRandom.ApiKeyHash,
-                    CompletionTime = typedRandom.CompletionTime,
-                    SerialNumber = typedRandom.SerialNumber,
-                    Size = typedRandom.Size,
-                    Format = "base64"
-                };
-
-                var rpcData = new string[typedRandom.Data.Count];
-
-                for (var i = 0; i < rpcData.Length; i++)
-                {
-                    rpcData[i] = Convert.ToBase64String(typedRandom.Data[i]);
-                }
-
-                rpcRandom.Data = rpcData;
-
-                @params = new RpcVerifyParams<RpcSignedBlobsRandom, string>
-                {
-                    Random = rpcRandom
-                };
-            }
-            else
-            {
-                throw new NotSupportedException(Strings.GetString("VerifySignature.RandomTypeIsInvalid"));
-            }
-
-            @params.Signature = signature;
-
-            var result = await InvokeRandomOrgMethod<RpcVerifyResult>(
-                _RPC_VERIFY_SIGNATUREE, @params, cancellationToken).ConfigureAwait(false);
-
-            return result.Authenticity;
         }
     }
 }

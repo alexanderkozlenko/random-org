@@ -11,22 +11,45 @@ namespace Community.RandomOrg.Data
         }
 
         [JsonProperty("n")]
-        public long Count { get; set; }
+        public long Count
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("method")]
-        public string Method { get; set; }
+        public string Method
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("hashedApiKey")]
         [JsonConverter(typeof(Base64ToByteArrayConverter))]
-        public byte[] ApiKeyHash { get; set; }
+        public byte[] ApiKeyHash
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("serialNumber")]
-        public long SerialNumber { get; set; }
+        public long SerialNumber
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("userData")]
-        public string UserData { get; set; }
+        public string UserData
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("license")]
-        public RpcLicense License { get; }
+        public RpcLicense License
+        {
+            get;
+        }
     }
 }

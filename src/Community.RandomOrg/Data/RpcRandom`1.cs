@@ -9,9 +9,17 @@ namespace Community.RandomOrg.Data
     {
         [JsonProperty("completionTime")]
         [JsonConverter(typeof(RandomDateTimeConverter))]
-        public DateTime CompletionTime { get; set; }
+        public DateTime CompletionTime
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("data")]
-        public IReadOnlyList<T> Data { get; set; }
+        public IReadOnlyList<T> Data
+        {
+            get;
+            set;
+        }
     }
 }

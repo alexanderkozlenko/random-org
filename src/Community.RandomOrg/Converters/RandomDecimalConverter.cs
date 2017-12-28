@@ -17,7 +17,7 @@ namespace Community.RandomOrg.Converters
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            writer.WriteValue((decimal)value % 1 != 0 ? value : Convert.ToInt64(value));
+            writer.WriteValue(RandomOrgConvert.ToObject((decimal)value));
         }
     }
 }

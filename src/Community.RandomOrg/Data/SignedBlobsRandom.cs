@@ -9,6 +9,10 @@
         }
 
         /// <summary>Gets or sets the size of each blob, measured in bits.</summary>
-        public int Size { get; set; }
+        public int Size
+        {
+            get;
+            set;
+        }
     }
 }

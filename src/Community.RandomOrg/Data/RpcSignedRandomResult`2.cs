@@ -8,6 +8,10 @@ namespace Community.RandomOrg.Data
     {
         [JsonProperty("signature")]
         [JsonConverter(typeof(Base64ToByteArrayConverter))]
-        public byte[] Signature { get; set; }
+        public byte[] Signature
+        {
+            get;
+            set;
+        }
     }
 }

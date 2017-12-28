@@ -9,12 +9,24 @@
         }
 
         /// <summary>Gets or sets the lower boundary for the range from which the random numbers will be picked.</summary>
-        public int Minimum { get; set; }
+        public int Minimum
+        {
+            get;
+            set;
+        }
 
         /// <summary>Gets or sets the upper boundary for the range from which the random numbers will be picked.</summary>
-        public int Maximum { get; set; }
+        public int Maximum
+        {
+            get;
+            set;
+        }
 
         /// <summary>Gets or sets a value which specifies whether the random numbers should be picked with replacement.</summary>
-        public bool Replacement { get; set; }
+        public bool Replacement
+        {
+            get;
+            set;
+        }
     }
 }

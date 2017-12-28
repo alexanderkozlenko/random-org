@@ -6,13 +6,25 @@ namespace Community.RandomOrg.Data
     internal sealed class RpcSignedStringsRandom : RpcSignedRandom<string>
     {
         [JsonProperty("length")]
-        public long Length { get; set; }
+        public long Length
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("characters")]
-        public string Characters { get; set; }
+        public string Characters
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("replacement")]
         [DefaultValue(true)]
-        public bool Replacement { get; set; }
+        public bool Replacement
+        {
+            get;
+            set;
+        }
     }
 }

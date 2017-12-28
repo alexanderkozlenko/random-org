@@ -6,16 +6,32 @@ namespace Community.RandomOrg.Data
     internal sealed class RpcSignedIntegersRandom : RpcSignedRandom<int>
     {
         [JsonProperty("min")]
-        public long Minimum { get; set; }
+        public long Minimum
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("max")]
-        public long Maximum { get; set; }
+        public long Maximum
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("replacement")]
         [DefaultValue(true)]
-        public bool Replacement { get; set; }
+        public bool Replacement
+        {
+            get;
+            set;
+        }
 
         [JsonProperty("base")]
-        public long Base { get; set; }
+        public long Base
+        {
+            get;
+            set;
+        }
     }
 }

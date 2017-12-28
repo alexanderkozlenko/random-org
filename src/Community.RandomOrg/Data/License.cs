@@ -10,12 +10,24 @@ namespace Community.RandomOrg.Data
         }
 
         /// <summary>Gets or sets license type.</summary>
-        public string Type { get; set; }
+        public string Type
+        {
+            get;
+            set;
+        }
 
         /// <summary>Gets or sets license description.</summary>
-        public string Text { get; set; }
+        public string Text
+        {
+            get;
+            set;
+        }
 
         /// <summary>Gets or sets an URL with license information.</summary>
-        public Uri InfoUrl { get; set; }
+        public Uri InfoUrl
+        {
+            get;
+            set;
+        }
     }
 }

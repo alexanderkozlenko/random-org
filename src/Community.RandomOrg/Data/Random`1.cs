@@ -12,9 +12,17 @@ namespace Community.RandomOrg.Data
         }
 
         /// <summary>Gets or sets the timestamp at which the operation was completed.</summary>
-        public DateTime CompletionTime { get; set; }
+        public DateTime CompletionTime
+        {
+            get;
+            set;
+        }
 
         /// <summary>Gets or sets the sequence of objects requested.</summary>
-        public IReadOnlyList<T> Data { get; set; }
+        public IReadOnlyList<T> Data
+        {
+            get;
+            set;
+        }
     }
 }

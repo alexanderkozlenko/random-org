@@ -12,6 +12,9 @@ namespace Community.RandomOrg
         }
 
         /// <summary>Gets a number that indicates the error type that occurred.</summary>
-        public long Code { get; }
+        public long Code
+        {
+            get;
+        }
     }
 }
