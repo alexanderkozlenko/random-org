@@ -702,33 +702,33 @@ namespace Community.RandomOrg
             var scheme = new JsonRpcSerializerScheme();
 
             scheme.Methods["getUsage"] =
-                new JsonRpcMethodScheme(typeof(RpcGetUsageResult), null);
+                new JsonRpcMethodScheme(typeof(RpcGetUsageResult));
             scheme.Methods["verifySignature"] =
-                new JsonRpcMethodScheme(typeof(RpcVerifyResult), null);
+                new JsonRpcMethodScheme(typeof(RpcVerifyResult));
             scheme.Methods["generateIntegers"] =
-                new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<int>), null);
+                new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<int>));
             scheme.Methods["generateDecimalFractions"] =
-                new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<decimal>), null);
+                new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<decimal>));
             scheme.Methods["generateGaussians"] =
-                new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<decimal>), null);
+                new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<decimal>));
             scheme.Methods["generateStrings"] =
-                new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<string>), null);
+                new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<string>));
             scheme.Methods["generateUUIDs"] =
-                new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<Guid>), null);
+                new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<Guid>));
             scheme.Methods["generateBlobs"] =
-                new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<string>), null);
+                new JsonRpcMethodScheme(typeof(RpcSimpleRandomResult<string>));
             scheme.Methods["generateSignedIntegers"] =
-                new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedIntegersRandom, int>), null);
+                new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedIntegersRandom, int>));
             scheme.Methods["generateSignedDecimalFractions"] =
-                new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedDecimalFractionsRandom, decimal>), null);
+                new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedDecimalFractionsRandom, decimal>));
             scheme.Methods["generateSignedGaussians"] =
-                new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedGaussiansRandom, decimal>), null);
+                new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedGaussiansRandom, decimal>));
             scheme.Methods["generateSignedStrings"] =
-                new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedStringsRandom, string>), null);
+                new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedStringsRandom, string>));
             scheme.Methods["generateSignedUUIDs"] =
-                new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedUuidsRandom, Guid>), null);
+                new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedUuidsRandom, Guid>));
             scheme.Methods["generateSignedBlobs"] =
-                new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedBlobsRandom, string>), null);
+                new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedBlobsRandom, string>));
 
             var settings = new JsonRpcSerializerSettings
             {
@@ -743,17 +743,17 @@ namespace Community.RandomOrg
             return new Dictionary<Type, JsonRpcMethodScheme>(6)
             {
                 [typeof(RpcSignedRandomResult<RpcSignedIntegersRandom, int>)] =
-                    new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedIntegersRandom, int>), null),
+                    new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedIntegersRandom, int>)),
                 [typeof(RpcSignedRandomResult<RpcSignedDecimalFractionsRandom, decimal>)] =
-                    new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedDecimalFractionsRandom, decimal>), null),
+                    new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedDecimalFractionsRandom, decimal>)),
                 [typeof(RpcSignedRandomResult<RpcSignedGaussiansRandom, decimal>)] =
-                    new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedGaussiansRandom, decimal>), null),
+                    new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedGaussiansRandom, decimal>)),
                 [typeof(RpcSignedRandomResult<RpcSignedStringsRandom, string>)] =
-                    new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedStringsRandom, string>), null),
+                    new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedStringsRandom, string>)),
                 [typeof(RpcSignedRandomResult<RpcSignedUuidsRandom, Guid>)] =
-                    new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedUuidsRandom, Guid>), null),
+                    new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedUuidsRandom, Guid>)),
                 [typeof(RpcSignedRandomResult<RpcSignedBlobsRandom, string>)] =
-                    new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedBlobsRandom, string>), null)
+                    new JsonRpcMethodScheme(typeof(RpcSignedRandomResult<RpcSignedBlobsRandom, string>))
             };
         }
 
