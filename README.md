@@ -9,8 +9,6 @@ The client supports all RANDOM.ORG [Core API v2](https://api.random.org/json-rpc
 ```cs
 using (var client = new RandomOrgClient("YOUR_API_KEY_HERE"))
 {
-    // Get current API key's status and available bits
-    var usg = await client.GetUsageAsync();
     // Generate an integer from the [0,10] range without replacement
     var rii = await client.GenerateIntegersAsync(1, 0, 10, false);
     // Generate a decimal fraction with 8 decimal places without replacement
@@ -29,19 +27,14 @@ using (var client = new RandomOrgClient("YOUR_API_KEY_HERE"))
     var srii = await client.GenerateSignedIntegersAsync(1, 0, 10, false);
     // Signature verification can be executed without specifying an API key
     var vrii = await client.VerifySignatureAsync(srii.Random, srii.Signature);
-    // Since RANDOM.ORG stores the signed result for a minimum of 24 hours,
-    // it can be fetched again by a serial number
-    var crii = await client.GetResultAsync<SignedIntegersRandom, int>(srii.Random.SerialNumber);
 
-    Console.WriteLine($"Key status: {usg.Status}, bits left: {usg.BitsLeft}");
-    Console.WriteLine($"Random integer: {rii.Random.Data[0]}");
-    Console.WriteLine($"Random decimal fraction: {rif.Random.Data[0]}");
-    Console.WriteLine($"Random Gaussian number: {rig.Random.Data[0]}");
-    Console.WriteLine($"Random string: {ris.Random.Data[0]}");
-    Console.WriteLine($"Random UUID: {riu.Random.Data[0]}");
-    Console.WriteLine($"Random BLOB: {Convert.ToBase64String(rib.Random.Data[0])}");
-    Console.WriteLine($"Signed random integer: {srii.Random.Data[0]}");
-    Console.WriteLine($"Signed random integer (verification): {vrii}");
-    Console.WriteLine($"Signed random integer (cached result): {crii.Random.Data[0]}");
+    Console.WriteLine("Integer: " + rii.Random.Data[0]);
+    Console.WriteLine("Decimal fraction: " + rif.Random.Data[0]);
+    Console.WriteLine("Gaussian number: " + rig.Random.Data[0]);
+    Console.WriteLine("Dtring: " + ris.Random.Data[0]);
+    Console.WriteLine("UUID: " + riu.Random.Data[0]);
+    Console.WriteLine("BLOB: " + Convert.ToBase64String(rib.Random.Data[0]));
+    Console.WriteLine("Signed integer: " + srii.Random.Data[0]);
+    Console.WriteLine("Signed integer (verification): " + vrii);
 }
 ```
