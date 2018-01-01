@@ -3,7 +3,6 @@ param (
 )
 
 function execute {
-    [outputtype([void])]
     param(
         [parameter(mandatory)][ScriptBlock]$command
     )
@@ -18,10 +17,13 @@ function execute {
     }
 }
 
-[String]$sources = "$PSScriptRoot/src";
-[String]$namespace = "Community.RandomOrg";
+[String]$sources = "$PSScriptRoot/src/";
 
-execute { dotnet clean "$sources/" -c $configuration /nologo };
-execute { dotnet build "$sources/" -c $configuration };
-execute { dotnet test "$sources/$namespace.Tests/$namespace.Tests.csproj" -c $configuration --no-restore --no-build };
-execute { dotnet pack "$sources/$namespace/$namespace.csproj" -c $configuration --no-restore --no-build /nologo };
+execute { dotnet clean "$sources" -c $configuration };
+execute { dotnet build "$sources" -c $configuration };
+
+foreach ($project in (get-childitem -path "$sources" -file -include "*.Tests.csproj" -recurse)) {
+    execute { dotnet test "$project" -c $configuration --no-restore --no-build };
+}
+
+execute { dotnet pack "$sources" -c $configuration --no-restore --no-build };
