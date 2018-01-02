@@ -10,21 +10,14 @@ namespace Community.RandomOrg.Data
             License = new RpcLicense();
         }
 
-        [JsonProperty("n")]
-        public long Count
-        {
-            get;
-            set;
-        }
-
-        [JsonProperty("method")]
+        [JsonProperty("method", Required = Required.Always)]
         public string Method
         {
             get;
             set;
         }
 
-        [JsonProperty("hashedApiKey")]
+        [JsonProperty("hashedApiKey", Required = Required.Always)]
         [JsonConverter(typeof(Base64ToByteArrayConverter))]
         public byte[] ApiKeyHash
         {
@@ -32,21 +25,21 @@ namespace Community.RandomOrg.Data
             set;
         }
 
-        [JsonProperty("serialNumber")]
+        [JsonProperty("serialNumber", Required = Required.Always)]
         public long SerialNumber
         {
             get;
             set;
         }
 
-        [JsonProperty("userData")]
+        [JsonProperty("userData", Required = Required.AllowNull)]
         public string UserData
         {
             get;
             set;
         }
 
-        [JsonProperty("license")]
+        [JsonProperty("license", Required = Required.Always)]
         public RpcLicense License
         {
             get;

@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Http;
 
 namespace Community.RandomOrg
@@ -8,6 +9,14 @@ namespace Community.RandomOrg
     {
         internal RandomOrgRequestException(string message, string rpcMethod, HttpStatusCode statusCode, string reasonPhrase)
             : base(message)
+        {
+            RpcMethod = rpcMethod;
+            StatusCode = statusCode;
+            ReasonPhrase = reasonPhrase;
+        }
+
+        internal RandomOrgRequestException(string message, string rpcMethod, HttpStatusCode statusCode, string reasonPhrase, Exception inner)
+            : base(message, inner)
         {
             RpcMethod = rpcMethod;
             StatusCode = statusCode;

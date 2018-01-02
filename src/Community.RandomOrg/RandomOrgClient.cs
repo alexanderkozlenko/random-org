@@ -72,7 +72,6 @@ namespace Community.RandomOrg
         /// <param name="serialNumber">The integer containing the serial number associated with this random information.</param>
         /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
         /// <returns>A <see cref="SignedGenerationInfo{TRandom, TValue}" /> instance.</returns>
-        /// <exception cref="JsonRpcException">The type of random data container is invalid.</exception>
         /// <exception cref="InvalidOperationException">The API key is not specified.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
@@ -309,6 +308,7 @@ namespace Community.RandomOrg
                 var rpcRandom = new RpcSignedIntegersRandom
                 {
                     Method = "generateSignedIntegers",
+                    Count = typedRandom.Data.Count,
                     Minimum = typedRandom.Minimum,
                     Maximum = typedRandom.Maximum,
                     Replacement = typedRandom.Replacement,
@@ -335,6 +335,7 @@ namespace Community.RandomOrg
                 var rpcRandom = new RpcSignedDecimalFractionsRandom
                 {
                     Method = "generateSignedDecimalFractions",
+                    Count = typedRandom.Data.Count,
                     DecimalPlaces = typedRandom.DecimalPlaces,
                     Replacement = typedRandom.Replacement
                 };
@@ -367,6 +368,7 @@ namespace Community.RandomOrg
                 var rpcRandom = new RpcSignedGaussiansRandom
                 {
                     Method = "generateSignedGaussians",
+                    Count = typedRandom.Data.Count,
                     Mean = typedRandom.Mean,
                     StandardDeviation = typedRandom.StandardDeviation,
                     SignificantDigits = typedRandom.SignificantDigits
@@ -408,6 +410,7 @@ namespace Community.RandomOrg
                 var rpcRandom = new RpcSignedStringsRandom
                 {
                     Method = "generateSignedStrings",
+                    Count = typedRandom.Data.Count,
                     Length = typedRandom.Length,
                     Characters = typedRandom.Characters,
                     Replacement = typedRandom.Replacement
@@ -428,7 +431,8 @@ namespace Community.RandomOrg
 
                 var rpcRandom = new RpcSignedUuidsRandom
                 {
-                    Method = "generateSignedUUIDs"
+                    Method = "generateSignedUUIDs",
+                    Count = typedRandom.Data.Count
                 };
 
                 TransferValues(typedRandom, rpcRandom);
@@ -497,7 +501,6 @@ namespace Community.RandomOrg
 
         private static void TransferValues<T>(SignedRandom<T> source, RpcSignedRandom<T> target)
         {
-            target.Count = source.Data.Count;
             target.ApiKeyHash = source.ApiKeyHash;
             target.Data = source.Data;
             target.CompletionTime = source.CompletionTime;
@@ -641,6 +644,11 @@ namespace Community.RandomOrg
                             _jsonRpcSerializer.DeserializeResponseData(httpResponseString, _methodSchemeBindings) :
                             _jsonRpcSerializer.DeserializeResponseData(httpResponseString, _methodNameBindings);
                     }
+                    catch (JsonRpcException e)
+                    {
+                        throw new RandomOrgRequestException(Strings.GetString("protocol.message.invalid_value"),
+                            method, httpResponseMessage.StatusCode, httpResponseMessage.ReasonPhrase, e);
+                    }
                     finally
                     {
                         if (resultType != null)
@@ -673,6 +681,11 @@ namespace Community.RandomOrg
                     if (jsonRpcRequest.Id != jsonRpcResponse.Id)
                     {
                         throw new RandomOrgRequestException(Strings.GetString("protocol.message.identifier.invalid_value"),
+                            method, httpResponseMessage.StatusCode, httpResponseMessage.ReasonPhrase);
+                    }
+                    if (jsonRpcResponse.Result == null)
+                    {
+                        throw new RandomOrgRequestException(Strings.GetString("protocol.message.invalid_value"),
                             method, httpResponseMessage.StatusCode, httpResponseMessage.ReasonPhrase);
                     }
 

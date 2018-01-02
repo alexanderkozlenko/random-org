@@ -1,5 +1,4 @@
 using System;
-using System.Data.JsonRpc;
 using System.Globalization;
 using System.Net;
 using System.Net.Http;
@@ -828,7 +827,7 @@ namespace Community.RandomOrg.Tests
 
             using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
             {
-                await Assert.ThrowsAsync<JsonRpcException>(() =>
+                await Assert.ThrowsAsync<RandomOrgRequestException>(() =>
                     client.GetResultAsync<SignedUuidsRandom, Guid>(
                         requestJsonObject["params"]["serialNumber"].ToObject<int>(),
                         CancellationToken.None));

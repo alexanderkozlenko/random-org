@@ -5,21 +5,28 @@ namespace Community.RandomOrg.Data
 {
     internal sealed class RpcSignedIntegersRandom : RpcSignedRandom<int>
     {
-        [JsonProperty("min")]
+        [JsonProperty("n", Required = Required.Always)]
+        public long Count
+        {
+            get;
+            set;
+        }
+
+        [JsonProperty("min", Required = Required.Always)]
         public long Minimum
         {
             get;
             set;
         }
 
-        [JsonProperty("max")]
+        [JsonProperty("max", Required = Required.Always)]
         public long Maximum
         {
             get;
             set;
         }
 
-        [JsonProperty("replacement")]
+        [JsonProperty("replacement", Required = Required.Always)]
         [DefaultValue(true)]
         public bool Replacement
         {
@@ -27,7 +34,7 @@ namespace Community.RandomOrg.Data
             set;
         }
 
-        [JsonProperty("base")]
+        [JsonProperty("base", Required = Required.Always)]
         public long Base
         {
             get;

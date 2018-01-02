@@ -5,14 +5,21 @@ namespace Community.RandomOrg.Data
 {
     internal sealed class RpcSignedDecimalFractionsRandom : RpcSignedRandom<decimal>
     {
-        [JsonProperty("decimalPlaces")]
+        [JsonProperty("n", Required = Required.Always)]
+        public long Count
+        {
+            get;
+            set;
+        }
+
+        [JsonProperty("decimalPlaces", Required = Required.Always)]
         public long DecimalPlaces
         {
             get;
             set;
         }
 
-        [JsonProperty("replacement")]
+        [JsonProperty("replacement", Required = Required.Always)]
         [DefaultValue(true)]
         public bool Replacement
         {

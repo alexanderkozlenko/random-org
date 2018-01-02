@@ -6,7 +6,7 @@ namespace Community.RandomOrg.Data
 {
     internal sealed class RpcGetUsageResult : RpcMethodResult
     {
-        [JsonProperty("status")]
+        [JsonProperty("status", Required = Required.Always)]
         [JsonConverter(typeof(ApiKeyStatusConverter))]
         public ApiKeyStatus Status
         {
@@ -14,35 +14,35 @@ namespace Community.RandomOrg.Data
             set;
         }
 
-        [JsonProperty("bitsLeft")]
+        [JsonProperty("bitsLeft", Required = Required.Always)]
         public long BitsLeft
         {
             get;
             set;
         }
 
-        [JsonProperty("requestsLeft")]
+        [JsonProperty("requestsLeft", Required = Required.Always)]
         public long RequestsLeft
         {
             get;
             set;
         }
 
-        [JsonProperty("creationTime")]
+        [JsonProperty("creationTime", Required = Required.Always)]
         public DateTime CreationTime
         {
             get;
             set;
         }
 
-        [JsonProperty("totalBits")]
+        [JsonProperty("totalBits", Required = Required.Always)]
         public long TotalBits
         {
             get;
             set;
         }
 
-        [JsonProperty("totalRequests")]
+        [JsonProperty("totalRequests", Required = Required.Always)]
         public long TotalRequests
         {
             get;

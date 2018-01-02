@@ -5,7 +5,14 @@ namespace Community.RandomOrg.Data
 {
     internal sealed class RpcSignedGaussiansRandom : RpcSignedRandom<decimal>
     {
-        [JsonProperty("mean")]
+        [JsonProperty("n", Required = Required.Always)]
+        public long Count
+        {
+            get;
+            set;
+        }
+
+        [JsonProperty("mean", Required = Required.Always)]
         [JsonConverter(typeof(RandomDecimalConverter))]
         public decimal Mean
         {
@@ -13,7 +20,7 @@ namespace Community.RandomOrg.Data
             set;
         }
 
-        [JsonProperty("standardDeviation")]
+        [JsonProperty("standardDeviation", Required = Required.Always)]
         [JsonConverter(typeof(RandomDecimalConverter))]
         public decimal StandardDeviation
         {
@@ -21,7 +28,7 @@ namespace Community.RandomOrg.Data
             set;
         }
 
-        [JsonProperty("significantDigits")]
+        [JsonProperty("significantDigits", Required = Required.Always)]
         public long SignificantDigits
         {
             get;

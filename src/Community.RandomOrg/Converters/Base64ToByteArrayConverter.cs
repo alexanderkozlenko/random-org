@@ -12,12 +12,12 @@ namespace Community.RandomOrg.Converters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            return Convert.FromBase64String((string)reader.Value ?? string.Empty);
+            return Convert.FromBase64String((string)reader.Value);
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            writer.WriteValue(Convert.ToBase64String((byte[])value ?? new byte[] { }));
+            writer.WriteValue(Convert.ToBase64String((byte[])value));
         }
     }
 }

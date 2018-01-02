@@ -7,7 +7,7 @@ namespace Community.RandomOrg.Data
 {
     internal abstract class RpcRandom<T>
     {
-        [JsonProperty("completionTime")]
+        [JsonProperty("completionTime", Required = Required.Always)]
         [JsonConverter(typeof(RandomDateTimeConverter))]
         public DateTime CompletionTime
         {
@@ -15,7 +15,7 @@ namespace Community.RandomOrg.Data
             set;
         }
 
-        [JsonProperty("data")]
+        [JsonProperty("data", Required = Required.Always)]
         public IReadOnlyList<T> Data
         {
             get;
