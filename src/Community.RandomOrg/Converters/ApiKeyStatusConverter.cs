@@ -30,7 +30,7 @@ namespace Community.RandomOrg.Converters
                     }
                 default:
                     {
-                        throw new NotSupportedException(Strings.GetString("Service.ApiKeyStatusIsInvalid"));
+                        throw new JsonException(Strings.GetString("protocol.random.api_key_status.invalid_value"));
                     }
             }
         }

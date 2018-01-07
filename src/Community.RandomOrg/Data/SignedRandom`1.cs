@@ -1,12 +1,22 @@
 ﻿namespace Community.RandomOrg.Data
 {
     /// <summary>Encapsulates signed random objects and associated data.</summary>
-    /// <typeparam name="T">The type of random object.</typeparam>
-    public abstract class SignedRandom<T> : Random<T>
+    /// <typeparam name="TValue">The type of random object.</typeparam>
+    /// <typeparam name="TParameters">The type of random parameters.</typeparam>
+    public sealed class SignedRandom<TValue, TParameters> : RandomObject<TValue>
+        where TParameters : RandomParameters, new()
     {
-        internal SignedRandom()
+        /// <summary>Initializes a new instance of the <see cref="SignedRandom{TValue, TParameters}" /> class.</summary>
+        public SignedRandom()
         {
-            License = new License();
+            Parameters = new TParameters();
+            License = new RandomLicense();
+        }
+
+        /// <summary>Gets the random parameters.</summary>
+        public TParameters Parameters
+        {
+            get;
         }
 
         /// <summary>Gets or sets the SHA-512 hash of the API key.</summary>
@@ -31,7 +41,7 @@
         }
 
         /// <summary>Gets an object describing the license terms under which the random values can be used.</summary>
-        public License License
+        public RandomLicense License
         {
             get;
         }

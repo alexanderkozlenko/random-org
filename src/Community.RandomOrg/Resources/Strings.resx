@@ -120,56 +120,29 @@
   <data name="client.api_key.invalid_format" xml:space="preserve">
     <value>The format of API key is invalid</value>
   </data>
-  <data name="client.api_key.required" xml:space="preserve">
-    <value>An API key is required for the operation</value>
-  </data>
-  <data name="client.verify.api_key_hash.not_specified" xml:space="preserve">
-    <value>The hash of API key is not specified</value>
-  </data>
-  <data name="client.verify.api_key_hash.invalid_length" xml:space="preserve">
-    <value>The hash of API key has invalid length</value>
-  </data>
-  <data name="client.verify.completion_time.not_specified" xml:space="preserve">
-    <value>The completion time is not specified</value>
-  </data>
-  <data name="client.verify.data.empty_sequence" xml:space="preserve">
-    <value>The random data is empty sequence</value>
-  </data>
   <data name="client.verify.data.not_specified" xml:space="preserve">
     <value>The random data is not specified</value>
   </data>
   <data name="client.verify.random.invalid_type" xml:space="preserve">
     <value>The random type is invalid</value>
   </data>
-  <data name="client.verify.serial_number.not_specified" xml:space="preserve">
-    <value>The serial number is not specified</value>
-  </data>
-  <data name="client.verify.signature.invalid_length" xml:space="preserve">
-    <value>The signature has invalid length</value>
-  </data>
-  <data name="protocol.content.length.invalid_value" xml:space="preserve">
-    <value>The content length of service response is invalid</value>
-  </data>
-  <data name="protocol.content.length.not_specified" xml:space="preserve">
-    <value>The content length of service response is not specified</value>
-  </data>
-  <data name="protocol.content.type.invalid_value" xml:space="preserve">
-    <value>The content type of service response is invalid</value>
-  </data>
-  <data name="protocol.content.type.not_specified" xml:space="preserve">
-    <value>The content type of service response is not specified</value>
+  <data name="protocol.http.headers.invalid_set" xml:space="preserve">
+    <value>The HTTP response has invalid set of JSON-RPC transport headers</value>
   </data>
   <data name="protocol.http.status_code.invalid_value" xml:space="preserve">
-    <value>Response status code does not indicate success</value>
+    <value>The HTTP response status code does not indicate success</value>
   </data>
-  <data name="protocol.message.identifier.invalid_value" xml:space="preserve">
-    <value>The service message identifier is invalid</value>
+  <data name="protocol.random.api_key_status.invalid_value" xml:space="preserve">
+    <value>The value for the API key status is invalid</value>
   </data>
-  <data name="protocol.message.invalid_value" xml:space="preserve">
-    <value>The service message is invalid</value>
+  <data name="protocol.random.message.invalid_value" xml:space="preserve">
+    <value>The RANDOM.ORG response is invalid</value>
   </data>
-  <data name="protocol.response.content.invalid_structure" xml:space="preserve">
-    <value>The structure of service response is invalid</value>
+  <data name="protocol.rpc.id.invalid_value" xml:space="preserve">
+    <value>The JSON-RPC response identifier does not match the request identifier</value>
+  </data>
+  <data name="protocol.rpc.message.invalid_value" xml:space="preserve">
+    <value>The JSON-RPC response is invalid</value>
   </data>
   <data name="random.blob.count.invalid_range" xml:space="preserve">
     <value>The count must be within the [1,100] range</value>
@@ -184,31 +157,40 @@
     <value>The total size of all blobs must not exceed 1048576 bits</value>
   </data>
   <data name="random.decimal_fraction.count.invalid_range" xml:space="preserve">
-    <value>The count must be within the [1,1e4] range</value>
+    <value>The count must be within the [1,10000] range</value>
   </data>
   <data name="random.decimal_fraction.decimal_places.invalid_range" xml:space="preserve">
     <value>The number of decimal places must be within the [1,20] range</value>
   </data>
   <data name="random.gaussian.count.invalid_range" xml:space="preserve">
-    <value>The count must be within the [1,1e4] range</value>
+    <value>The count must be within the [1,10000] range</value>
   </data>
   <data name="random.gaussian.mean.invalid_range" xml:space="preserve">
-    <value>The distribution's mean must be within the [-1e6,1e6] range</value>
+    <value>The distribution's mean must be within the [-1000000,1000000] range</value>
   </data>
   <data name="random.gaussian.significant_digits.invalid_range" xml:space="preserve">
     <value>The number of significant digits must be within the [2,20] range</value>
   </data>
   <data name="random.gaussian.standard_deviation.invalid_range" xml:space="preserve">
-    <value>The distribution's standard deviation must be within the [-1e6,1e6] range</value>
+    <value>The distribution's standard deviation must be within the [-1000000,1000000] range</value>
   </data>
   <data name="random.integer.count.invalid_range" xml:space="preserve">
-    <value>The count must be within the [1,1e4] range</value>
+    <value>The count must be within the [1,10000] range</value>
   </data>
   <data name="random.integer.lower_boundary.invalid_range" xml:space="preserve">
-    <value>The lower boundary must be within the [-1e9,1e9] range</value>
+    <value>The lower boundary must be within the [-1000000000,1000000000] range</value>
   </data>
   <data name="random.integer.upper_boundary.invalid_range" xml:space="preserve">
-    <value>The upper boundary must be within the [-1e9,1e9] range</value>
+    <value>The upper boundary must be within the [-1000000000,1000000000] range</value>
+  </data>
+  <data name="random.sequence.arguments.different_counts" xml:space="preserve">
+    <value>Counts of argument arrays are different</value>
+  </data>
+  <data name="random.sequence.count.invalid_range" xml:space="preserve">
+    <value>The count of sequences must be within the [1,10] range</value>
+  </data>
+  <data name="random.sequence.count.invalid_value" xml:space="preserve">
+    <value>The total count must be within the [1,10000] range</value>
   </data>
   <data name="random.string.characters.length.invalid_range" xml:space="preserve">
     <value>The number of characters must be within the [1,80] range</value>
@@ -217,21 +199,15 @@
     <value>The set of characters is not specified</value>
   </data>
   <data name="random.string.count.invalid_range" xml:space="preserve">
-    <value>The count must be within the [1,1e4] range</value>
+    <value>The count must be within the [1,10000] range</value>
   </data>
   <data name="random.string.length.invalid_range" xml:space="preserve">
     <value>The length of each string must be within the [1,20] range</value>
   </data>
-  <data name="random.string.not_specified" xml:space="preserve">
-    <value>The string at position {0} is not specified</value>
-  </data>
   <data name="random.user_data.length.invalid_range" xml:space="preserve">
-    <value>The length of user data string must be within the [1,1e3] range</value>
+    <value>The length of user data string must be within the [1,1000] range</value>
   </data>
   <data name="random.uuid.count.invalid_range" xml:space="preserve">
-    <value>The count must be within the [1,1e3] range</value>
-  </data>
-  <data name="service.api_key.invalid_status" xml:space="preserve">
-    <value>The status of API key is invalid</value>
+    <value>The count must be within the [1,1000] range</value>
   </data>
 </root>

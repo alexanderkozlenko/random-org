@@ -24,14 +24,14 @@
                 "text": "These values are licensed for commercial (non-gambling) use.",
                 "infoUrl": "https://api.random.org/licenses/commercial-2"
             },
-            "userData": null,
-            "completionTime": "2017-02-12 12:33:43Z",
-            "serialNumber": 10
+            "userData": "2a7c3042-a6fc-4449-b8da-1aac0c20b1df",
+            "completionTime": "2015-01-02 03:04:05Z",
+            "serialNumber": 1
         },
         "signature": "ltsKR+9V6/HlZLutqJmnpBzL7/r+i7gGJEs4kFfpu5xfjvmaZ4vQ4jWKB1V8LbtovojewX1DPWK39Y+BYYhvOHTZIIwYHpAo3vpe7c3+HcruNVUaXmIOZD/lrPCFO/BWTvRi7R/gp+MAicQUXfxfwrs6ZHI4KHLakiOVVNUy7S0aUMihQIAeSSEeECHeALXzpQmBoalFfn5giubBB5eSmkm5at5CNcYtLcy8sxlCgi8Y7P9bEkuao0Luw5DqOVNM2h9gYVUsN5ez2A+IA9rHLfYyaUhhAG1tEdvsv7URLBQp0N6dh6U62qzOmihO6zklBJFXVN7+y7E+ikMHXuz31Xj7FoUxgXhlAomRJAMYIvI4Eg9HEacHi6HpY/dcvdTtOVLrwYeYo4A2g2wspQ8qq6lIwMtxPK7Zjo4TSKTAvlGy3u3QE1+3D3brmIPvLu7J40134ljr8mpnzd+iqf4/sU0vRl4lHXwRuI3olxyqXfyZOUtuqWlceoccF0pG2oaxdwJsmSTEuW4L5KolhmQkJs6HVcVZHSa8WWSDlJ7dk++DLwvrzO4lIZufmS/KCLe0pKkM/fC5JYFCXTbzCZ4Z4DAO5FPLHhK7MEfwRvQkHK0NE2CpM2vhPkvAtey2eD+3kO1/0SK0QtBWWgAB1Fjgn2CRpsEzlsimqlGYZpdWeI0=",
         "bitsUsed": 266,
         "bitsLeft": 4995454,
-        "requestsLeft": 19992,
-        "advisoryDelay": 1190
+        "requestsLeft": 199999,
+        "advisoryDelay": 0
     }
 }

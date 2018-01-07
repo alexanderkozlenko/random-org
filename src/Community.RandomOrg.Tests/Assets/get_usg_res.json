@@ -2,10 +2,10 @@
     "jsonrpc": "2.0",
     "result": {
         "status": "running",
-        "creationTime": "2013-02-01 17:53:40Z",
-        "bitsLeft": 998532,
-        "requestsLeft": 199996,
-        "totalBits": 1646421,
-        "totalRequests": 65036
+        "creationTime": "2015-01-02 03:04:05Z",
+        "bitsLeft": 199999,
+        "requestsLeft": 199999,
+        "totalBits": 1,
+        "totalRequests": 1
     }
 }

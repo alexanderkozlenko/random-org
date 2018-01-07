@@ -1,0 +1,10 @@
+{
+    "jsonrpc": "2.0",
+    "error": {
+        "code": 501,
+        "message": "The credentials '55ea5fe3-ab48-47f1-a0ed-952648e1a8c2' you specified are not valid or have expired",
+        "data": [
+            "55ea5fe3-ab48-47f1-a0ed-952648e1a8c2"
+        ]
+    }
+}

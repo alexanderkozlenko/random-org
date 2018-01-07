@@ -4,36 +4,28 @@
         "random": {
             "method": "generateSignedIntegers",
             "hashedApiKey": "jRRSWJJ4kGLIQJ6FngDu2WaGnf7CAV8jqmj2K2HjaF5y++av3qB7r4oq67cnIKAEBeciqJKCXdXKE9apwtg2MA==",
-            "n": 10,
+            "n": 2,
             "min": 1,
-            "max": 6,
+            "max": 10,
             "replacement": true,
             "base": 10,
             "data": [
                 3,
-                2,
-                6,
-                6,
-                2,
-                2,
-                1,
-                3,
-                1,
-                5
+                10
             ],
             "license": {
                 "type": "commercial-2",
                 "text": "These values are licensed for commercial (non-gambling) use.",
                 "infoUrl": "https://api.random.org/licenses/commercial-2"
             },
-            "userData": null,
-            "completionTime": "2017-02-12 10:47:15Z",
-            "serialNumber": 4
+            "userData": "2a7c3042-a6fc-4449-b8da-1aac0c20b1df",
+            "completionTime": "2015-01-02 03:04:05Z",
+            "serialNumber": 1
         },
         "signature": "dPXrMbLTr9Bq7pFyghExeI09n92H9Q1Mj6CDD2ABHtDwHDAzN3Tq3el6mS+xkmLyZpkBrWm+ficdLGS8BI8dq8f+GTuzDJCQ0Ah6FnAaXn7TX32xdZ9rqAp0S1IcR7GVMa8Wbcb5u70+evtVSUciotYqQNLkPPB6xx5+TFkY2L24TkfxHGXqG53D5MZDha7kSR7w2cuTRhabRmGmRA7dXgw4swJwAfvKXs63fCzZVbK1pfjZbm7IkmimhP7SRox9t5rAQkFSYfNKeGDrIlFgONb9+5OUEMO+9860nzUBIYsahO+VIHZWYbxSDB4chfmy/bNeBAeexx7tvV8Df2sQ3+soF3fQ/3ca5YFWdWceE+clkI7/8zlPaNYlWQiFDo/0QnySQxLf09O/2Ct3HBoIxBixEj+4FtYbpUi7OmE6IOL/Jhk+RRBfdXxHZUieOykJynTdbXchXCVGY9w5ZkgT8b5w6nDRxTid0RXfepY+sdOucZp7Few4/IYNQmGxB1jMFnUbw5l2TQD2f65P0FojwXpSkJfUnXsRy6m72XCUwo8PwTvrpfdHykWxwWyzhw+jLz/Pte3DrpD/xvwjtOi5OnZAO8SXYdjR8lH6ZUrvQZZI9qT0O3OBMPEgspYDNEx3IGbmwW2/wxaujW6xbxkFS+i0n4gjjdtOhAQHYstTE+o=",
-        "bitsUsed": 26,
-        "bitsLeft": 4999948,
-        "requestsLeft": 19998,
-        "advisoryDelay": 1090
+        "bitsUsed": 1,
+        "bitsLeft": 199999,
+        "requestsLeft": 199999,
+        "advisoryDelay": 0
     }
 }

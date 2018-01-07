@@ -12,7 +12,7 @@ namespace Community.RandomOrg.Converters
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            return reader.Value != null ? new Uri((string)reader.Value, UriKind.Absolute) : null;
+            return reader.Value != null ? new Uri((string)reader.Value) : null;
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)

@@ -1,0 +1,21 @@
+{
+    "jsonrpc": "2.0",
+    "result": {
+        "random": {
+            "data": [
+                [
+                    3
+                ],
+                [
+                    3,
+                    10
+                ]
+            ],
+            "completionTime": "2015-01-02 03:04:05Z"
+        },
+        "bitsUsed": 1,
+        "bitsLeft": 199999,
+        "requestsLeft": 199999,
+        "advisoryDelay": 0
+    }
+}

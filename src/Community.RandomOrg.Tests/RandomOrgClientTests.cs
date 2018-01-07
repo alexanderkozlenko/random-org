@@ -6,101 +6,107 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Community.RandomOrg.Data;
+using Community.RandomOrg.Tests.Internal;
 using Community.RandomOrg.Tests.Resources;
-using Community.RandomOrg.Tests.Stubbing;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Community.RandomOrg.Tests
 {
     public sealed class RandomOrgClientTests
     {
-        private const string _RANDOM_API_KEY = "00000000-0000-0000-0000-000000000000";
-        private const string _HTTP_MEDIA_TYPE = "application/json";
-        private const string _TIMESTAMP_FORMAT = "yyyy'-'MM'-'dd' 'HH':'mm':'ss.FFFFFFFK";
+        private readonly ITestOutputHelper _output;
 
-        private static Task<string> HandleRequestContent(string requestContent, JToken expectedRequestObject, JToken expectedResponseObject)
+        public RandomOrgClientTests(ITestOutputHelper output)
         {
-            var requestJsonObjectActual = JObject.Parse(requestContent);
-
-            expectedRequestObject["id"] = requestJsonObjectActual["id"];
-            expectedResponseObject["id"] = requestJsonObjectActual["id"];
-
-            Assert.True(JToken.DeepEquals(expectedRequestObject, requestJsonObjectActual));
-
-            return Task.FromResult(expectedResponseObject.ToString());
+            _output = output;
         }
 
-        private static void VerifyGenerationInfo<TValue>(SimpleGenerationInfo<TValue> typedObject, JObject jsonObject)
+        private async Task<HttpResponseMessage> InternalHandleRequest(HttpRequestMessage request, JObject joreq, JObject jores)
         {
-            Assert.NotNull(typedObject);
-            Assert.Equal(jsonObject["result"]["bitsUsed"], typedObject.BitsUsed);
-            Assert.Equal(jsonObject["result"]["bitsLeft"], typedObject.BitsLeft);
-            Assert.Equal(jsonObject["result"]["requestsLeft"], typedObject.RequestsLeft);
-            Assert.NotNull(typedObject.Random);
-            Assert.Equal(jsonObject["result"]["random"]["completionTime"], typedObject.Random.CompletionTime.ToString(_TIMESTAMP_FORMAT));
-            Assert.NotNull(typedObject.Random.Data);
-            Assert.Equal(jsonObject["result"]["random"]["data"].ToObject<TValue[]>(), typedObject.Random.Data);
-        }
+            var joreqa = JObject.Parse(await request.Content.ReadAsStringAsync());
 
-        private static void VerifyGenerationInfo<TRandom, TValue>(SignedGenerationInfo<TRandom, TValue> typedObject, JObject jsonObject)
-            where TRandom : SignedRandom<TValue>
-        {
-            Assert.NotNull(typedObject);
-            Assert.Equal(jsonObject["result"]["bitsUsed"], typedObject.BitsUsed);
-            Assert.Equal(jsonObject["result"]["bitsLeft"], typedObject.BitsLeft);
-            Assert.Equal(jsonObject["result"]["requestsLeft"], typedObject.RequestsLeft);
-            Assert.Equal(jsonObject["result"]["signature"], Convert.ToBase64String(typedObject.Signature));
-            Assert.NotNull(typedObject.Random);
-            Assert.Equal(jsonObject["result"]["random"]["completionTime"], typedObject.Random.CompletionTime.ToString(_TIMESTAMP_FORMAT));
-            Assert.Equal(jsonObject["result"]["random"]["hashedApiKey"], Convert.ToBase64String(typedObject.Random.ApiKeyHash));
-            Assert.Equal(jsonObject["result"]["random"]["serialNumber"], typedObject.Random.SerialNumber);
-            Assert.Equal(jsonObject["result"]["random"]["userData"], typedObject.Random.UserData);
-            Assert.NotNull(typedObject.Random.Data);
-            Assert.Equal(jsonObject["result"]["random"]["data"].ToObject<TValue[]>(), typedObject.Random.Data);
-            Assert.NotNull(typedObject.Random.License);
-            Assert.Equal(jsonObject["result"]["random"]["license"]["type"], typedObject.Random.License.Type);
-            Assert.Equal(jsonObject["result"]["random"]["license"]["text"], typedObject.Random.License.Text);
-            Assert.Equal(jsonObject["result"]["random"]["license"]["infoUrl"], typedObject.Random.License.InfoUrl?.OriginalString);
-        }
+            joreq["id"] = joreqa["id"];
+            jores["id"] = joreqa["id"];
 
-        private static string ConvertApiKeyStatus(ApiKeyStatus value)
-        {
-            switch (value)
+            _output.WriteLine("Actual request:");
+            _output.WriteLine("");
+            _output.WriteLine(joreqa.ToString(Formatting.Indented));
+
+            Assert.True(JToken.DeepEquals(joreqa, joreq), "Request JSON object differs from expected");
+
+            return new HttpResponseMessage
             {
-                case ApiKeyStatus.Stopped:
-                    return "stopped";
-                case ApiKeyStatus.Paused:
-                    return "paused";
-                case ApiKeyStatus.Running:
-                    return "running";
-                default:
-                    throw new NotSupportedException();
-            }
+                StatusCode = HttpStatusCode.OK,
+                ReasonPhrase = HttpStatusCode.OK.ToString(),
+                Content = new StringContent(jores.ToString(), Encoding.UTF8, "application/json")
+            };
+        }
+
+        private static void InternalVerifyResult<TValue>(RandomResult<TValue> result, JObject jores)
+        {
+            Assert.NotNull(result);
+            Assert.NotNull(result.Random);
+            Assert.NotNull(result.Random.Data);
+
+            var joresult = jores["result"];
+            var jorandom = jores["result"]["random"];
+
+            Assert.Equal(joresult["bitsUsed"].ToObject<long>(), result.BitsUsed);
+            Assert.Equal(joresult["bitsLeft"].ToObject<long>(), result.BitsLeft);
+            Assert.Equal(joresult["requestsLeft"].ToObject<long>(), result.RequestsLeft);
+            Assert.Equal(RandomOrgConvert.ToDateTime(jorandom["completionTime"].ToObject<string>()), result.Random.CompletionTime);
+        }
+
+        private static void InternalVerifyResult<TValue, TParameters>(SignedRandomResult<TValue, TParameters> result, JObject jores)
+            where TParameters : RandomParameters, new()
+        {
+            Assert.NotNull(result);
+            Assert.NotNull(result.Random);
+            Assert.NotNull(result.Random.Data);
+            Assert.NotNull(result.Random.Parameters);
+            Assert.NotNull(result.Random.License);
+
+            var joresult = jores["result"];
+            var jorandom = jores["result"]["random"];
+            var jolicense = jores["result"]["random"]["license"];
+
+            Assert.Equal(joresult["bitsUsed"].ToObject<long>(), result.BitsUsed);
+            Assert.Equal(joresult["bitsLeft"].ToObject<long>(), result.BitsLeft);
+            Assert.Equal(joresult["requestsLeft"].ToObject<long>(), result.RequestsLeft);
+            Assert.Equal(Convert.FromBase64String(joresult["signature"].ToObject<string>()), result.Signature);
+            Assert.Equal(RandomOrgConvert.ToDateTime(jorandom["completionTime"].ToObject<string>()), result.Random.CompletionTime);
+            Assert.Equal(Convert.FromBase64String(jorandom["hashedApiKey"].ToObject<string>()), result.Random.ApiKeyHash);
+            Assert.Equal(jorandom["serialNumber"].ToObject<long>(), result.Random.SerialNumber);
+            Assert.Equal(jorandom["userData"].ToObject<string>(), result.Random.UserData);
+            Assert.Equal(jolicense["type"].ToObject<string>(), result.Random.License.Type);
+            Assert.Equal(jolicense["text"].ToObject<string>(), result.Random.License.Text);
+            Assert.Equal(jolicense["infoUrl"].ToObject<string>(), result.Random.License.InfoUrl?.OriginalString);
         }
 
         [Fact]
-        public void ConstructorWhenApiKeyIsInvalid()
+        public void ConstructorWhenApiKeyFormatIsInvalid()
         {
-            Assert.Throws<ArgumentException>(() =>
-                new RandomOrgClient("test_value"));
+            Assert.ThrowsAny<ArgumentException>(() =>
+                new RandomOrgClient("XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"));
         }
 
         [Theory]
-        [InlineData(00000, 0, 5)]
-        [InlineData(10001, 0, 5)]
-        [InlineData(1, -1000000001, 5)]
-        [InlineData(1, +1000000001, 5)]
-        [InlineData(1, 0, -1000000001)]
-        [InlineData(1, 0, +1000000001)]
-        public async void GenerateIntegersWhenArgumentOutOfRange(int count, int minimum, int maximum)
+        [InlineData(00000, +0000000000, +0000000005)]
+        [InlineData(10001, +0000000000, +0000000005)]
+        [InlineData(00001, -1000000001, +0000000005)]
+        [InlineData(00001, +1000000001, +0000000005)]
+        [InlineData(00001, +0000000000, -1000000001)]
+        [InlineData(00001, +0000000000, +1000000001)]
+        public async void GenerateIntegersWithInvalidParameter(int count, int minimum, int maximum)
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_int_req.json"));
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
             {
-                await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+                await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateIntegersAsync(count, minimum, maximum, false, CancellationToken.None));
             }
         }
@@ -108,40 +114,67 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateIntegers()
         {
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_int_req.json"));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_int_res.json"));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_int_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_int_res.json"));
 
-            var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
+            var joparams = joreq["params"];
+            var jorandom = jores["result"]["random"];
 
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(rq => InternalHandleRequest(rq, joreq, jores)))))
             {
                 var result = await client.GenerateIntegersAsync(
-                    requestJsonObject["params"]["n"].ToObject<int>(),
-                    requestJsonObject["params"]["min"].ToObject<int>(),
-                    requestJsonObject["params"]["max"].ToObject<int>(),
-                    true,
+                    joparams["n"].ToObject<int>(),
+                    joparams["min"].ToObject<int>(),
+                    joparams["max"].ToObject<int>(),
+                    joparams["replacement"].ToObject<bool>(),
                     CancellationToken.None);
 
-                VerifyGenerationInfo(result, responseJsonObject);
+                InternalVerifyResult(result, jores);
+
+                Assert.Equal(jorandom["data"].ToObject<int[]>(), result.Random.Data);
+            }
+        }
+
+        [Fact]
+        public async void GenerateIntegerSequences()
+        {
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_seq_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_seq_res.json"));
+
+            var joparams = joreq["params"];
+            var jorandom = jores["result"]["random"];
+
+            var key = joparams["apiKey"].ToString();
+
+            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(rq => InternalHandleRequest(rq, joreq, jores)))))
+            {
+                var result = await client.GenerateIntegerSequencesAsync(
+                    joparams["n"].ToObject<int[]>(),
+                    joparams["min"].ToObject<int[]>(),
+                    joparams["max"].ToObject<int[]>(),
+                    joparams["replacement"].ToObject<bool[]>(),
+                    CancellationToken.None);
+
+                InternalVerifyResult(result, jores);
+
+                Assert.Equal(jorandom["data"].ToObject<int[][]>(), result.Random.Data);
             }
         }
 
         [Theory]
-        [InlineData(00000, 2)]
-        [InlineData(10001, 2)]
-        [InlineData(1, 00)]
-        [InlineData(1, 21)]
-        public async void GenerateDecimalFractionsWhenArgumentOutOfRange(int count, int decimalPlaces)
+        [InlineData(00000, 02)]
+        [InlineData(10001, 02)]
+        [InlineData(00001, 00)]
+        [InlineData(00001, 21)]
+        public async void GenerateDecimalFractionsWithInvalidParameter(int count, int decimalPlaces)
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_dfr_req.json"));
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
             {
-                await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+                await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateDecimalFractionsAsync(count, decimalPlaces, false, CancellationToken.None));
             }
         }
@@ -149,46 +182,46 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateDecimalFractions()
         {
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_dfr_req.json"));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_dfr_res.json"));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_dfr_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_dfr_res.json"));
 
-            var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
+            var joparams = joreq["params"];
+            var jorandom = jores["result"]["random"];
+            var key = joparams["apiKey"].ToString();
 
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(rq => InternalHandleRequest(rq, joreq, jores)))))
             {
                 var result = await client.GenerateDecimalFractionsAsync(
-                    requestJsonObject["params"]["n"].ToObject<int>(),
-                    requestJsonObject["params"]["decimalPlaces"].ToObject<int>(),
-                    true,
+                    joparams["n"].ToObject<int>(),
+                    joparams["decimalPlaces"].ToObject<int>(),
+                    joparams["replacement"].ToObject<bool>(),
                     CancellationToken.None);
 
-                VerifyGenerationInfo(result, responseJsonObject);
+                InternalVerifyResult(result, jores);
+
+                Assert.Equal(jorandom["data"].ToObject<decimal[]>(), result.Random.Data);
             }
         }
 
         [Theory]
-        [InlineData(00000, "0.0", "0.0", 2)]
-        [InlineData(10001, "0.0", "0.0", 2)]
-        [InlineData(1, "-1000001.0", "0.0", 2)]
-        [InlineData(1, "+1000001.0", "0.0", 2)]
-        [InlineData(1, "0.0", "-1000001.0", 2)]
-        [InlineData(1, "0.0", "+1000001.0", 2)]
-        [InlineData(1, "0.0", "0.0", 01)]
-        [InlineData(1, "0.0", "0.0", 21)]
-        public async void GenerateGaussiansWhenArgumentOutOfRange(int count, string mean, string standardDeviation, int significantDigits)
+        [InlineData(00000, "+0000000.0", "+0000000.0", 02)]
+        [InlineData(10001, "+0000000.0", "+0000000.0", 02)]
+        [InlineData(00001, "-1000001.0", "+0000000.0", 02)]
+        [InlineData(00001, "+1000001.0", "+0000000.0", 02)]
+        [InlineData(00001, "+0000000.0", "-1000001.0", 02)]
+        [InlineData(00001, "+0000000.0", "+1000001.0", 02)]
+        [InlineData(00001, "+0000000.0", "+0000000.0", 01)]
+        [InlineData(00001, "+0000000.0", "+0000000.0", 21)]
+        public async void GenerateGaussiansWithInvalidParameter(int count, string mean, string standardDeviation, int significantDigits)
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_gss_req.json"));
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
             {
                 var meanValue = decimal.Parse(mean, CultureInfo.InvariantCulture);
                 var standardDeviationValue = decimal.Parse(standardDeviation, CultureInfo.InvariantCulture);
 
-                await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+                await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateGaussiansAsync(count, meanValue, standardDeviationValue, significantDigits, CancellationToken.None));
             }
         }
@@ -196,40 +229,40 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateGaussians()
         {
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_gss_req.json"));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_gss_res.json"));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_gss_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_gss_res.json"));
 
-            var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
+            var joparams = joreq["params"];
+            var jorandom = jores["result"]["random"];
+            var key = joparams["apiKey"].ToString();
 
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(rq => InternalHandleRequest(rq, joreq, jores)))))
             {
                 var result = await client.GenerateGaussiansAsync(
-                    requestJsonObject["params"]["n"].ToObject<int>(),
-                    requestJsonObject["params"]["mean"].ToObject<decimal>(),
-                    requestJsonObject["params"]["standardDeviation"].ToObject<decimal>(),
-                    requestJsonObject["params"]["significantDigits"].ToObject<int>(),
+                    joparams["n"].ToObject<int>(),
+                    joparams["mean"].ToObject<decimal>(),
+                    joparams["standardDeviation"].ToObject<decimal>(),
+                    joparams["significantDigits"].ToObject<int>(),
                     CancellationToken.None);
 
-                VerifyGenerationInfo(result, responseJsonObject);
+                InternalVerifyResult(result, jores);
+
+                Assert.Equal(jorandom["data"].ToObject<decimal[]>(), result.Random.Data);
             }
         }
 
         [Theory]
-        [InlineData(00000, 1)]
-        [InlineData(10001, 1)]
-        [InlineData(1, 00)]
-        [InlineData(1, 21)]
-        public async void GenerateStringsWhenArgumentOutOfRange(int count, int length)
+        [InlineData(00000, 01)]
+        [InlineData(10001, 01)]
+        [InlineData(00001, 00)]
+        [InlineData(00001, 21)]
+        public async void GenerateStringsWithInvalidParameter(int count, int length)
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_str_req.json"));
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
             {
-                await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+                await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateStringsAsync(count, length, "abcde", false, CancellationToken.None));
             }
         }
@@ -237,10 +270,9 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateStringsWhenCharactersIsNull()
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_str_req.json"));
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
             {
                 await Assert.ThrowsAsync<ArgumentNullException>(() =>
                     client.GenerateStringsAsync(1, 1, null, false, CancellationToken.None));
@@ -252,53 +284,50 @@ namespace Community.RandomOrg.Tests
         [InlineData(81)]
         public async void GenerateStringsWhenCharactersNumberIsInvalid(int number)
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_str_req.json"));
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
             {
-                var characters = new string('a', number);
-
                 await Assert.ThrowsAsync<ArgumentException>(() =>
-                    client.GenerateStringsAsync(1, 1, characters, false, CancellationToken.None));
+                    client.GenerateStringsAsync(1, 1, new string('a', number), false, CancellationToken.None));
             }
         }
 
         [Fact]
         public async void GenerateStrings()
         {
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_str_req.json"));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_str_res.json"));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_str_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_str_res.json"));
 
-            var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
+            var joparams = joreq["params"];
+            var jorandom = jores["result"]["random"];
+            var key = joparams["apiKey"].ToString();
 
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(rq => InternalHandleRequest(rq, joreq, jores)))))
             {
                 var result = await client.GenerateStringsAsync(
-                    requestJsonObject["params"]["n"].ToObject<int>(),
-                    requestJsonObject["params"]["length"].ToObject<int>(),
-                    requestJsonObject["params"]["characters"].ToObject<string>(),
-                    true,
+                    joparams["n"].ToObject<int>(),
+                    joparams["length"].ToObject<int>(),
+                    joparams["characters"].ToObject<string>(),
+                    joparams["replacement"].ToObject<bool>(),
                     CancellationToken.None);
 
-                VerifyGenerationInfo(result, responseJsonObject);
+                InternalVerifyResult(result, jores);
+
+                Assert.Equal(jorandom["data"].ToObject<string[]>(), result.Random.Data);
             }
         }
 
         [Theory]
         [InlineData(0000)]
         [InlineData(1001)]
-        public async void GenerateUuidsWhenArgumentOutOfRange(int count)
+        public async void GenerateUuidsWithInvalidParameter(int count)
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_uid_req.json"));
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
             {
-                await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+                await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateUuidsAsync(count, CancellationToken.None));
             }
         }
@@ -306,21 +335,22 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateUuids()
         {
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_uid_req.json"));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_uid_res.json"));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_uid_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_uid_res.json"));
 
-            var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
+            var joparams = joreq["params"];
+            var jorandom = jores["result"]["random"];
+            var key = joparams["apiKey"].ToString();
 
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(rq => InternalHandleRequest(rq, joreq, jores)))))
             {
                 var result = await client.GenerateUuidsAsync(
-                    requestJsonObject["params"]["n"].ToObject<int>(),
+                    joparams["n"].ToObject<int>(),
                     CancellationToken.None);
 
-                VerifyGenerationInfo(result, responseJsonObject);
+                InternalVerifyResult(result, jores);
+
+                Assert.Equal(jorandom["data"].ToObject<Guid[]>(), result.Random.Data);
             }
         }
 
@@ -331,14 +361,13 @@ namespace Community.RandomOrg.Tests
         [InlineData(001, 1048577)]
         [InlineData(001, 0000007)]
         [InlineData(002, 1048576)]
-        public async void GenerateBlobsWhenArgumentOutOfRange(int count, int size)
+        public async void GenerateBlobsWithInalidParameter(int count, int size)
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_blb_req.json"));
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
             {
-                await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+                await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateBlobsAsync(count, size, CancellationToken.None));
             }
         }
@@ -346,34 +375,27 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateBlobs()
         {
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_blb_req.json"));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_pur_blb_res.json"));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_blb_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_blb_res.json"));
 
-            var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
+            var joparams = joreq["params"];
+            var jorandom = jores["result"]["random"];
+            var key = joparams["apiKey"].ToString();
 
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(rq => InternalHandleRequest(rq, joreq, jores)))))
             {
                 var result = await client.GenerateBlobsAsync(
-                    requestJsonObject["params"]["n"].ToObject<int>(),
-                    requestJsonObject["params"]["size"].ToObject<int>(),
+                    joparams["n"].ToObject<int>(),
+                    joparams["size"].ToObject<int>(),
                     CancellationToken.None);
 
-                Assert.NotNull(result);
-                Assert.Equal(responseJsonObject["result"]["bitsUsed"], result.BitsUsed);
-                Assert.Equal(responseJsonObject["result"]["bitsLeft"], result.BitsLeft);
-                Assert.Equal(responseJsonObject["result"]["requestsLeft"], result.RequestsLeft);
-                Assert.NotNull(result.Random);
-                Assert.Equal(responseJsonObject["result"]["random"]["completionTime"], result.Random.CompletionTime.ToString(_TIMESTAMP_FORMAT));
-                Assert.NotNull(result.Random.Data);
+                InternalVerifyResult(result, jores);
 
-                var dataJsonObject = (JArray)responseJsonObject["result"]["random"]["data"];
+                var jodata = (JArray)jorandom["data"];
 
-                for (var i = 0; i < dataJsonObject.Count; i++)
+                for (var i = 0; i < jodata.Count; i++)
                 {
-                    Assert.Equal(dataJsonObject[i], Convert.ToBase64String(result.Random.Data[i]));
+                    Assert.Equal(Convert.FromBase64String(jodata[i].ToObject<string>()), result.Random.Data[i]);
                 }
             }
         }
@@ -381,10 +403,9 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GetUsageWhenApiKeyIsNull()
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_req.json"));
 
-            using (var client = new RandomOrgClient(null, httpClient))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
             {
                 await Assert.ThrowsAsync<InvalidOperationException>(() =>
                     client.GetUsageAsync(CancellationToken.None));
@@ -394,43 +415,40 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GetUsage()
         {
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_req.json"));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_res.json"));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_res.json"));
 
-            var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
+            var joresult = jores["result"];
+            var key = joreq["params"]["apiKey"].ToString();
 
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(rq => InternalHandleRequest(rq, joreq, jores)))))
             {
                 var result = await client.GetUsageAsync(CancellationToken.None);
 
                 Assert.NotNull(result);
-                Assert.Equal(responseJsonObject["result"]["status"], ConvertApiKeyStatus(result.Status));
-                Assert.Equal(responseJsonObject["result"]["creationTime"], result.CreationTime.ToString(_TIMESTAMP_FORMAT));
-                Assert.Equal(responseJsonObject["result"]["bitsLeft"], result.BitsLeft);
-                Assert.Equal(responseJsonObject["result"]["requestsLeft"], result.RequestsLeft);
-                Assert.Equal(responseJsonObject["result"]["totalBits"], result.TotalBits);
-                Assert.Equal(responseJsonObject["result"]["totalRequests"], result.TotalRequests);
+                Assert.Equal(RandomOrgConvert.ToApiKeyStatus(joresult["status"].ToObject<string>()), result.Status);
+                Assert.Equal(RandomOrgConvert.ToDateTime(joresult["creationTime"].ToObject<string>()), result.CreationTime);
+                Assert.Equal(joresult["bitsLeft"].ToObject<long>(), result.BitsLeft);
+                Assert.Equal(joresult["requestsLeft"].ToObject<long>(), result.RequestsLeft);
+                Assert.Equal(joresult["totalBits"].ToObject<long>(), result.TotalBits);
+                Assert.Equal(joresult["totalRequests"].ToObject<long>(), result.TotalRequests);
             }
         }
 
         [Theory]
-        [InlineData(00000, 0, 5)]
-        [InlineData(10001, 0, 5)]
-        [InlineData(1, -1000000001, 5)]
-        [InlineData(1, +1000000001, 5)]
-        [InlineData(1, 0, -1000000001)]
-        [InlineData(1, 0, +1000000001)]
-        public async void GenerateSignedIntegersWhenArgumentOutOfRange(int count, int minimum, int maximum)
+        [InlineData(00000, +0000000000, +0000000005)]
+        [InlineData(10001, +0000000000, +0000000005)]
+        [InlineData(00001, -1000000001, +0000000005)]
+        [InlineData(00001, +1000000001, +0000000005)]
+        [InlineData(00001, +0000000000, -1000000001)]
+        [InlineData(00001, +0000000000, +1000000001)]
+        public async void GenerateSignedIntegersWithInvalidParameter(int count, int minimum, int maximum)
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_int_req.json"));
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
             {
-                await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+                await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateSignedIntegersAsync(count, minimum, maximum, false, null, CancellationToken.None));
             }
         }
@@ -438,45 +456,75 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateSignedIntegers()
         {
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_int_req.json"));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_int_res.json"));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_int_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_int_res.json"));
 
-            var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
+            var joparams = joreq["params"];
+            var jorandom = jores["result"]["random"];
+            var key = joparams["apiKey"].ToString();
 
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(rq => InternalHandleRequest(rq, joreq, jores)))))
             {
                 var result = await client.GenerateSignedIntegersAsync(
-                    requestJsonObject["params"]["n"].ToObject<int>(),
-                    requestJsonObject["params"]["min"].ToObject<int>(),
-                    requestJsonObject["params"]["max"].ToObject<int>(),
-                    true,
-                    null,
+                    joparams["n"].ToObject<int>(),
+                    joparams["min"].ToObject<int>(),
+                    joparams["max"].ToObject<int>(),
+                    joparams["replacement"].ToObject<bool>(),
+                    joparams["userData"].ToObject<string>(),
                     CancellationToken.None);
 
-                VerifyGenerationInfo(result, responseJsonObject);
+                InternalVerifyResult(result, jores);
 
-                Assert.Equal(responseJsonObject["result"]["random"]["min"], result.Random.Minimum);
-                Assert.Equal(responseJsonObject["result"]["random"]["max"], result.Random.Maximum);
-                Assert.Equal(responseJsonObject["result"]["random"]["replacement"], result.Random.Replacement);
+                Assert.Equal(jorandom["data"].ToObject<int[]>(), result.Random.Data);
+                Assert.Equal(jorandom["min"].ToObject<int>(), result.Random.Parameters.Minimum);
+                Assert.Equal(jorandom["max"].ToObject<int>(), result.Random.Parameters.Maximum);
+                Assert.Equal(jorandom["replacement"].ToObject<bool>(), result.Random.Parameters.Replacement);
+                Assert.Equal(jorandom["userData"].ToObject<string>(), result.Random.UserData);
+            }
+        }
+
+        [Fact]
+        public async void GenerateSignedIntegerSequences()
+        {
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_seq_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_seq_res.json"));
+
+            var joparams = joreq["params"];
+            var jorandom = jores["result"]["random"];
+            var key = joparams["apiKey"].ToString();
+
+            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(rq => InternalHandleRequest(rq, joreq, jores)))))
+            {
+                var result = await client.GenerateSignedIntegerSequencesAsync(
+                    joparams["n"].ToObject<int[]>(),
+                    joparams["min"].ToObject<int[]>(),
+                    joparams["max"].ToObject<int[]>(),
+                    joparams["replacement"].ToObject<bool[]>(),
+                    joparams["userData"].ToObject<string>(),
+                    CancellationToken.None);
+
+                InternalVerifyResult(result, jores);
+
+                Assert.Equal(jorandom["data"].ToObject<int[][]>(), result.Random.Data);
+                Assert.Equal(jorandom["min"].ToObject<int[]>(), result.Random.Parameters.Minimums);
+                Assert.Equal(jorandom["max"].ToObject<int[]>(), result.Random.Parameters.Maximums);
+                Assert.Equal(jorandom["replacement"].ToObject<bool[]>(), result.Random.Parameters.Replacements);
+                Assert.Equal(jorandom["userData"].ToObject<string>(), result.Random.UserData);
             }
         }
 
         [Theory]
-        [InlineData(00000, 2)]
-        [InlineData(10001, 2)]
-        [InlineData(1, 00)]
-        [InlineData(1, 21)]
-        public async void GenerateSignedDecimalFractionsWhenArgumentOutOfRange(int count, int decimalPlaces)
+        [InlineData(00000, 02)]
+        [InlineData(10001, 02)]
+        [InlineData(00001, 00)]
+        [InlineData(00001, 21)]
+        public async void GenerateSignedDecimalFractionsWithInvalidParameter(int count, int decimalPlaces)
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_dfr_req.json"));
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
             {
-                await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+                await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateSignedDecimalFractionsAsync(count, decimalPlaces, false, null, CancellationToken.None));
             }
         }
@@ -484,50 +532,50 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateSignedDecimalFractions()
         {
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_dfr_req.json"));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_dfr_res.json"));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_dfr_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_dfr_res.json"));
 
-            var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
+            var joparams = joreq["params"];
+            var jorandom = jores["result"]["random"];
+            var key = joparams["apiKey"].ToString();
 
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(rq => InternalHandleRequest(rq, joreq, jores)))))
             {
                 var result = await client.GenerateSignedDecimalFractionsAsync(
-                    requestJsonObject["params"]["n"].ToObject<int>(),
-                    requestJsonObject["params"]["decimalPlaces"].ToObject<int>(),
-                    true,
-                    null,
+                    joparams["n"].ToObject<int>(),
+                    joparams["decimalPlaces"].ToObject<int>(),
+                    joparams["replacement"].ToObject<bool>(),
+                    joparams["userData"].ToObject<string>(),
                     CancellationToken.None);
 
-                VerifyGenerationInfo(result, responseJsonObject);
+                InternalVerifyResult(result, jores);
 
-                Assert.Equal(responseJsonObject["result"]["random"]["decimalPlaces"], result.Random.DecimalPlaces);
-                Assert.Equal(responseJsonObject["result"]["random"]["replacement"], result.Random.Replacement);
+                Assert.Equal(jorandom["data"].ToObject<decimal[]>(), result.Random.Data);
+                Assert.Equal(jorandom["decimalPlaces"].ToObject<int>(), result.Random.Parameters.DecimalPlaces);
+                Assert.Equal(jorandom["replacement"].ToObject<bool>(), result.Random.Parameters.Replacement);
+                Assert.Equal(jorandom["userData"].ToObject<string>(), result.Random.UserData);
             }
         }
 
         [Theory]
-        [InlineData(00000, "0.0", "0.0", 2)]
-        [InlineData(10001, "0.0", "0.0", 2)]
-        [InlineData(1, "-1000001.0", "0.0", 2)]
-        [InlineData(1, "+1000001.0", "0.0", 2)]
-        [InlineData(1, "0.0", "-1000001.0", 2)]
-        [InlineData(1, "0.0", "+1000001.0", 2)]
-        [InlineData(1, "0.0", "0.0", 01)]
-        [InlineData(1, "0.0", "0.0", 21)]
-        public async void GenerateSignedGaussiansWhenArgumentOutOfRange(int count, string mean, string standardDeviation, int significantDigits)
+        [InlineData(00000, "+0000000.0", "+0000000.0", 02)]
+        [InlineData(10001, "+0000000.0", "+0000000.0", 02)]
+        [InlineData(00001, "-1000001.0", "+0000000.0", 02)]
+        [InlineData(00001, "+1000001.0", "+0000000.0", 02)]
+        [InlineData(00001, "+0000000.0", "-1000001.0", 02)]
+        [InlineData(00001, "+0000000.0", "+1000001.0", 02)]
+        [InlineData(00001, "+0000000.0", "+0000000.0", 01)]
+        [InlineData(00001, "+0000000.0", "+0000000.0", 21)]
+        public async void GenerateSignedGaussiansWithInvalidParameter(int count, string mean, string standardDeviation, int significantDigits)
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_gss_req.json"));
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
             {
                 var meanValue = decimal.Parse(mean, CultureInfo.InvariantCulture);
                 var standardDeviationValue = decimal.Parse(standardDeviation, CultureInfo.InvariantCulture);
 
-                await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+                await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateSignedGaussiansAsync(count, meanValue, standardDeviationValue, significantDigits, null, CancellationToken.None));
             }
         }
@@ -535,45 +583,45 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateSignedGaussians()
         {
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_gss_req.json"));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_gss_res.json"));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_gss_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_gss_res.json"));
 
-            var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
+            var joparams = joreq["params"];
+            var jorandom = jores["result"]["random"];
+            var key = joparams["apiKey"].ToString();
 
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(rq => InternalHandleRequest(rq, joreq, jores)))))
             {
                 var result = await client.GenerateSignedGaussiansAsync(
-                    requestJsonObject["params"]["n"].ToObject<int>(),
-                    requestJsonObject["params"]["mean"].ToObject<decimal>(),
-                    requestJsonObject["params"]["standardDeviation"].ToObject<decimal>(),
-                    requestJsonObject["params"]["significantDigits"].ToObject<int>(),
-                    null,
+                    joparams["n"].ToObject<int>(),
+                    joparams["mean"].ToObject<decimal>(),
+                    joparams["standardDeviation"].ToObject<decimal>(),
+                    joparams["significantDigits"].ToObject<int>(),
+                    joparams["userData"].ToObject<string>(),
                     CancellationToken.None);
 
-                VerifyGenerationInfo(result, responseJsonObject);
+                InternalVerifyResult(result, jores);
 
-                Assert.Equal(responseJsonObject["result"]["random"]["mean"], result.Random.Mean);
-                Assert.Equal(responseJsonObject["result"]["random"]["standardDeviation"], result.Random.StandardDeviation);
-                Assert.Equal(responseJsonObject["result"]["random"]["significantDigits"], result.Random.SignificantDigits);
+                Assert.Equal(jorandom["data"].ToObject<decimal[]>(), result.Random.Data);
+                Assert.Equal(jorandom["mean"].ToObject<decimal>(), result.Random.Parameters.Mean);
+                Assert.Equal(jorandom["standardDeviation"].ToObject<decimal>(), result.Random.Parameters.StandardDeviation);
+                Assert.Equal(jorandom["significantDigits"].ToObject<int>(), result.Random.Parameters.SignificantDigits);
+                Assert.Equal(jorandom["userData"].ToObject<string>(), result.Random.UserData);
             }
         }
 
         [Theory]
-        [InlineData(00000, 1)]
-        [InlineData(10001, 1)]
-        [InlineData(1, 00)]
-        [InlineData(1, 21)]
-        public async void GenerateSignedStringsWhenArgumentOutOfRange(int count, int length)
+        [InlineData(00000, 01)]
+        [InlineData(10001, 01)]
+        [InlineData(00001, 00)]
+        [InlineData(00001, 21)]
+        public async void GenerateSignedStringsWithInvalidParameter(int count, int length)
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_str_req.json"));
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
             {
-                await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+                await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateSignedStringsAsync(count, length, "abcde", false, null, CancellationToken.None));
             }
         }
@@ -581,10 +629,9 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateSignedStringsWhenCharactersIsNull()
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_str_req.json"));
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
             {
                 await Assert.ThrowsAsync<ArgumentNullException>(() =>
                     client.GenerateSignedStringsAsync(1, 1, null, false, null, CancellationToken.None));
@@ -594,10 +641,9 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateSignedStringsWhenCharactersCountIsInvalid()
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_str_req.json"));
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
             {
                 var characters = new string('a', 81);
 
@@ -609,43 +655,43 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateSignedStrings()
         {
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_str_req.json"));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_str_res.json"));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_str_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_str_res.json"));
 
-            var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
+            var joparams = joreq["params"];
+            var jorandom = jores["result"]["random"];
+            var key = joparams["apiKey"].ToString();
 
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(rq => InternalHandleRequest(rq, joreq, jores)))))
             {
                 var result = await client.GenerateSignedStringsAsync(
-                    requestJsonObject["params"]["n"].ToObject<int>(),
-                    requestJsonObject["params"]["length"].ToObject<int>(),
-                    requestJsonObject["params"]["characters"].ToObject<string>(),
-                    true,
-                    null,
+                    joparams["n"].ToObject<int>(),
+                    joparams["length"].ToObject<int>(),
+                    joparams["characters"].ToObject<string>(),
+                    joparams["replacement"].ToObject<bool>(),
+                    joparams["userData"].ToObject<string>(),
                     CancellationToken.None);
 
-                VerifyGenerationInfo(result, responseJsonObject);
+                InternalVerifyResult(result, jores);
 
-                Assert.Equal(responseJsonObject["result"]["random"]["length"], result.Random.Length);
-                Assert.Equal(responseJsonObject["result"]["random"]["characters"], result.Random.Characters);
-                Assert.Equal(responseJsonObject["result"]["random"]["replacement"], result.Random.Replacement);
+                Assert.Equal(jorandom["data"].ToObject<string[]>(), result.Random.Data);
+                Assert.Equal(jorandom["length"].ToObject<int>(), result.Random.Parameters.Length);
+                Assert.Equal(jorandom["characters"].ToObject<string>(), result.Random.Parameters.Characters);
+                Assert.Equal(jorandom["replacement"].ToObject<bool>(), result.Random.Parameters.Replacement);
+                Assert.Equal(jorandom["userData"].ToObject<string>(), result.Random.UserData);
             }
         }
 
         [Theory]
         [InlineData(0000)]
         [InlineData(1001)]
-        public async void GenerateSignedUuidsWhenArgumentOutOfRange(int count)
+        public async void GenerateSignedUuidsWithInvalidParameter(int count)
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_uid_req.json"));
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
             {
-                await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+                await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateSignedUuidsAsync(count, null, CancellationToken.None));
             }
         }
@@ -653,22 +699,24 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateSignedUuids()
         {
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_uid_req.json"));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_uid_res.json"));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_uid_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_uid_res.json"));
 
-            var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
+            var joparams = joreq["params"];
+            var jorandom = jores["result"]["random"];
+            var key = joparams["apiKey"].ToString();
 
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(rq => InternalHandleRequest(rq, joreq, jores)))))
             {
                 var result = await client.GenerateSignedUuidsAsync(
-                    requestJsonObject["params"]["n"].ToObject<int>(),
-                    null,
+                    joparams["n"].ToObject<int>(),
+                    joparams["userData"].ToObject<string>(),
                     CancellationToken.None);
 
-                VerifyGenerationInfo(result, responseJsonObject);
+                InternalVerifyResult(result, jores);
+
+                Assert.Equal(jorandom["data"].ToObject<Guid[]>(), result.Random.Data);
+                Assert.Equal(jorandom["userData"].ToObject<string>(), result.Random.UserData);
             }
         }
 
@@ -679,14 +727,13 @@ namespace Community.RandomOrg.Tests
         [InlineData(001, 1048577)]
         [InlineData(001, 0000007)]
         [InlineData(002, 1048576)]
-        public async void GenerateSignedBlobsWhenArgumentOutOfRange(int count, int size)
+        public async void GenerateSignedBlobsWithInvalidParameter(int count, int size)
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_blb_req.json"));
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
             {
-                await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() =>
+                await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateSignedBlobsAsync(count, size, null, CancellationToken.None));
             }
         }
@@ -694,59 +741,57 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void GenerateSignedBlobs()
         {
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_blb_req.json"));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_blb_res.json"));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_blb_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_blb_res.json"));
 
-            var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
+            var joparams = joreq["params"];
+            var jorandom = jores["result"]["random"];
+            var key = joparams["apiKey"].ToString();
 
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(rq => InternalHandleRequest(rq, joreq, jores)))))
             {
                 var result = await client.GenerateSignedBlobsAsync(
-                    requestJsonObject["params"]["n"].ToObject<int>(),
-                    requestJsonObject["params"]["size"].ToObject<int>(),
-                    null,
+                    joparams["n"].ToObject<int>(),
+                    joparams["size"].ToObject<int>(),
+                    joparams["userData"].ToObject<string>(),
                     CancellationToken.None);
 
-                VerifyGenerationInfo(result, responseJsonObject);
+                InternalVerifyResult(result, jores);
 
-                Assert.Equal(responseJsonObject["result"]["random"]["size"], result.Random.Size);
+                var jodata = (JArray)jorandom["data"];
+
+                for (var i = 0; i < jodata.Count; i++)
+                {
+                    Assert.Equal(Convert.FromBase64String(jodata[i].ToObject<string>()), result.Random.Data[i]);
+                }
+
+                Assert.Equal(jorandom["size"].ToObject<int>(), result.Random.Parameters.Size);
+                Assert.Equal(jorandom["userData"].ToObject<string>(), result.Random.UserData);
             }
         }
 
         [Fact]
         public async void VerifySignatureWhenRandomIsNull()
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.ver_sig_req.json"));
 
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            var joparams = joreq["params"];
+
+            using (var client = new RandomOrgClient(Guid.Empty.ToString(), new HttpClient(new RandomOrgHandler())))
             {
-                var signature = Convert.FromBase64String(
-                    "Pd46xecjlt/EEOdNGFQNCFHVJhZ5lfVUFLziDusOpLIKGbbHh4kCRM8+el8xh3ASUgR7qfL+K7pzERsIIHIheiIt8EXq9Xr/DW3N" +
-                    "3qfKL/4Cai+zyBGn4xThSJnXSJPvM+LuXI+B2dPx7GYJa2PSVgF+fV3j0eN+exAa4fjAQFGiPDQo+dCQO3cSO8aZ76tSGJpo/6b1" +
-                    "rR/sdIt8uAWRsfL56tFA+2+xUtuXU5vM8HT+KO6o4N7TWpvBz1rw/0S9iiIRdIDJ5M/AjKXeXKMMkDBHUaeUWCDEZkZOMYTk6IvO" +
-                    "pERlsWz0dz2xrs4NE8vZsi4nIVU5izGLYceMRf2TmZVC7XXdZDbeEnJnCmDacRBONqTYklJ22wGrXrFs8GElEoG3IqOgjS1ZME3/" +
-                    "jBGW7G3eUB1xb0lT773V2YvGBPTqsnz3tawO8UDdIpoGjSQjtgql/j7gzNmyW6AC9wvrLyXeh7OP6rhp3SLNUAjNhr+QqjHrqPEv" +
-                    "+QqkZspYCxTMVyRILCe+z+jTbNnTClVpgxIP5hSfLkinea/TpomZqWj6KwYPqKuiNMrEXsbWlAytzr1v1tsbHbESb2XKytUDWHqm" +
-                    "BDCNxHphcgVTmn9+bi2+WPjueBBUH+b0ZOvHIZNxld9P76x8IlcOVKRLl770j0yD3ActIZNaHvUNYeBoK2M=");
+                var signature = Convert.FromBase64String(joparams["signature"].ToObject<string>());
 
                 await Assert.ThrowsAsync<ArgumentNullException>(() =>
-                    client.VerifySignatureAsync(default(SignedIntegersRandom), signature, CancellationToken.None));
+                    client.VerifySignatureAsync(default(SignedRandom<int, IntegerParameters>), signature, CancellationToken.None));
             }
         }
 
         [Fact]
         public async void VerifySignatureWhenSignatureIsNull()
         {
-            var stubHandler = (Func<string, Task<string>>)(requestContent => throw new NotSupportedException());
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(Guid.Empty.ToString(), new HttpClient(new RandomOrgHandler())))
             {
-                var random = new SignedIntegersRandom();
+                var random = new SignedRandom<int, IntegerParameters>();
 
                 await Assert.ThrowsAsync<ArgumentNullException>(() =>
                     client.VerifySignatureAsync(random, null, CancellationToken.None));
@@ -756,220 +801,94 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void VerifySignature()
         {
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.ver_sig_req.json"));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.ver_sig_res.json"));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.ver_sig_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.ver_sig_res.json"));
 
-            var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
+            var joparams = joreq["params"];
+            var jorandom = joreq["params"]["random"];
+            var jolicense = joreq["params"]["random"]["license"];
 
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
-
-            using (var client = new RandomOrgClient(null, httpClient))
+            using (var client = new RandomOrgClient(Guid.Empty.ToString(), new HttpClient(new RandomOrgHandler(rq => InternalHandleRequest(rq, joreq, jores)))))
             {
-                var random = new SignedIntegersRandom
+                var random = new SignedRandom<int, IntegerParameters>
                 {
-                    ApiKeyHash = Convert.FromBase64String(requestJsonObject["params"]["random"]["hashedApiKey"].ToObject<string>()),
-                    CompletionTime = requestJsonObject["params"]["random"]["completionTime"].ToObject<DateTime>(),
-                    SerialNumber = requestJsonObject["params"]["random"]["serialNumber"].ToObject<int>(),
-                    Minimum = requestJsonObject["params"]["random"]["min"].ToObject<int>(),
-                    Maximum = requestJsonObject["params"]["random"]["max"].ToObject<int>(),
-                    Replacement = requestJsonObject["params"]["random"]["replacement"].ToObject<bool>(),
-                    Data = requestJsonObject["params"]["random"]["data"].ToObject<int[]>(),
-                    UserData = requestJsonObject["params"]["random"]["userData"].ToObject<string>(),
+                    ApiKeyHash = Convert.FromBase64String(jorandom["hashedApiKey"].ToObject<string>()),
+                    CompletionTime = jorandom["completionTime"].ToObject<DateTime>(),
+                    SerialNumber = jorandom["serialNumber"].ToObject<int>(),
+                    Data = jorandom["data"].ToObject<int[]>(),
+                    UserData = jorandom["userData"].ToObject<string>()
                 };
 
-                random.License.Type = "commercial-2";
-                random.License.Text = "These values are licensed for commercial (non-gambling) use.";
-                random.License.InfoUrl = new Uri("https://api.random.org/licenses/commercial-2");
+                random.Parameters.Minimum = jorandom["min"].ToObject<int>();
+                random.Parameters.Maximum = jorandom["max"].ToObject<int>();
+                random.Parameters.Replacement = jorandom["replacement"].ToObject<bool>();
+                random.License.Type = jolicense["type"].ToObject<string>();
+                random.License.Text = jolicense["text"].ToObject<string>();
+                random.License.InfoUrl = new Uri(jolicense["infoUrl"].ToObject<string>());
 
-                var signature = Convert.FromBase64String(requestJsonObject["params"]["signature"].ToObject<string>());
+                var signature = Convert.FromBase64String(joparams["signature"].ToObject<string>());
                 var result = await client.VerifySignatureAsync(random, signature, CancellationToken.None);
 
-                Assert.True(result);
+                Assert.Equal(result, jores["result"]["authenticity"].ToObject<bool>());
             }
         }
 
         [Fact]
-        public async void GetResult()
+        public async void GetUsageWhenHttpStatusCodeIsInvalid()
         {
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_res_req.json"));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_res_res.json"));
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_res.json"));
 
-            var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
+            var key = joreq["params"]["apiKey"].ToString();
 
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            async Task<HttpResponseMessage> Handler(HttpRequestMessage request)
             {
-                var result = await client.GetResultAsync<SignedIntegersRandom, int>(
-                    requestJsonObject["params"]["serialNumber"].ToObject<int>(),
-                    CancellationToken.None);
+                var joreqa = JObject.Parse(await request.Content.ReadAsStringAsync());
 
-                VerifyGenerationInfo(result, responseJsonObject);
+                joreq["id"] = joreqa["id"];
+                jores["id"] = joreqa["id"];
 
-                Assert.Equal(responseJsonObject["result"]["random"]["min"], result.Random.Minimum);
-                Assert.Equal(responseJsonObject["result"]["random"]["max"], result.Random.Maximum);
-                Assert.Equal(responseJsonObject["result"]["random"]["replacement"], result.Random.Replacement);
+                Assert.True(JToken.DeepEquals(joreqa, joreq));
+
+                return new HttpResponseMessage
+                {
+                    StatusCode = HttpStatusCode.BadRequest,
+                    ReasonPhrase = HttpStatusCode.BadRequest.ToString(),
+                    Content = new StringContent(jores.ToString(), Encoding.UTF8, "application/json")
+                };
             }
-        }
 
-        [Fact]
-        public async void GetResultWhenRandomTypeIsInvalid()
-        {
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_res_req.json"));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_res_res.json"));
-
-            var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
-
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
-            {
-                await Assert.ThrowsAsync<RandomOrgRequestException>(() =>
-                    client.GetResultAsync<SignedUuidsRandom, Guid>(
-                        requestJsonObject["params"]["serialNumber"].ToObject<int>(),
-                        CancellationToken.None));
-            }
-        }
-
-        [Fact]
-        public async void InvokeMethodWhenHttpStatusCodeIsInvalid()
-        {
-            var stubHandler = (Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>>)
-                (
-                    (requestMessage, cancellationToken) =>
-                    {
-                        var responseContent = EmbeddedResourceManager.GetString("Assets.get_usg_res.json");
-
-                        var responseMessage = new HttpResponseMessage
-                        {
-                            RequestMessage = requestMessage,
-                            StatusCode = HttpStatusCode.BadRequest,
-                            ReasonPhrase = "BAD_REQUEST",
-                            Content = new StringContent(responseContent, Encoding.UTF8, _HTTP_MEDIA_TYPE),
-                            Version = new Version(1, 1)
-                        };
-
-                        return Task.FromResult(responseMessage);
-                    }
-                );
-
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(Handler))))
             {
                 var exception = await Assert.ThrowsAsync<RandomOrgRequestException>(() =>
                     client.GetUsageAsync(CancellationToken.None));
 
-                Assert.Equal("getUsage", exception.RpcMethod);
                 Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
-                Assert.Equal("BAD_REQUEST", exception.ReasonPhrase);
+                Assert.Equal(HttpStatusCode.BadRequest.ToString(), exception.ReasonPhrase);
             }
         }
 
-        [Fact]
-        public async void InvokeMethodWhenContentTypeIsInvalid()
+        [Theory]
+        [InlineData("get_usg_101")]
+        [InlineData("get_usg_501")]
+        public async void GetUsageWithServiceError(string test)
         {
-            var stubHandler = (Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>>)
-                (
-                    (requestMessage, cancellationToken) =>
-                    {
-                        var responseContentString = EmbeddedResourceManager.GetString("Assets.get_usg_res.json");
-                        var responseContent = new StringContent(responseContentString, Encoding.UTF8, "application/octet-stream");
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString($"Assets.{test}_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString($"Assets.{test}_res.json"));
 
-                        var responseMessage = new HttpResponseMessage
-                        {
-                            RequestMessage = requestMessage,
-                            StatusCode = HttpStatusCode.OK,
-                            Content = responseContent,
-                            Version = new Version(1, 1)
-                        };
+            var joparams = joreq["params"];
+            var joerror = jores["error"];
 
-                        return Task.FromResult(responseMessage);
-                    }
-                );
+            var key = joparams["apiKey"].ToString();
 
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
-            {
-                await Assert.ThrowsAsync<RandomOrgRequestException>(() =>
-                    client.GetUsageAsync(CancellationToken.None));
-            }
-        }
-
-        [Fact]
-        public async void InvokeMethodWhenContentLengthIsInvalid()
-        {
-            var stubHandler = (Func<HttpRequestMessage, CancellationToken, Task<HttpResponseMessage>>)
-            (
-                (requestMessage, cancellationToken) =>
-                {
-                    var responseContentString = EmbeddedResourceManager.GetString("Assets.get_usg_res.json");
-                    var responseContent = new StringContent(responseContentString, Encoding.UTF8, _HTTP_MEDIA_TYPE);
-
-                    responseContent.Headers.ContentLength = 2;
-
-                    var responseMessage = new HttpResponseMessage
-                    {
-                        RequestMessage = requestMessage,
-                        StatusCode = HttpStatusCode.OK,
-                        Content = responseContent,
-                        Version = new Version(1, 1)
-                    };
-
-                    return Task.FromResult(responseMessage);
-                }
-            );
-
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
-            {
-                await Assert.ThrowsAsync<RandomOrgRequestException>(() =>
-                    client.GetUsageAsync(CancellationToken.None));
-            }
-        }
-
-        [Fact]
-        public async void RandomOrgErrorWithNoData()
-        {
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_req_101.json"));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_res_101.json"));
-
-            var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
-
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
+            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(rq => InternalHandleRequest(rq, joreq, jores)))))
             {
                 var exception = await Assert.ThrowsAsync<RandomOrgException>(() =>
                     client.GetUsageAsync(CancellationToken.None));
 
-                Assert.Equal(101, exception.Code);
-            }
-        }
-
-        [Fact]
-        public async void RandomOrgErrorWithData()
-        {
-            var requestJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_req_501.json"));
-            var responseJsonObject = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_res_501.json"));
-
-            var stubHandler = (Func<string, Task<string>>)
-                (requestContent => HandleRequestContent(requestContent, requestJsonObject, responseJsonObject));
-
-            var httpClient = new HttpClient(new HttpMessageHandlerStub(stubHandler, _HTTP_MEDIA_TYPE));
-
-            using (var client = new RandomOrgClient(_RANDOM_API_KEY, httpClient))
-            {
-                var exception = await Assert.ThrowsAsync<RandomOrgException>(() =>
-                    client.GetUsageAsync(CancellationToken.None));
-
-                Assert.Equal(501, exception.Code);
+                Assert.Equal(joreq["method"].ToObject<string>(), exception.Method);
+                Assert.Equal(joerror["code"].ToObject<long>(), exception.Code);
+                Assert.Equal(joerror["message"].ToObject<string>(), exception.Message);
             }
         }
     }

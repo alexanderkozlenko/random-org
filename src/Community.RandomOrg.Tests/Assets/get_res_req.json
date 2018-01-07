@@ -1,8 +1,0 @@
-{
-    "jsonrpc": "2.0",
-    "method": "getResult",
-    "params": {
-        "apiKey": "00000000-0000-0000-0000-000000000000",
-        "serialNumber": 2647656
-    }
-}
