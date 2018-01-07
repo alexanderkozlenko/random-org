@@ -482,7 +482,7 @@ namespace Community.RandomOrg
                 typeof(RpcSignedResult<RpcGaussiansRandom, decimal>),
                 typeof(RpcSignedResult<RpcStringsRandom, string>),
                 typeof(RpcSignedResult<RpcUuidsRandom, Guid>),
-                typeof(RpcSignedResult<RpcBlobsRandom, string>),
+                typeof(RpcSignedResult<RpcBlobsRandom, string>)
             };
 
             var result = new Dictionary<Type, JsonRpcMethodScheme>(types.Length);

@@ -23,7 +23,6 @@ using (var client = new RandomOrgClient("YOUR_API_KEY_HERE"))
     // Each generation method has a corresponding one for generating random data
     // with signature, which can be verified afterwards
     var sin = await client.GenerateSignedIntegersAsync(1, 0, 10, false);
-    // Signature verification can be executed without specifying an API key
     var vin = await client.VerifySignatureAsync(sin.Random, sin.Signature);
 
     Console.WriteLine("Random integer: " + bin.Random.Data[0]);
@@ -38,7 +37,7 @@ using (var client = new RandomOrgClient("YOUR_API_KEY_HERE"))
 
 ### Limitations
 
-- `string` is the only supported type for user data optional parameter (Signed API)
-- `getResult` method is not supported (Signed API)
 - `base64` is the only supported format for BLOBs representation in JSON
 - `10` is the only supported base for integers representation in JSON
+- `string` is the only supported type for user data optional parameter (Signed API)
+- A method for retrieving previously generated results is not supported (Signed API)

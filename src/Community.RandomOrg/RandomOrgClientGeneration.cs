@@ -330,7 +330,7 @@ namespace Community.RandomOrg
             var parameters = new Dictionary<string, object>(2, StringComparer.Ordinal)
             {
                 ["apiKey"] = _apiKey,
-                ["n"] = count,
+                ["n"] = count
             };
 
             var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<Guid>, RpcRandom<Guid>, Guid>(
