@@ -3,7 +3,7 @@
     "result": {
         "random": {
             "method": "generateSignedGaussians",
-            "hashedApiKey": "jRRSWJJ4kGLIQJ6FngDu2WaGnf7CAV8jqmj2K2HjaF5y++av3qB7r4oq67cnIKAEBeciqJKCXdXKE9apwtg2MA==",
+            "hashedApiKey": "FG+7TLaIoH+9IUeE8vc0ln2AL2EoPmGfd63M/40XPWSd8uJ/3cnpVBQnNhppoKiYeFCwy5PaS1A/jmdUPfRWzQ==",
             "n": 4,
             "mean": 0,
             "standardDeviation": 1,
@@ -15,17 +15,17 @@
                 -2.4014567
             ],
             "license": {
-                "type": "commercial-2",
-                "text": "These values are licensed for commercial (non-gambling) use.",
-                "infoUrl": "https://api.random.org/licenses/commercial-2"
+                "type": "beta",
+                "text": "These values are licensed for non-profit, commercial (non-gambling), and for gambling purposes with no prize value limitations.",
+                "infoUrl": "https://api.random.org/licenses/beta"
             },
             "userData": "2a7c3042-a6fc-4449-b8da-1aac0c20b1df",
             "completionTime": "2015-01-02 03:04:05Z",
             "serialNumber": 1
         },
         "signature": "ZdPJHoxP6h/fB80puc91ZyUD/JqV/iz4agCZsqUvk59DPyvS/1VW1VyBSdPKqKGEXXK1fZtGZ45elQFpXl7faxeXI29gVC9bKpQ76Ilt+/X1jGdvgO9u76fbtPpqipjentpQhMuEWYqKrSakcicwv7U9AVQNdjqIlF/CB8mixukWOek02fsykmEMQCPZPXADlF8HkI35GzjSJWox1BwvsFBUxqe0bQKPgTwv2vLgsfbq56ozR2epa4jG8f49TtHRDywsx42bKk2w9xikMVy2J0aWGBk8sTsith9LxUHQPBbhEz6luUftUz03qH5v0wzsxQAQ07RdhV/JnHyF/E0VxyrGiuqXrGNTmQdezWvGywWIq8vuijBimhaLStkSWrGa4kSjHN9Oepx+COCJAJLrFGkINegIjO47V1nIotK8+VIdl2jWY1OzMnNs3fxvsMfIhVC+LSvWAepEa5qcRGpei3FBRoCiC1d8bdTZlRGkTzknqIoa1Zd6r3b0C29HWZqcYQ9OIv3rIfdA8IqJJKuvoLeJDUDJL3mjEqMpj6RPIb/EbJ8m2inN2yCid7Z7lL3WAE8+9r4zuc/UFLmXzePm7m2zhB50HN36N502Yl3I9/YVVgIKnK45HpPWM3Eda4BoxYZKeKclFQkOLmoLymcWcFqyrGaAp8zlk2ivOESEW7A=",
-        "bitsUsed": 106,
-        "bitsLeft": 4990643,
+        "bitsUsed": 1,
+        "bitsLeft": 199999,
         "requestsLeft": 199999,
         "advisoryDelay": 0
     }

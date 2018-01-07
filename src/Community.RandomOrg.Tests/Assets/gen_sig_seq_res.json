@@ -3,7 +3,7 @@
     "result": {
         "random": {
             "method": "generateSignedIntegerSequences",
-            "hashedApiKey": "jRRSWJJ4kGLIQJ6FngDu2WaGnf7CAV8jqmj2K2HjaF5y++av3qB7r4oq67cnIKAEBeciqJKCXdXKE9apwtg2MA==",
+            "hashedApiKey": "FG+7TLaIoH+9IUeE8vc0ln2AL2EoPmGfd63M/40XPWSd8uJ/3cnpVBQnNhppoKiYeFCwy5PaS1A/jmdUPfRWzQ==",
             "n": [
                 1,
                 2
@@ -34,9 +34,9 @@
                 ]
             ],
             "license": {
-                "type": "commercial-2",
-                "text": "These values are licensed for commercial (non-gambling) use.",
-                "infoUrl": "https://api.random.org/licenses/commercial-2"
+                "type": "beta",
+                "text": "These values are licensed for non-profit, commercial (non-gambling), and for gambling purposes with no prize value limitations.",
+                "infoUrl": "https://api.random.org/licenses/beta"
             },
             "userData": "2a7c3042-a6fc-4449-b8da-1aac0c20b1df",
             "completionTime": "2015-01-02 03:04:05Z",

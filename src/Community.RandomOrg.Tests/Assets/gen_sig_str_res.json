@@ -3,7 +3,7 @@
     "result": {
         "random": {
             "method": "generateSignedStrings",
-            "hashedApiKey": "jRRSWJJ4kGLIQJ6FngDu2WaGnf7CAV8jqmj2K2HjaF5y++av3qB7r4oq67cnIKAEBeciqJKCXdXKE9apwtg2MA==",
+            "hashedApiKey": "FG+7TLaIoH+9IUeE8vc0ln2AL2EoPmGfd63M/40XPWSd8uJ/3cnpVBQnNhppoKiYeFCwy5PaS1A/jmdUPfRWzQ==",
             "n": 8,
             "length": 10,
             "characters": "abcdefghijklmnopqrstuvwxyz",
@@ -19,17 +19,17 @@
                 "swmsyolhar"
             ],
             "license": {
-                "type": "commercial-2",
-                "text": "These values are licensed for commercial (non-gambling) use.",
-                "infoUrl": "https://api.random.org/licenses/commercial-2"
+                "type": "beta",
+                "text": "These values are licensed for non-profit, commercial (non-gambling), and for gambling purposes with no prize value limitations.",
+                "infoUrl": "https://api.random.org/licenses/beta"
             },
             "userData": "2a7c3042-a6fc-4449-b8da-1aac0c20b1df",
             "completionTime": "2015-01-02 03:04:05Z",
             "serialNumber": 1
         },
         "signature": "uxNedFTWcAhFyGzrPFFEGGa81QKaepcemBFSfcLczUXXUWGgdjH6P/xE+1kR7jLIt/VLw/xOu/g1vPHyawtnvkPBle6HmQCnJ+nPRjNLUyEpAcZKiOCpvMRtsiUV9IBAwSefWgqaA+IdE457IwSG+LHXAn//0tiISn7hFdSF51cSsbvbM8aLH12vXc9AUuaqGlp6KpTgyfQAX1IciHrPiowdgmJ5hqJvXGj40h1C/NtHPazx6tvEE3ZHHgRubUUlAFJiP3hYcOZq1f+hdyk5d8pHKRFJsZee8aqiszidLPIeWGP4ce+8/g9NSAVUW3uqyxhSfnWM/CIo6ajR+VmzvjTdQO9ThcmkwXIgFauKaOkXmHi/kAzP9X2bLrxu3fIORtno/AO0Asu0mvC8QEcXk2iUWNqfU8FD0DcYeK44qpzKz+Rd1NSyGYVcU7katKSXZghEGQexXd0LHq5IQQeyUIJkA515l+sppebQpScRiUip2AmM2EJTxVuXDRL857R1zyorHZb5GHAUXb5jYUvRrxhavC73G8ppKv7z3aVSVZJ0fqam7zKQyQaWY4wrTG4HjJuHX0Elvtxp49HB4dkHs9nPGw+ETJRiNPZm9Fguf/z4RWuCAuvdarPSINK2N4Fmv2ww5tKWj/veFmHc52oRHFq/cv+90hpPFDaIc6beJ+Y=",
-        "bitsUsed": 376,
-        "bitsLeft": 4963692,
+        "bitsUsed": 1,
+        "bitsLeft": 199999,
         "requestsLeft": 199999,
         "advisoryDelay": 0
     }
