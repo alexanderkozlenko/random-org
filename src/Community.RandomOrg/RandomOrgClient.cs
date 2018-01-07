@@ -60,7 +60,7 @@ namespace Community.RandomOrg
                 ["apiKey"] = _apiKey
             };
 
-            var response = await InvokeAccountServiceMethodAsync<RpcGetUsageResult>("getUsage", @params, cancellationToken).ConfigureAwait(false);
+            var response = await InvokeAccountServiceMethodAsync<RpcRandomUsageResult>("getUsage", @params, cancellationToken).ConfigureAwait(false);
 
             return new RandomUsage(response.Status, response.CreationTime, response.TotalBits, response.BitsLeft, response.TotalRequests, response.RequestsLeft);
         }
@@ -469,20 +469,20 @@ namespace Community.RandomOrg
         {
             var types = new[]
             {
-                typeof(RpcGetUsageResult),
-                typeof(RpcVerifyResult),
+                typeof(RpcRandomUsageResult),
                 typeof(RpcRandomResult<int>),
                 typeof(RpcRandomResult<int[]>),
                 typeof(RpcRandomResult<string>),
                 typeof(RpcRandomResult<decimal>),
                 typeof(RpcRandomResult<Guid>),
-                typeof(RpcSignedResult<RpcIntegersRandom, int>),
-                typeof(RpcSignedResult<RpcIntegerSequencesRandom, int[]>),
-                typeof(RpcSignedResult<RpcDecimalFractionsRandom, decimal>),
-                typeof(RpcSignedResult<RpcGaussiansRandom, decimal>),
-                typeof(RpcSignedResult<RpcStringsRandom, string>),
-                typeof(RpcSignedResult<RpcUuidsRandom, Guid>),
-                typeof(RpcSignedResult<RpcBlobsRandom, string>)
+                typeof(RpcSignedRandomResult<RpcIntegersRandom, int>),
+                typeof(RpcSignedRandomResult<RpcIntegerSequencesRandom, int[]>),
+                typeof(RpcSignedRandomResult<RpcDecimalFractionsRandom, decimal>),
+                typeof(RpcSignedRandomResult<RpcGaussiansRandom, decimal>),
+                typeof(RpcSignedRandomResult<RpcStringsRandom, string>),
+                typeof(RpcSignedRandomResult<RpcUuidsRandom, Guid>),
+                typeof(RpcSignedRandomResult<RpcBlobsRandom, string>),
+                typeof(RpcVerifyResult)
             };
 
             var result = new Dictionary<Type, JsonRpcMethodScheme>(types.Length);

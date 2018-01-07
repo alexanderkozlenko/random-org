@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Internal
 {
-    internal sealed class RpcGetUsageResult : RpcMethodResult
+    internal sealed class RpcRandomUsageResult : RpcMethodResult
     {
         [JsonProperty("status", Required = Required.Always)]
         [JsonConverter(typeof(ApiKeyStatusConverter))]
