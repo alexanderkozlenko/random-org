@@ -3,9 +3,9 @@
     "result": {
         "status": "running",
         "creationTime": "2015-01-02 03:04:05Z",
-        "bitsLeft": 199999,
-        "requestsLeft": 199999,
-        "totalBits": 1,
+        "bitsLeft": 249992,
+        "requestsLeft": 999,
+        "totalBits": 8,
         "totalRequests": 1
     }
 }

@@ -21,9 +21,9 @@
             "serialNumber": 1
         },
         "signature": "SwpyF0bd7ue4iXrFpj/xAGIz0/cd9ginzjfBXfl4gsFPKXgxkkItgby9mafz6B1DK5UL3jexfrMTJxhsq3BV3b7W/PG5DUicIoCYFRNAHgfoVZ94ddDefIkQjPC8+tOXqVDNBKeXBFFz+A+QF3SAL1OcEXooMlSuiZaNKI7R8NS/AhxWQwPOv8/oeWQXkoyejZWmCrMNX84hYgNUi6Ri/WHs8r0CZAm9fhlgoREX8kSC9wmyFm+H0e+z5C9ZHzmO3OHGHP4nzLF1NdOL3Z5xWls1RLmwqlmpF2KpFsEs9PLqfx6AQymyR3kxNFhLSAoVkuLzHQb3nX9ncHPesKmxIajmID6OsUtt5LC9osfPxrZT+iQVX3NN93pcE3ZNQ4GzOMv2OVk72M7QbmeZT8Ra4VJOmMJVvCbvWZcmpXgvFb795NBExQlnmFCJN+B/BkeasdwL+1hJiFoi0pWgU7odnnp9MNGRtknoYOut337EqF3MTH+aZ0vlb6fXiJ4jNHwcFkCODjnRf9PXFrBMswcV6tU5EdnfJQ4OMFhk3wXE2pqDAkwBo7R6C38EVvKz39AO7rP7QIN54OzUl/x2eHLivxgszBBubA1RUgtDFhqLRMawnpfYLgb5+E9nUCBf0nwOqz1OJSo0X5TNptQy6pOElE8rSDhZjTxjxq3ldKOyCkk=",
-        "bitsUsed": 1,
-        "bitsLeft": 199999,
-        "requestsLeft": 199999,
+        "bitsUsed": 8,
+        "bitsLeft": 249992,
+        "requestsLeft": 999,
         "advisoryDelay": 0
     }
 }
