@@ -16,9 +16,9 @@ namespace Community.RandomOrg
     public sealed partial class RandomOrgClient : IDisposable
     {
         private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = new MediaTypeHeaderValue("application/json");
-        private static readonly JsonRpcSerializer _jsonRpcSerializer = CreateJsonRpcSerializer();
+        private static readonly JsonRpcSerializer _jsonRpcSerializer = new JsonRpcSerializer(null, new Dictionary<JsonRpcId, JsonRpcResponseContract>(1));
         private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/2/invoke", UriKind.Absolute);
-        private static readonly IReadOnlyDictionary<Type, JsonRpcMethodScheme> _bindings = CreateBindings();
+        private static readonly IReadOnlyDictionary<Type, JsonRpcResponseContract> _contracts = CreateContracts();
 
         private readonly string _apiKey;
         private readonly HttpMessageInvoker _httpMessageInvoker;
@@ -402,12 +402,12 @@ namespace Community.RandomOrg
 
                     try
                     {
-                        var bindings = new Dictionary<JsonRpcId, JsonRpcMethodScheme>(1)
-                        {
-                            [jsonRpcRequest.Id] = _bindings[typeof(TResult)]
-                        };
+                        _jsonRpcSerializer.DynamicResponseBindings[jsonRpcRequest.Id] = _contracts[typeof(TResult)];
 
-                        responseData = _jsonRpcSerializer.DeserializeResponseData(httpResponseString, bindings);
+                        responseData = _jsonRpcSerializer.DeserializeResponseData(httpResponseString);
+
+                        _jsonRpcSerializer.DynamicResponseBindings.Remove(jsonRpcRequest.Id);
+
                     }
                     catch (JsonRpcException e)
                     {
@@ -455,17 +455,7 @@ namespace Community.RandomOrg
             return httpClient;
         }
 
-        private static JsonRpcSerializer CreateJsonRpcSerializer()
-        {
-            var settings = new JsonRpcSerializerSettings
-            {
-                JsonSerializerBufferPool = new JsonBufferPool()
-            };
-
-            return new JsonRpcSerializer(null, settings);
-        }
-
-        private static IReadOnlyDictionary<Type, JsonRpcMethodScheme> CreateBindings()
+        private static IReadOnlyDictionary<Type, JsonRpcResponseContract> CreateContracts()
         {
             var types = new[]
             {
@@ -485,11 +475,11 @@ namespace Community.RandomOrg
                 typeof(RpcVerifyResult)
             };
 
-            var result = new Dictionary<Type, JsonRpcMethodScheme>(types.Length);
+            var result = new Dictionary<Type, JsonRpcResponseContract>(types.Length);
 
             for (var i = 0; i < types.Length; i++)
             {
-                result[types[i]] = new JsonRpcMethodScheme(types[i]);
+                result[types[i]] = new JsonRpcResponseContract(types[i]);
             }
 
             return result;
