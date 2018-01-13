@@ -31,11 +31,9 @@ namespace Community.RandomOrg.Tests
             joreq["id"] = joreqa["id"];
             jores["id"] = joreqa["id"];
 
-            _output.WriteLine("Actual request:");
-            _output.WriteLine("");
             _output.WriteLine(joreqa.ToString(Formatting.Indented));
 
-            Assert.True(JToken.DeepEquals(joreqa, joreq), "Request JSON object differs from expected");
+            Assert.True(JToken.DeepEquals(joreqa, joreq), "Actual JSON string differs from expected");
 
             return new HttpResponseMessage
             {
