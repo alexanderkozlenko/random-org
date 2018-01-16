@@ -32,9 +32,7 @@ namespace Community.RandomOrg.Benchmarks.Suites
                 "gen_sig_int",
                 "gen_sig_seq",
                 "gen_sig_str",
-                "gen_sig_uid",
-                "get_usg",
-                "ver_sig"
+                "gen_sig_uid"
             };
 
             foreach (var asset in assets)
