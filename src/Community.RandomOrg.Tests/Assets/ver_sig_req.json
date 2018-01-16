@@ -5,14 +5,20 @@
         "random": {
             "method": "generateSignedIntegers",
             "hashedApiKey": "oT3AdLMVZKajz0pgW/8Z+t5sGZkqQSOnAi1aB8Li0tXgWf8LolrgdQ1wn9sKx1ehxhUZmhwUIpAtM8QeRbn51Q==",
-            "n": 2,
+            "n": 8,
             "min": 1,
-            "max": 10,
+            "max": 256,
             "replacement": true,
             "base": 10,
             "data": [
-                1,
-                10
+                156,
+                0,
+                25,
+                33,
+                152,
+                148,
+                256,
+                117
             ],
             "userData": "2a7c3042-a6fc-4449-b8da-1aac0c20b1df",
             "completionTime": "2015-01-02 03:04:05Z",

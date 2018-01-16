@@ -26,7 +26,7 @@ namespace Community.RandomOrg.Tests
 
         private async Task<HttpResponseMessage> InternalHandleRequest(HttpRequestMessage request, JObject joreq, JObject jores)
         {
-            var joreqa = JObject.Parse(await request.Content.ReadAsStringAsync());
+            var joreqa = JObject.Parse(await request.Content.ReadAsStringAsync().ConfigureAwait(false));
 
             joreq["id"] = joreqa["id"];
             jores["id"] = joreqa["id"];
@@ -102,7 +102,7 @@ namespace Community.RandomOrg.Tests
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_int_req.json"));
 
-            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateIntegersAsync(count, minimum, maximum, false, CancellationToken.None));
@@ -120,7 +120,7 @@ namespace Community.RandomOrg.Tests
 
             var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
             {
                 var result = await client.GenerateIntegersAsync(
                     joparams["n"].ToObject<int>(),
@@ -146,7 +146,7 @@ namespace Community.RandomOrg.Tests
 
             var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
             {
                 var result = await client.GenerateIntegerSequencesAsync(
                     joparams["n"].ToObject<int[]>(),
@@ -170,7 +170,7 @@ namespace Community.RandomOrg.Tests
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_dfr_req.json"));
 
-            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateDecimalFractionsAsync(count, decimalPlaces, false, CancellationToken.None));
@@ -187,7 +187,7 @@ namespace Community.RandomOrg.Tests
             var jorandom = jores["result"]["random"];
             var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
             {
                 var result = await client.GenerateDecimalFractionsAsync(
                     joparams["n"].ToObject<int>(),
@@ -214,7 +214,7 @@ namespace Community.RandomOrg.Tests
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_gss_req.json"));
 
-            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 var meanValue = decimal.Parse(mean, CultureInfo.InvariantCulture);
                 var standardDeviationValue = decimal.Parse(standardDeviation, CultureInfo.InvariantCulture);
@@ -234,7 +234,7 @@ namespace Community.RandomOrg.Tests
             var jorandom = jores["result"]["random"];
             var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
             {
                 var result = await client.GenerateGaussiansAsync(
                     joparams["n"].ToObject<int>(),
@@ -258,7 +258,7 @@ namespace Community.RandomOrg.Tests
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_str_req.json"));
 
-            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateStringsAsync(count, length, "abcde", false, CancellationToken.None));
@@ -270,7 +270,7 @@ namespace Community.RandomOrg.Tests
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_str_req.json"));
 
-            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAsync<ArgumentNullException>(() =>
                     client.GenerateStringsAsync(1, 1, null, false, CancellationToken.None));
@@ -284,7 +284,7 @@ namespace Community.RandomOrg.Tests
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_str_req.json"));
 
-            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAsync<ArgumentException>(() =>
                     client.GenerateStringsAsync(1, 1, new string('a', number), false, CancellationToken.None));
@@ -301,7 +301,7 @@ namespace Community.RandomOrg.Tests
             var jorandom = jores["result"]["random"];
             var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
             {
                 var result = await client.GenerateStringsAsync(
                     joparams["n"].ToObject<int>(),
@@ -323,7 +323,7 @@ namespace Community.RandomOrg.Tests
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_uid_req.json"));
 
-            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateUuidsAsync(count, CancellationToken.None));
@@ -340,7 +340,7 @@ namespace Community.RandomOrg.Tests
             var jorandom = jores["result"]["random"];
             var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
             {
                 var result = await client.GenerateUuidsAsync(
                     joparams["n"].ToObject<int>(),
@@ -363,7 +363,7 @@ namespace Community.RandomOrg.Tests
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_blb_req.json"));
 
-            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateBlobsAsync(count, size, CancellationToken.None));
@@ -380,7 +380,7 @@ namespace Community.RandomOrg.Tests
             var jorandom = jores["result"]["random"];
             var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
             {
                 var result = await client.GenerateBlobsAsync(
                     joparams["n"].ToObject<int>(),
@@ -403,7 +403,7 @@ namespace Community.RandomOrg.Tests
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_req.json"));
 
-            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAsync<InvalidOperationException>(() =>
                     client.GetUsageAsync(CancellationToken.None));
@@ -419,7 +419,7 @@ namespace Community.RandomOrg.Tests
             var joresult = jores["result"];
             var key = joreq["params"]["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
             {
                 var result = await client.GetUsageAsync(CancellationToken.None);
 
@@ -444,7 +444,7 @@ namespace Community.RandomOrg.Tests
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_int_req.json"));
 
-            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateSignedIntegersAsync(count, minimum, maximum, false, null, CancellationToken.None));
@@ -461,7 +461,7 @@ namespace Community.RandomOrg.Tests
             var jorandom = jores["result"]["random"];
             var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
             {
                 var result = await client.GenerateSignedIntegersAsync(
                     joparams["n"].ToObject<int>(),
@@ -491,7 +491,7 @@ namespace Community.RandomOrg.Tests
             var jorandom = jores["result"]["random"];
             var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
             {
                 var result = await client.GenerateSignedIntegerSequencesAsync(
                     joparams["n"].ToObject<int[]>(),
@@ -520,7 +520,7 @@ namespace Community.RandomOrg.Tests
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_dfr_req.json"));
 
-            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateSignedDecimalFractionsAsync(count, decimalPlaces, false, null, CancellationToken.None));
@@ -537,7 +537,7 @@ namespace Community.RandomOrg.Tests
             var jorandom = jores["result"]["random"];
             var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
             {
                 var result = await client.GenerateSignedDecimalFractionsAsync(
                     joparams["n"].ToObject<int>(),
@@ -568,7 +568,7 @@ namespace Community.RandomOrg.Tests
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_gss_req.json"));
 
-            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 var meanValue = decimal.Parse(mean, CultureInfo.InvariantCulture);
                 var standardDeviationValue = decimal.Parse(standardDeviation, CultureInfo.InvariantCulture);
@@ -588,7 +588,7 @@ namespace Community.RandomOrg.Tests
             var jorandom = jores["result"]["random"];
             var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
             {
                 var result = await client.GenerateSignedGaussiansAsync(
                     joparams["n"].ToObject<int>(),
@@ -617,7 +617,7 @@ namespace Community.RandomOrg.Tests
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_str_req.json"));
 
-            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateSignedStringsAsync(count, length, "abcde", false, null, CancellationToken.None));
@@ -629,7 +629,7 @@ namespace Community.RandomOrg.Tests
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_str_req.json"));
 
-            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAsync<ArgumentNullException>(() =>
                     client.GenerateSignedStringsAsync(1, 1, null, false, null, CancellationToken.None));
@@ -641,7 +641,7 @@ namespace Community.RandomOrg.Tests
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_str_req.json"));
 
-            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 var characters = new string('a', 81);
 
@@ -660,7 +660,7 @@ namespace Community.RandomOrg.Tests
             var jorandom = jores["result"]["random"];
             var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
             {
                 var result = await client.GenerateSignedStringsAsync(
                     joparams["n"].ToObject<int>(),
@@ -687,7 +687,7 @@ namespace Community.RandomOrg.Tests
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_uid_req.json"));
 
-            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateSignedUuidsAsync(count, null, CancellationToken.None));
@@ -704,7 +704,7 @@ namespace Community.RandomOrg.Tests
             var jorandom = jores["result"]["random"];
             var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
             {
                 var result = await client.GenerateSignedUuidsAsync(
                     joparams["n"].ToObject<int>(),
@@ -729,7 +729,7 @@ namespace Community.RandomOrg.Tests
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_blb_req.json"));
 
-            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
                     client.GenerateSignedBlobsAsync(count, size, null, CancellationToken.None));
@@ -746,7 +746,7 @@ namespace Community.RandomOrg.Tests
             var jorandom = jores["result"]["random"];
             var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
             {
                 var result = await client.GenerateSignedBlobsAsync(
                     joparams["n"].ToObject<int>(),
@@ -775,7 +775,7 @@ namespace Community.RandomOrg.Tests
 
             var joparams = joreq["params"];
 
-            using (var client = new RandomOrgClient(Guid.Empty.ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(Guid.Empty.ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 var signature = Convert.FromBase64String(joparams["signature"].ToObject<string>());
 
@@ -787,7 +787,7 @@ namespace Community.RandomOrg.Tests
         [Fact]
         public async void VerifySignatureWhenSignatureIsNull()
         {
-            using (var client = new RandomOrgClient(Guid.Empty.ToString(), new HttpClient(new RandomOrgHandler())))
+            using (var client = new RandomOrgClient(Guid.Empty.ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 var random = new SignedRandom<int, IntegerParameters>();
 
@@ -806,7 +806,7 @@ namespace Community.RandomOrg.Tests
             var jorandom = joreq["params"]["random"];
             var jolicense = joreq["params"]["random"]["license"];
 
-            using (var client = new RandomOrgClient(Guid.Empty.ToString(), new HttpClient(new RandomOrgHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(Guid.Empty.ToString(), new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
             {
                 var random = new SignedRandom<int, IntegerParameters>
                 {
@@ -841,7 +841,7 @@ namespace Community.RandomOrg.Tests
 
             async Task<HttpResponseMessage> Handler(HttpRequestMessage request)
             {
-                var joreqa = JObject.Parse(await request.Content.ReadAsStringAsync());
+                var joreqa = JObject.Parse(await request.Content.ReadAsStringAsync().ConfigureAwait(false));
 
                 joreq["id"] = joreqa["id"];
                 jores["id"] = joreqa["id"];
@@ -856,7 +856,7 @@ namespace Community.RandomOrg.Tests
                 };
             }
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(Handler))))
+            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(Handler))))
             {
                 var exception = await Assert.ThrowsAsync<RandomOrgRequestException>(() =>
                     client.GetUsageAsync(CancellationToken.None));
@@ -879,7 +879,7 @@ namespace Community.RandomOrg.Tests
 
             var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new RandomOrgHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
             {
                 var exception = await Assert.ThrowsAsync<RandomOrgException>(() =>
                     client.GetUsageAsync(CancellationToken.None));

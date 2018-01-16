@@ -2,22 +2,41 @@
     "jsonrpc": "2.0",
     "result": {
         "random": {
-            "method": "generateSignedIntegers",
+            "method": "generateSignedIntegerSequences",
             "hashedApiKey": "FG+7TLaIoH+9IUeE8vc0ln2AL2EoPmGfd63M/40XPWSd8uJ/3cnpVBQnNhppoKiYeFCwy5PaS1A/jmdUPfRWzQ==",
-            "n": 8,
-            "min": 1,
-            "max": 256,
-            "replacement": true,
-            "base": 10,
-            "data": [
+            "n": [
+                3,
+                5
+            ],
+            "min": [
+                1,
+                1
+            ],
+            "max": [
                 128,
-                0,
-                25,
-                33,
-                152,
-                148,
-                256,
-                117
+                256
+            ],
+            "replacement": [
+                true,
+                true
+            ],
+            "base": [
+                10,
+                10
+            ],
+            "data": [
+                [
+                    128,
+                    0,
+                    25
+                ],
+                [
+                    33,
+                    152,
+                    148,
+                    256,
+                    117
+                ]
             ],
             "license": {
                 "type": "beta",
@@ -33,5 +52,6 @@
         "bitsLeft": 249744,
         "requestsLeft": 999,
         "advisoryDelay": 0
-    }
+    },
+    "id": "{id}"
 }

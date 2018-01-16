@@ -22,5 +22,6 @@
         "bitsLeft": 249744,
         "requestsLeft": 999,
         "advisoryDelay": 0
-    }
+    },
+    "id": "{id}"
 }

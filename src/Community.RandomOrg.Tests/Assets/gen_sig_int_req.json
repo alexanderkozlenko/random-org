@@ -3,9 +3,9 @@
     "method": "generateSignedIntegers",
     "params": {
         "apiKey": "55ea5fe3-ab48-47f1-a0ed-952648e1a8c2",
-        "n": 2,
+        "n": 8,
         "min": 1,
-        "max": 10,
+        "max": 256,
         "replacement": true,
         "base": 10,
         "userData": "2a7c3042-a6fc-4449-b8da-1aac0c20b1df"

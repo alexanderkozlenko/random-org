@@ -414,12 +414,19 @@ namespace Community.RandomOrg
                         throw new RandomOrgContractException(method, Strings.GetString("protocol.rpc.message.invalid_value"), e);
                     }
 
-                    if (!responseData.IsSingle || !responseData.SingleItem.IsValid)
+                    if (!responseData.IsSingle)
                     {
                         throw new RandomOrgContractException(method, Strings.GetString("protocol.random.message.invalid_value"));
                     }
 
-                    var jsonRpcResponse = responseData.SingleItem.Message;
+                    var jsonRpcItem = responseData.SingleItem;
+
+                    if (!jsonRpcItem.IsValid)
+                    {
+                        throw new RandomOrgContractException(method, Strings.GetString("protocol.random.message.invalid_value"), jsonRpcItem.Exception);
+                    }
+
+                    var jsonRpcResponse = jsonRpcItem.Message;
 
                     if (!jsonRpcResponse.Success)
                     {

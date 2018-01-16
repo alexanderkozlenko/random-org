@@ -4,14 +4,12 @@
         "random": {
             "data": [
                 0.4025041,
-                -1.4918831,
-                0.64733849,
-                0.5222242
+                -1.4918831
             ],
             "completionTime": "2015-01-02 03:04:05Z"
         },
-        "bitsUsed": 8,
-        "bitsLeft": 249992,
+        "bitsUsed": 256,
+        "bitsLeft": 249744,
         "requestsLeft": 999,
         "advisoryDelay": 0
     }

@@ -3,19 +3,13 @@
     "result": {
         "random": {
             "data": [
-                "grvhglvahj",
-                "hjrmosjwed",
-                "nivjyqptyy",
-                "lhogeshsmi",
-                "syilbgsytb",
-                "birvcmgdrz",
-                "wgclyynpcq",
-                "eujwnhgonh"
+                "umykehrfwzxgoube",
+                "mgfgvhvhbqvvvfbe"
             ],
             "completionTime": "2015-01-02 03:04:05Z"
         },
-        "bitsUsed": 8,
-        "bitsLeft": 249992,
+        "bitsUsed": 256,
+        "bitsLeft": 249744,
         "requestsLeft": 999,
         "advisoryDelay": 0
     }

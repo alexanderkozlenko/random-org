@@ -5,14 +5,14 @@ using System.Threading.Tasks;
 
 namespace Community.RandomOrg.Tests.Internal
 {
-    /// <summary>An HTTP mesage handler for <see cref="RandomOrgClient" /> testing.</summary>
-    internal sealed class RandomOrgHandler : HttpMessageHandler
+    /// <summary>An HTTP mesage handler for unit testing.</summary>
+    internal sealed class TestHttpMessageHandler : HttpMessageHandler
     {
         private readonly Func<HttpRequestMessage, Task<HttpResponseMessage>> _handler;
 
-        /// <summary>Initializes a new instance of the <see cref="RandomOrgHandler" /> class.</summary>
+        /// <summary>Initializes a new instance of the <see cref="TestHttpMessageHandler" /> class.</summary>
         /// <param name="handler">The handler function.</param>
-        public RandomOrgHandler(Func<HttpRequestMessage, Task<HttpResponseMessage>> handler = null)
+        public TestHttpMessageHandler(Func<HttpRequestMessage, Task<HttpResponseMessage>> handler = null)
         {
             _handler = handler;
         }

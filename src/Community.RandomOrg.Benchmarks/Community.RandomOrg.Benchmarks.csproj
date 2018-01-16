@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <OutputPath>$(RepositoryPath)/bin/bin/$(AssemblyName)/$(Configuration)/</OutputPath>
+    <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+    <IsPackable>False</IsPackable>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.10.12" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="./Assets/**/*" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="./*Artifacts*/**/*" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="../Community.RandomOrg/Community.RandomOrg.csproj" />
+  </ItemGroup>
+</Project>

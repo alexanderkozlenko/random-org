@@ -3,12 +3,13 @@
     "result": {
         "random": {
             "data": [
-                "47849fd4-b790-492e-8b93-c601a91b662d"
+                "8a5e74a0-8db5-4fa8-871d-79646ba0a8c0",
+                "daf218f5-e6cf-452d-8581-ca24a826f12c"
             ],
             "completionTime": "2015-01-02 03:04:05Z"
         },
-        "bitsUsed": 8,
-        "bitsLeft": 249992,
+        "bitsUsed": 256,
+        "bitsLeft": 249744,
         "requestsLeft": 999,
         "advisoryDelay": 0
     }
