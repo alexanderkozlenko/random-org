@@ -19,20 +19,20 @@ namespace Community.RandomOrg.Benchmarks.Suites
         {
             var assets = new[]
             {
-                "gen_bas_blb",
-                "gen_bas_dfr",
-                "gen_bas_gss",
-                "gen_bas_int",
-                "gen_bas_seq",
-                "gen_bas_str",
-                "gen_bas_uid",
-                "gen_sig_blb",
-                "gen_sig_dfr",
-                "gen_sig_gss",
-                "gen_sig_int",
-                "gen_sig_seq",
-                "gen_sig_str",
-                "gen_sig_uid"
+                "bas_blb",
+                "bas_dfr",
+                "bas_gss",
+                "bas_int",
+                "bas_seq",
+                "bas_str",
+                "bas_uid",
+                "sig_blb",
+                "sig_dfr",
+                "sig_gss",
+                "sig_int",
+                "sig_seq",
+                "sig_str",
+                "sig_uid"
             };
 
             foreach (var asset in assets)
@@ -43,88 +43,88 @@ namespace Community.RandomOrg.Benchmarks.Suites
             }
         }
 
-        [Benchmark(Description = "gen_bas_blb")]
+        [Benchmark(Description = "BAS BLB")]
         public async Task GenerateBasicBlobsAsync()
         {
-            await _clients["gen_bas_blb"].GenerateBlobsAsync(2, 128).ConfigureAwait(false);
+            await _clients["bas_blb"].GenerateBlobsAsync(2, 128).ConfigureAwait(false);
         }
 
-        [Benchmark(Description = "gen_bas_dfr")]
+        [Benchmark(Description = "BAS DFR")]
         public async Task GenerateBasicDecimalFractionsAsync()
         {
-            await _clients["gen_bas_dfr"].GenerateDecimalFractionsAsync(2, 8, true).ConfigureAwait(false);
+            await _clients["bas_dfr"].GenerateDecimalFractionsAsync(2, 8, true).ConfigureAwait(false);
         }
 
-        [Benchmark(Description = "gen_bas_gss")]
+        [Benchmark(Description = "BAS GSS")]
         public async Task GenerateBasicGaussiansAsync()
         {
-            await _clients["gen_bas_gss"].GenerateGaussiansAsync(2, 0, 1, 8).ConfigureAwait(false);
+            await _clients["bas_gss"].GenerateGaussiansAsync(2, 0, 1, 8).ConfigureAwait(false);
         }
 
-        [Benchmark(Description = "gen_bas_int")]
+        [Benchmark(Description = "BAS INT")]
         public async Task GenerateBasicIntegersAsync()
         {
-            await _clients["gen_bas_int"].GenerateIntegersAsync(8, 1, 256, true).ConfigureAwait(false);
+            await _clients["bas_int"].GenerateIntegersAsync(8, 1, 256, true).ConfigureAwait(false);
         }
 
-        [Benchmark(Description = "gen_bas_seq")]
+        [Benchmark(Description = "BAS SEQ")]
         public async Task GenerateBasicIntegeGenerateIntegerSequencesAsyncrsAsync()
         {
-            await _clients["gen_bas_seq"].GenerateIntegerSequencesAsync(new[] { 3, 5 }, new[] { 1, 2 }, new[] { 128, 256 }, new[] { true, true }).ConfigureAwait(false);
+            await _clients["bas_seq"].GenerateIntegerSequencesAsync(new[] { 3, 5 }, new[] { 1, 2 }, new[] { 128, 256 }, new[] { true, true }).ConfigureAwait(false);
         }
 
-        [Benchmark(Description = "gen_bas_str")]
+        [Benchmark(Description = "BAS STR")]
         public async Task GenerateBasicStringsAsync()
         {
-            await _clients["gen_bas_str"].GenerateStringsAsync(2, 16, "abcdefghijklmnopqrstuvwxyz", true).ConfigureAwait(false);
+            await _clients["bas_str"].GenerateStringsAsync(2, 16, "abcdefghijklmnopqrstuvwxyz", true).ConfigureAwait(false);
         }
 
-        [Benchmark(Description = "gen_bas_uid")]
+        [Benchmark(Description = "BAS UID")]
         public async Task GenerateBasicUuidsAsync()
         {
-            await _clients["gen_bas_uid"].GenerateUuidsAsync(2).ConfigureAwait(false);
+            await _clients["bas_uid"].GenerateUuidsAsync(2).ConfigureAwait(false);
         }
 
-        [Benchmark(Description = "gen_sig_blb")]
+        [Benchmark(Description = "SIG BLB")]
         public async Task GenerateSignedBlobsAsync()
         {
-            await _clients["gen_sig_blb"].GenerateSignedBlobsAsync(2, 128).ConfigureAwait(false);
+            await _clients["sig_blb"].GenerateSignedBlobsAsync(2, 128).ConfigureAwait(false);
         }
 
-        [Benchmark(Description = "gen_sig_dfr")]
+        [Benchmark(Description = "SIG DFR")]
         public async Task GenerateSignedDecimalFractionsAsync()
         {
-            await _clients["gen_sig_dfr"].GenerateSignedDecimalFractionsAsync(2, 8, true).ConfigureAwait(false);
+            await _clients["sig_dfr"].GenerateSignedDecimalFractionsAsync(2, 8, true).ConfigureAwait(false);
         }
 
-        [Benchmark(Description = "gen_sig_gss")]
+        [Benchmark(Description = "SIG GSS")]
         public async Task GenerateSignedGaussiansAsync()
         {
-            await _clients["gen_sig_gss"].GenerateSignedGaussiansAsync(2, 0, 1, 8).ConfigureAwait(false);
+            await _clients["sig_gss"].GenerateSignedGaussiansAsync(2, 0, 1, 8).ConfigureAwait(false);
         }
 
-        [Benchmark(Description = "gen_sig_int")]
+        [Benchmark(Description = "SIG INT")]
         public async Task GenerateSignedIntegersAsync()
         {
-            await _clients["gen_sig_int"].GenerateSignedIntegersAsync(8, 1, 256, true).ConfigureAwait(false);
+            await _clients["sig_int"].GenerateSignedIntegersAsync(8, 1, 256, true).ConfigureAwait(false);
         }
 
-        [Benchmark(Description = "gen_sig_seq")]
+        [Benchmark(Description = "SIG SEQ")]
         public async Task GenerateSignedIntegeGenerateIntegerSequencesAsyncrsAsync()
         {
-            await _clients["gen_sig_seq"].GenerateSignedIntegerSequencesAsync(new[] { 3, 5 }, new[] { 1, 2 }, new[] { 128, 256 }, new[] { true, true }).ConfigureAwait(false);
+            await _clients["sig_seq"].GenerateSignedIntegerSequencesAsync(new[] { 3, 5 }, new[] { 1, 2 }, new[] { 128, 256 }, new[] { true, true }).ConfigureAwait(false);
         }
 
-        [Benchmark(Description = "gen_sig_str")]
+        [Benchmark(Description = "SIG STR")]
         public async Task GenerateSignedStringsAsync()
         {
-            await _clients["gen_sig_str"].GenerateSignedStringsAsync(2, 16, "abcdefghijklmnopqrstuvwxyz", true).ConfigureAwait(false);
+            await _clients["sig_str"].GenerateSignedStringsAsync(2, 16, "abcdefghijklmnopqrstuvwxyz", true).ConfigureAwait(false);
         }
 
-        [Benchmark(Description = "gen_sig_uid")]
+        [Benchmark(Description = "SIG UID")]
         public async Task GenerateSignedUuidsAsync()
         {
-            await _clients["gen_sig_uid"].GenerateSignedUuidsAsync(2).ConfigureAwait(false);
+            await _clients["sig_uid"].GenerateSignedUuidsAsync(2).ConfigureAwait(false);
         }
     }
 }

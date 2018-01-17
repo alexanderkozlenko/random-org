@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Loggers;
@@ -25,30 +25,20 @@ namespace Community.RandomOrg.Benchmarks.Framework
                 throw new ArgumentNullException(nameof(configuration));
             }
 
-            var suites = new List<(Type, string)>();
-            var types = assembly.GetExportedTypes();
+            var suites = assembly.GetExportedTypes()
+                .Select(type => (Type: type, Attribute: type.GetCustomAttribute<BenchmarkSuiteAttribute>()))
+                .Where(tuple => tuple.Attribute != null)
+                .Select(tuple => (tuple.Type, tuple.Attribute.Name))
+                .OrderBy(tuple => tuple.Name)
+                .ToArray();
 
-            for (var i = 0; i < types.Length; i++)
+            WriteLine(configuration, $"Found {suites.Length} benchmark suite(s)");
+
+            foreach (var suite in suites)
             {
-                var attribute = types[i].GetCustomAttribute<BenchmarkSuiteAttribute>();
+                WriteLine(configuration, $"Running benchmark suite \"{suite.Name}\"...");
 
-                if (attribute != null)
-                {
-                    suites.Add((types[i], attribute.Name));
-                }
-            }
-
-            suites.Sort();
-
-            WriteLine(configuration, $"Found {suites.Count} benchmark suite(s)");
-
-            for (var i = 0; i < suites.Count; i++)
-            {
-                var (type, name) = suites[i];
-
-                WriteLine(configuration, $"Running benchmark suite \"{name}\"...");
-
-                BenchmarkRunner.Run(type, configuration);
+                BenchmarkRunner.Run(suite.Type, configuration);
             }
         }
 
