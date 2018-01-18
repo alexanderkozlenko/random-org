@@ -38,7 +38,7 @@ namespace Community.RandomOrg
                 throw new ArgumentOutOfRangeException(nameof(maximum), maximum, Strings.GetString("random.integer.upper_boundary.invalid_range"));
             }
 
-            var parameters = new Dictionary<string, object>(5, StringComparer.Ordinal)
+            var parameters = new Dictionary<string, object>(6, StringComparer.Ordinal)
             {
                 ["apiKey"] = _apiKey,
                 ["n"] = count,
@@ -133,7 +133,7 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.sequence.count.invalid_value"));
             }
 
-            var parameters = new Dictionary<string, object>(5, StringComparer.Ordinal)
+            var parameters = new Dictionary<string, object>(6, StringComparer.Ordinal)
             {
                 ["apiKey"] = _apiKey,
                 ["n"] = counts,
@@ -440,7 +440,7 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
 
-            var parameters = new Dictionary<string, object>(6, StringComparer.Ordinal)
+            var parameters = new Dictionary<string, object>(7, StringComparer.Ordinal)
             {
                 ["apiKey"] = _apiKey,
                 ["n"] = count,
@@ -542,7 +542,7 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.sequence.count.invalid_value"));
             }
 
-            var parameters = new Dictionary<string, object>(6, StringComparer.Ordinal)
+            var parameters = new Dictionary<string, object>(7, StringComparer.Ordinal)
             {
                 ["apiKey"] = _apiKey,
                 ["n"] = counts,
@@ -835,7 +835,7 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
 
-            var parameters = new Dictionary<string, object>(4, StringComparer.Ordinal)
+            var parameters = new Dictionary<string, object>(5, StringComparer.Ordinal)
             {
                 ["apiKey"] = _apiKey,
                 ["n"] = count,

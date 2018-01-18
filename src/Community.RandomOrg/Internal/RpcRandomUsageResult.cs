@@ -1,5 +1,4 @@
-﻿using System;
-using Community.RandomOrg.Converters;
+﻿using Community.RandomOrg.Converters;
 using Community.RandomOrg.Data;
 using Newtonsoft.Json;
 
@@ -24,27 +23,6 @@ namespace Community.RandomOrg.Internal
 
         [JsonProperty("requestsLeft", Required = Required.Always)]
         public long RequestsLeft
-        {
-            get;
-            set;
-        }
-
-        [JsonProperty("creationTime", Required = Required.Always)]
-        public DateTime CreationTime
-        {
-            get;
-            set;
-        }
-
-        [JsonProperty("totalBits", Required = Required.Always)]
-        public long TotalBits
-        {
-            get;
-            set;
-        }
-
-        [JsonProperty("totalRequests", Required = Required.Always)]
-        public long TotalRequests
         {
             get;
             set;

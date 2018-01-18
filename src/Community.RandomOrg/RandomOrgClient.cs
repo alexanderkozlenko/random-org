@@ -55,14 +55,14 @@ namespace Community.RandomOrg
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
         public async Task<RandomUsage> GetUsageAsync(CancellationToken cancellationToken)
         {
-            var @params = new Dictionary<string, object>(1, StringComparer.Ordinal)
+            var parameters = new Dictionary<string, object>(1, StringComparer.Ordinal)
             {
                 ["apiKey"] = _apiKey
             };
 
-            var response = await InvokeAccountServiceMethodAsync<RpcRandomUsageResult>("getUsage", @params, cancellationToken).ConfigureAwait(false);
+            var response = await InvokeAccountServiceMethodAsync<RpcRandomUsageResult>("getUsage", parameters, cancellationToken).ConfigureAwait(false);
 
-            return new RandomUsage(response.Status, response.CreationTime, response.TotalBits, response.BitsLeft, response.TotalRequests, response.RequestsLeft);
+            return new RandomUsage(response.Status, response.BitsLeft, response.RequestsLeft);
         }
 
         /// <summary>Verifies the signature of signed random objects and associated data.</summary>
@@ -300,8 +300,6 @@ namespace Community.RandomOrg
 
             await _requestSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
-            cancellationToken.ThrowIfCancellationRequested();
-
             try
             {
                 if (_advisoryTime != null)
@@ -333,8 +331,6 @@ namespace Community.RandomOrg
 
             await _requestSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
-            cancellationToken.ThrowIfCancellationRequested();
-
             try
             {
                 return await InvokeServiceMethodAsync<TResult>(method, parameters, cancellationToken).ConfigureAwait(false);
@@ -359,8 +355,6 @@ namespace Community.RandomOrg
 
                 using (var httpResponseMessage = await _httpMessageInvoker.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false))
                 {
-                    cancellationToken.ThrowIfCancellationRequested();
-
                     if (!httpResponseMessage.IsSuccessStatusCode)
                     {
                         throw new RandomOrgRequestException(Strings.GetString("protocol.http.status_code.invalid_value"),
@@ -398,21 +392,24 @@ namespace Community.RandomOrg
                             httpResponseMessage.StatusCode, httpResponseMessage.ReasonPhrase);
                     }
 
+                    _jsonRpcSerializer.DynamicResponseBindings[jsonRpcRequest.Id] = _contracts[typeof(TResult)];
+
                     var responseData = default(JsonRpcData<JsonRpcResponse>);
 
                     try
                     {
-                        _jsonRpcSerializer.DynamicResponseBindings[jsonRpcRequest.Id] = _contracts[typeof(TResult)];
-
                         responseData = _jsonRpcSerializer.DeserializeResponseData(httpResponseString);
-
-                        _jsonRpcSerializer.DynamicResponseBindings.Remove(jsonRpcRequest.Id);
-
                     }
                     catch (JsonRpcException e)
                     {
                         throw new RandomOrgContractException(method, Strings.GetString("protocol.rpc.message.invalid_value"), e);
                     }
+                    finally
+                    {
+                        _jsonRpcSerializer.DynamicResponseBindings.Remove(jsonRpcRequest.Id);
+                    }
+
+                    cancellationToken.ThrowIfCancellationRequested();
 
                     if (!responseData.IsSingle)
                     {

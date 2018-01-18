@@ -43,6 +43,11 @@ namespace Community.RandomOrg.Tests
             };
         }
 
+        private HttpClient CreateHttpMessageInvoker(JObject joreq, JObject jores)
+        {
+            return new HttpClient(new TestHttpMessageHandler(_output, request => InternalHandleRequest(request, joreq, jores)));
+        }
+
         private static void InternalVerifyResult<TValue>(RandomResult<TValue> result, JObject jores)
         {
             Assert.NotNull(result);
@@ -118,9 +123,7 @@ namespace Community.RandomOrg.Tests
             var joparams = joreq["params"];
             var jorandom = jores["result"]["random"];
 
-            var key = joparams["apiKey"].ToString();
-
-            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var result = await client.GenerateIntegersAsync(
                     joparams["n"].ToObject<int>(),
@@ -144,9 +147,7 @@ namespace Community.RandomOrg.Tests
             var joparams = joreq["params"];
             var jorandom = jores["result"]["random"];
 
-            var key = joparams["apiKey"].ToString();
-
-            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var result = await client.GenerateIntegerSequencesAsync(
                     joparams["n"].ToObject<int[]>(),
@@ -185,9 +186,8 @@ namespace Community.RandomOrg.Tests
 
             var joparams = joreq["params"];
             var jorandom = jores["result"]["random"];
-            var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var result = await client.GenerateDecimalFractionsAsync(
                     joparams["n"].ToObject<int>(),
@@ -232,9 +232,8 @@ namespace Community.RandomOrg.Tests
 
             var joparams = joreq["params"];
             var jorandom = jores["result"]["random"];
-            var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var result = await client.GenerateGaussiansAsync(
                     joparams["n"].ToObject<int>(),
@@ -299,9 +298,8 @@ namespace Community.RandomOrg.Tests
 
             var joparams = joreq["params"];
             var jorandom = jores["result"]["random"];
-            var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var result = await client.GenerateStringsAsync(
                     joparams["n"].ToObject<int>(),
@@ -338,9 +336,8 @@ namespace Community.RandomOrg.Tests
 
             var joparams = joreq["params"];
             var jorandom = jores["result"]["random"];
-            var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var result = await client.GenerateUuidsAsync(
                     joparams["n"].ToObject<int>(),
@@ -378,9 +375,8 @@ namespace Community.RandomOrg.Tests
 
             var joparams = joreq["params"];
             var jorandom = jores["result"]["random"];
-            var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var result = await client.GenerateBlobsAsync(
                     joparams["n"].ToObject<int>(),
@@ -419,17 +415,14 @@ namespace Community.RandomOrg.Tests
             var joresult = jores["result"];
             var key = joreq["params"]["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(key, CreateHttpMessageInvoker(joreq, jores)))
             {
                 var result = await client.GetUsageAsync(CancellationToken.None);
 
                 Assert.NotNull(result);
                 Assert.Equal(RandomOrgConvert.ToApiKeyStatus(joresult["status"].ToObject<string>()), result.Status);
-                Assert.Equal(RandomOrgConvert.ToDateTime(joresult["creationTime"].ToObject<string>()), result.CreationTime);
                 Assert.Equal(joresult["bitsLeft"].ToObject<long>(), result.BitsLeft);
                 Assert.Equal(joresult["requestsLeft"].ToObject<long>(), result.RequestsLeft);
-                Assert.Equal(joresult["totalBits"].ToObject<long>(), result.TotalBits);
-                Assert.Equal(joresult["totalRequests"].ToObject<long>(), result.TotalRequests);
             }
         }
 
@@ -459,9 +452,8 @@ namespace Community.RandomOrg.Tests
 
             var joparams = joreq["params"];
             var jorandom = jores["result"]["random"];
-            var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var result = await client.GenerateSignedIntegersAsync(
                     joparams["n"].ToObject<int>(),
@@ -489,9 +481,8 @@ namespace Community.RandomOrg.Tests
 
             var joparams = joreq["params"];
             var jorandom = jores["result"]["random"];
-            var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var result = await client.GenerateSignedIntegerSequencesAsync(
                     joparams["n"].ToObject<int[]>(),
@@ -535,9 +526,8 @@ namespace Community.RandomOrg.Tests
 
             var joparams = joreq["params"];
             var jorandom = jores["result"]["random"];
-            var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var result = await client.GenerateSignedDecimalFractionsAsync(
                     joparams["n"].ToObject<int>(),
@@ -586,9 +576,8 @@ namespace Community.RandomOrg.Tests
 
             var joparams = joreq["params"];
             var jorandom = jores["result"]["random"];
-            var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var result = await client.GenerateSignedGaussiansAsync(
                     joparams["n"].ToObject<int>(),
@@ -658,9 +647,8 @@ namespace Community.RandomOrg.Tests
 
             var joparams = joreq["params"];
             var jorandom = jores["result"]["random"];
-            var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var result = await client.GenerateSignedStringsAsync(
                     joparams["n"].ToObject<int>(),
@@ -702,9 +690,8 @@ namespace Community.RandomOrg.Tests
 
             var joparams = joreq["params"];
             var jorandom = jores["result"]["random"];
-            var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var result = await client.GenerateSignedUuidsAsync(
                     joparams["n"].ToObject<int>(),
@@ -744,9 +731,8 @@ namespace Community.RandomOrg.Tests
 
             var joparams = joreq["params"];
             var jorandom = jores["result"]["random"];
-            var key = joparams["apiKey"].ToString();
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var result = await client.GenerateSignedBlobsAsync(
                     joparams["n"].ToObject<int>(),
@@ -806,7 +792,7 @@ namespace Community.RandomOrg.Tests
             var jorandom = joreq["params"]["random"];
             var jolicense = joreq["params"]["random"]["license"];
 
-            using (var client = new RandomOrgClient(Guid.Empty.ToString(), new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(Guid.Empty.ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var random = new SignedRandom<int, IntegerParameters>
                 {
@@ -856,7 +842,7 @@ namespace Community.RandomOrg.Tests
                 };
             }
 
-            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(Handler))))
+            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(_output, Handler))))
             {
                 var exception = await Assert.ThrowsAsync<RandomOrgRequestException>(() =>
                     client.GetUsageAsync(CancellationToken.None));
@@ -877,9 +863,7 @@ namespace Community.RandomOrg.Tests
             var joparams = joreq["params"];
             var joerror = jores["error"];
 
-            var key = joparams["apiKey"].ToString();
-
-            using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(r => InternalHandleRequest(r, joreq, jores)))))
+            using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var exception = await Assert.ThrowsAsync<RandomOrgException>(() =>
                     client.GetUsageAsync(CancellationToken.None));

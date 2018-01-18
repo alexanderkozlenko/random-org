@@ -35,9 +35,15 @@ using (var client = new RandomOrgClient("YOUR_API_KEY_HERE"))
 }
 ```
 
+### Features
+
+- The client has an ability to use a custom `HttpMessageInvoker` instanse to do HTTP requests.
+- All operations support cancellation via `CancellationToken`.
+
 ### Limitations
 
+- API key usage information doesn't contain information about key creation time and total count of used bits and requests
+- A method for retrieving previously generated results is not supported (Signed API)
+- `string` is the only supported type for user data optional parameter (Signed API)
 - `base64` is the only supported format for BLOBs representation in JSON
 - `10` is the only supported base for integers representation in JSON
-- `string` is the only supported type for user data optional parameter (Signed API)
-- A method for retrieving previously generated results is not supported (Signed API)
