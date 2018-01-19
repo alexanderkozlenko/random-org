@@ -1,6 +1,4 @@
-﻿using System;
-using Community.RandomOrg.Converters;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Internal
 {
@@ -36,8 +34,7 @@ namespace Community.RandomOrg.Internal
         }
 
         [JsonProperty("advisoryDelay", Required = Required.Always)]
-        [JsonConverter(typeof(RandomTimeSpanConverter))]
-        public TimeSpan AdvisoryDelay
+        public long AdvisoryDelay
         {
             get;
             set;

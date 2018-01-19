@@ -277,7 +277,11 @@ namespace Community.RandomOrg
             target.SerialNumber = source.SerialNumber;
             target.License.Type = source.License.Type;
             target.License.Text = source.License.Text;
-            target.License.InfoUrl = source.License.InfoUrl;
+
+            if (source.License.InfoUrl != null)
+            {
+                target.License.InfoUrl = source.License.InfoUrl.OriginalString;
+            }
         }
 
         private static void TransferSignedRandomData<TSource, TTarget, TParameters>(RpcSignedRandom<TSource> source, SignedRandom<TTarget, TParameters> target)
@@ -289,7 +293,11 @@ namespace Community.RandomOrg
             target.UserData = source.UserData;
             target.License.Type = source.License.Type;
             target.License.Text = source.License.Text;
-            target.License.InfoUrl = source.License.InfoUrl;
+
+            if (source.License.InfoUrl != null)
+            {
+                target.License.InfoUrl = new Uri(source.License.InfoUrl);
+            }
         }
 
         private async Task<TResult> InvokeGenerationServiceMethodAsync<TResult, TRandom, TValue>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken)
@@ -314,7 +322,7 @@ namespace Community.RandomOrg
 
                 var result = await InvokeServiceMethodAsync<TResult>(method, parameters, cancellationToken).ConfigureAwait(false);
 
-                _advisoryTime = result.Random.CompletionTime + result.AdvisoryDelay;
+                _advisoryTime = result.Random.CompletionTime + TimeSpan.FromMilliseconds(result.AdvisoryDelay);
 
                 return result;
             }

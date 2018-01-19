@@ -1,6 +1,4 @@
-﻿using System;
-using Community.RandomOrg.Converters;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Internal
 {
@@ -21,8 +19,7 @@ namespace Community.RandomOrg.Internal
         }
 
         [JsonProperty("infoUrl")]
-        [JsonConverter(typeof(StringToUriConverter))]
-        public Uri InfoUrl
+        public string InfoUrl
         {
             get;
             set;
