@@ -2,7 +2,7 @@ using System;
 using System.Globalization;
 using System.Net;
 using System.Net.Http;
-using System.Text;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Community.RandomOrg.Data;
@@ -35,11 +35,14 @@ namespace Community.RandomOrg.Tests
 
             Assert.True(JToken.DeepEquals(joreqa, joreq), "Actual JSON string differs from expected");
 
+            var content = new StringContent(jores.ToString());
+
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
             return new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
-                ReasonPhrase = HttpStatusCode.OK.ToString(),
-                Content = new StringContent(jores.ToString(), Encoding.UTF8, "application/json")
+                Content = content
             };
         }
 
@@ -834,11 +837,14 @@ namespace Community.RandomOrg.Tests
 
                 Assert.True(JToken.DeepEquals(joreqa, joreq));
 
+                var content = new StringContent(jores.ToString());
+
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
                 return new HttpResponseMessage
                 {
                     StatusCode = HttpStatusCode.BadRequest,
-                    ReasonPhrase = HttpStatusCode.BadRequest.ToString(),
-                    Content = new StringContent(jores.ToString(), Encoding.UTF8, "application/json")
+                    Content = content
                 };
             }
 
@@ -848,7 +854,6 @@ namespace Community.RandomOrg.Tests
                     client.GetUsageAsync(CancellationToken.None));
 
                 Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
-                Assert.Equal(HttpStatusCode.BadRequest.ToString(), exception.ReasonPhrase);
             }
         }
 

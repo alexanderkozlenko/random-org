@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Http;
-using System.Text;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -11,6 +11,8 @@ namespace Community.RandomOrg.Benchmarks.Internal
     /// <summary>A benchmark HTTP mesage handler for the <see cref="RandomOrgClient" />.</summary>
     internal sealed class RandomOrgBenchmarkHandler : HttpMessageHandler
     {
+        private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = new MediaTypeHeaderValue("application/json");
+
         private readonly string _content;
 
         /// <summary>Initializes a new instance of the <see cref="RandomOrgBenchmarkHandler" /> class.</summary>
@@ -29,12 +31,14 @@ namespace Community.RandomOrg.Benchmarks.Internal
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var requestToken = JObject.Parse(await request.Content.ReadAsStringAsync().ConfigureAwait(false));
-            var content = _content.Replace("{id}", (string)requestToken["id"]);
+            var content = new StringContent(_content.Replace("{id}", (string)requestToken["id"]));
+
+            content.Headers.ContentType = _mediaTypeHeaderValue;
 
             return new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = new StringContent(content, Encoding.UTF8, "application/json")
+                Content = content
             };
         }
     }

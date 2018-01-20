@@ -365,29 +365,25 @@ namespace Community.RandomOrg
                 {
                     if (!httpResponseMessage.IsSuccessStatusCode)
                     {
-                        throw new RandomOrgRequestException(Strings.GetString("protocol.http.status_code.invalid_value"),
-                            httpResponseMessage.StatusCode, httpResponseMessage.ReasonPhrase);
+                        throw new RandomOrgRequestException(Strings.GetString("protocol.http.status_code.invalid_value"), httpResponseMessage.StatusCode);
                     }
 
                     var contentType = httpResponseMessage.Content.Headers.ContentType;
 
                     if (contentType == null)
                     {
-                        throw new RandomOrgRequestException(Strings.GetString("protocol.http.headers.invalid_set"),
-                            httpResponseMessage.StatusCode, httpResponseMessage.ReasonPhrase);
+                        throw new RandomOrgRequestException(Strings.GetString("protocol.http.headers.invalid_set"), httpResponseMessage.StatusCode);
                     }
                     if (string.Compare(contentType.MediaType, _mediaTypeHeaderValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0)
                     {
-                        throw new RandomOrgRequestException(Strings.GetString("protocol.http.headers.invalid_set"),
-                            httpResponseMessage.StatusCode, httpResponseMessage.ReasonPhrase);
+                        throw new RandomOrgRequestException(Strings.GetString("protocol.http.headers.invalid_set"), httpResponseMessage.StatusCode);
                     }
 
                     var contentLength = httpResponseMessage.Content.Headers.ContentLength;
 
                     if (contentLength == null)
                     {
-                        throw new RandomOrgRequestException(Strings.GetString("protocol.http.headers.invalid_set"),
-                            httpResponseMessage.StatusCode, httpResponseMessage.ReasonPhrase);
+                        throw new RandomOrgRequestException(Strings.GetString("protocol.http.headers.invalid_set"), httpResponseMessage.StatusCode);
                     }
 
                     var httpResponseString = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -396,8 +392,7 @@ namespace Community.RandomOrg
 
                     if (httpResponseString?.Length != contentLength)
                     {
-                        throw new RandomOrgRequestException(Strings.GetString("protocol.http.headers.invalid_set"),
-                            httpResponseMessage.StatusCode, httpResponseMessage.ReasonPhrase);
+                        throw new RandomOrgRequestException(Strings.GetString("protocol.http.headers.invalid_set"), httpResponseMessage.StatusCode);
                     }
 
                     _jsonRpcSerializer.DynamicResponseBindings[jsonRpcRequest.Id] = _contracts[typeof(TResult)];

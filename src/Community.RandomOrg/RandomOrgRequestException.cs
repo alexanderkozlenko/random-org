@@ -6,17 +6,10 @@ namespace Community.RandomOrg
     /// <summary>Represents an error for an unsuccessful HTTP request to RANDOM.ORG.</summary>
     public sealed class RandomOrgRequestException : HttpRequestException
     {
-        internal RandomOrgRequestException(string message, HttpStatusCode statusCode, string reasonPhrase)
+        internal RandomOrgRequestException(string message, HttpStatusCode statusCode)
             : base(message)
         {
             StatusCode = statusCode;
-            ReasonPhrase = reasonPhrase;
-        }
-
-        /// <summary>Gets the reason phrase of the HTTP response.</summary>
-        public string ReasonPhrase
-        {
-            get;
         }
 
         /// <summary>Gets the status code of the HTTP response.</summary>
