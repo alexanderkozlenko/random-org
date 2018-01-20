@@ -370,11 +370,7 @@ namespace Community.RandomOrg
 
                     var contentType = httpResponseMessage.Content.Headers.ContentType;
 
-                    if (contentType == null)
-                    {
-                        throw new RandomOrgRequestException(Strings.GetString("protocol.http.headers.invalid_set"), httpResponseMessage.StatusCode);
-                    }
-                    if (string.Compare(contentType.MediaType, _mediaTypeHeaderValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0)
+                    if ((contentType == null) || (string.Compare(contentType.MediaType, _mediaTypeHeaderValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0))
                     {
                         throw new RandomOrgRequestException(Strings.GetString("protocol.http.headers.invalid_set"), httpResponseMessage.StatusCode);
                     }
@@ -450,6 +446,7 @@ namespace Community.RandomOrg
         {
             var httpHandler = new HttpClientHandler
             {
+                AllowAutoRedirect = false,
                 AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
             };
 
