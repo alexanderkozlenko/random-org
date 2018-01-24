@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Community.RandomOrg.Benchmarks.Internal
 {
-    /// <summary>A benchmark HTTP mesage handler for the <see cref="RandomOrgClient" />.</summary>
+    /// <summary>A benchmark HTTP message handler for the <see cref="RandomOrgClient" />.</summary>
     internal sealed class RandomOrgBenchmarkHandler : HttpMessageHandler
     {
         private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = new MediaTypeHeaderValue("application/json");

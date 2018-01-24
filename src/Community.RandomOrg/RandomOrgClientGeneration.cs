@@ -65,7 +65,7 @@ namespace Community.RandomOrg
         /// <param name="counts">An array specifying the lengths of the requested sequences. Each value must be within the [1,10000] range and the total sum of all the lengths must be in the [1,10000] range. Up to 10 sequences can be requested.</param>
         /// <param name="minimums">An array specifying the lower boundaries for the requested sequences. Each value must be within the [-1000000000,1000000000] range.</param>
         /// <param name="maximums">An array specifying the upper boundaries for the requested sequences. Each value must be within the [-1000000000,1000000000] range.</param>
-        /// <param name="replacements">An array specifying for each requested sequence whether the random numbers in that seqeuence should be picked with replacement.</param>
+        /// <param name="replacements">An array specifying for each requested sequence whether the random numbers in that sequence should be picked with replacement.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
         /// <returns>A <see cref="RandomResult{T}" /> instance.</returns>
         /// <exception cref="ArgumentException">Counts of argument arrays are different, sequences count is greater than 10, or total count is outside the [1,10000] range.</exception>
@@ -473,7 +473,7 @@ namespace Community.RandomOrg
         /// <param name="counts">An array specifying the lengths of the requested sequences. Each value must be within the [1,10000] range and the total sum of all the lengths must be in the [1,10000] range. Up to 10 sequences can be requested.</param>
         /// <param name="minimums">An array specifying the lower boundaries for the requested sequences. Each value must be within the [-1000000000,1000000000] range.</param>
         /// <param name="maximums">An array specifying the upper boundaries for the requested sequences. Each value must be within the [-1000000000,1000000000] range.</param>
-        /// <param name="replacements">An array specifying for each requested sequence whether the random numbers in that seqeuence should be picked with replacement.</param>
+        /// <param name="replacements">An array specifying for each requested sequence whether the random numbers in that sequence should be picked with replacement.</param>
         /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1000.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
         /// <returns>A <see cref="RandomResult{T}" /> instance.</returns>

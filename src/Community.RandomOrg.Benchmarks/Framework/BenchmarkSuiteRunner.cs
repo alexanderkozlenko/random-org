@@ -12,7 +12,7 @@ namespace Community.RandomOrg.Benchmarks.Framework
     {
         /// <summary>Runs benchmark suites from the specified assembly.</summary>
         /// <param name="assembly">Assembly to search benchmark suites in.</param>
-        /// <param name="configuration">Benchmark runninng configuration.</param>
+        /// <param name="configuration">Benchmark running configuration.</param>
         /// <exception cref="ArgumentNullException"><paramref name="assembly" /> or <paramref name="configuration" /> is <see langword="null" />.</exception>
         public static void Run(Assembly assembly, IConfig configuration)
         {

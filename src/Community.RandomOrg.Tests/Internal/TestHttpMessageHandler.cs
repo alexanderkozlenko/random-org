@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 
 namespace Community.RandomOrg.Tests.Internal
 {
-    /// <summary>An HTTP mesage handler for unit testing.</summary>
+    /// <summary>An HTTP message handler for unit testing.</summary>
     internal sealed class TestHttpMessageHandler : HttpMessageHandler
     {
         private readonly ITestOutputHelper _output;
