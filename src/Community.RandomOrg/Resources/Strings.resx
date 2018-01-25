@@ -180,8 +180,17 @@
   <data name="random.integer.upper_boundary.invalid_range" xml:space="preserve">
     <value>The upper boundary must be within the [-1000000000,1000000000] range</value>
   </data>
-  <data name="random.sequence.arguments.different_counts" xml:space="preserve">
-    <value>Counts of argument arrays are different</value>
+  <data name="random.sequence.arguments.different_size" xml:space="preserve">
+    <value>Dimensions of argument collections are different</value>
+  </data>
+  <data name="random.sequence.maximums.not_specified" xml:space="preserve">
+    <value>The maximums collection is not specified</value>
+  </data>
+  <data name="random.sequence.minimums.not_specified" xml:space="preserve">
+    <value>The minimums collection is not specified</value>
+  </data>
+  <data name="random.sequence.replacements.not_specified" xml:space="preserve">
+    <value>The replacements collection is not specified</value>
   </data>
   <data name="random.sequence.count.invalid_range" xml:space="preserve">
     <value>The count of sequences must be within the [1,10] range</value>
@@ -191,9 +200,6 @@
   </data>
   <data name="random.string.characters.length.invalid_range" xml:space="preserve">
     <value>The number of characters must be within the [1,80] range</value>
-  </data>
-  <data name="random.string.characters.not_specified" xml:space="preserve">
-    <value>The set of characters is not specified</value>
   </data>
   <data name="random.string.count.invalid_range" xml:space="preserve">
     <value>The count must be within the [1,10000] range</value>

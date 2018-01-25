@@ -119,23 +119,42 @@ namespace Community.RandomOrg
                     break;
                 case SignedRandom<int[], IntegerSequenceParameters> x:
                     {
-                        if ((x.Data.Count != x.Parameters.Minimums.Length) ||
-                            (x.Data.Count != x.Parameters.Maximums.Length) ||
-                            (x.Data.Count != x.Parameters.Replacements.Length))
+                        if (x.Parameters.Minimums == null)
                         {
-                            throw new InvalidOperationException(Strings.GetString("random.sequence.arguments.different_counts"));
+                            throw new ArgumentException(Strings.GetString("random.sequence.minimums.not_specified"), nameof(random));
+                        }
+                        if (x.Parameters.Maximums == null)
+                        {
+                            throw new ArgumentException(Strings.GetString("random.sequence.maximums.not_specified"), nameof(random));
+                        }
+                        if (x.Parameters.Replacements == null)
+                        {
+                            throw new ArgumentException(Strings.GetString("random.sequence.replacements.not_specified"), nameof(random));
+                        }
+
+                        if ((x.Data.Count != x.Parameters.Minimums.Count) ||
+                            (x.Data.Count != x.Parameters.Maximums.Count) ||
+                            (x.Data.Count != x.Parameters.Replacements.Count))
+                        {
+                            throw new ArgumentException(Strings.GetString("random.sequence.arguments.different_size"), nameof(random));
                         }
 
                         var counts = new int[x.Data.Count];
-                        var bases = new int[x.Data.Count];
+                        var minimums = new int[x.Parameters.Minimums.Count];
+                        var maximums = new int[x.Parameters.Maximums.Count];
+                        var replacements = new bool[x.Parameters.Replacements.Count];
+                        var bases = new int[counts.Length];
 
-                        for (var i = 0; i < bases.Length; i++)
+                        for (var i = 0; i < counts.Length; i++)
                         {
                             if (x.Data[i] != null)
                             {
                                 counts[i] = x.Data[i].Length;
                             }
 
+                            minimums[i] = x.Parameters.Minimums[i];
+                            maximums[i] = x.Parameters.Maximums[i];
+                            replacements[i] = x.Parameters.Replacements[i];
                             bases[i] = 10;
                         }
 
@@ -143,9 +162,9 @@ namespace Community.RandomOrg
                         {
                             Method = "generateSignedIntegerSequences",
                             Counts = counts,
-                            Minimums = x.Parameters.Minimums,
-                            Maximums = x.Parameters.Maximums,
-                            Replacements = x.Parameters.Replacements,
+                            Minimums = minimums,
+                            Maximums = maximums,
+                            Replacements = replacements,
                             Bases = bases,
                             UserData = x.UserData,
                             Data = x.Data

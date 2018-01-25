@@ -99,7 +99,7 @@ namespace Community.RandomOrg
                 (counts.Count != maximums.Count) ||
                 (counts.Count != replacements.Count))
             {
-                throw new ArgumentException(Strings.GetString("random.sequence.arguments.different_counts"));
+                throw new ArgumentException(Strings.GetString("random.sequence.arguments.different_size"));
             }
             if (counts.Count > 10)
             {
@@ -128,7 +128,7 @@ namespace Community.RandomOrg
                 bases[i] = 10;
             }
 
-            if ((count < 1) || (count > 10000))
+            if (count > 10000)
             {
                 throw new ArgumentException(Strings.GetString("random.sequence.count.invalid_value"));
             }
@@ -504,7 +504,7 @@ namespace Community.RandomOrg
                 (counts.Count != maximums.Count) ||
                 (counts.Count != replacements.Count))
             {
-                throw new ArgumentException(Strings.GetString("random.sequence.arguments.different_counts"));
+                throw new ArgumentException(Strings.GetString("random.sequence.arguments.different_size"));
             }
             if (counts.Count > 10)
             {
@@ -533,7 +533,7 @@ namespace Community.RandomOrg
                 bases[i] = 10;
             }
 
-            if ((count < 1) || (count > 10000))
+            if (count > 10000)
             {
                 throw new ArgumentException(Strings.GetString("random.sequence.count.invalid_value"));
             }

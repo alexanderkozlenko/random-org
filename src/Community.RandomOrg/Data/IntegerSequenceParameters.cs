@@ -1,4 +1,6 @@
-﻿namespace Community.RandomOrg.Data
+﻿using System.Collections.Generic;
+
+namespace Community.RandomOrg.Data
 {
     /// <summary>Encapsulates random integers generation parameters.</summary>
     public sealed class IntegerSequenceParameters : RandomParameters
@@ -9,21 +11,21 @@
         }
 
         /// <summary>Gets or sets the lower boundary for the range from which the random numbers will be picked.</summary>
-        public int[] Minimums
+        public IReadOnlyList<int> Minimums
         {
             get;
             set;
         }
 
         /// <summary>Gets or sets the upper boundary for the range from which the random numbers will be picked.</summary>
-        public int[] Maximums
+        public IReadOnlyList<int> Maximums
         {
             get;
             set;
         }
 
         /// <summary>Gets or sets a value which specifies whether the random numbers should be picked with replacement.</summary>
-        public bool[] Replacements
+        public IReadOnlyList<bool> Replacements
         {
             get;
             set;
