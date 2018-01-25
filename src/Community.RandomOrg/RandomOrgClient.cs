@@ -240,7 +240,7 @@ namespace Community.RandomOrg
                         {
                             Method = "generateSignedBlobs",
                             Count = x.Data.Count,
-                            Size = x.Parameters.Size,
+                            Size = x.Parameters.Size * 8,
                             Format = "base64",
                             UserData = x.UserData,
                             Data = rpcData

@@ -125,7 +125,7 @@ namespace Community.RandomOrg
         /// <summary>Generates BLOBs containing true random data as an asynchronous operation.</summary>
         /// <param name="client">The <see cref="RandomOrgClient" /> instance.</param>
         /// <param name="count">How many random blobs to generate. Must be within the [1,100] range.</param>
-        /// <param name="size">The size of each blob, measured in bits. Must be within the [1,1048576] range and must be divisible by 8. The total size of all blobs requested must not exceed 1048576 bits.</param>
+        /// <param name="size">The size of each blob, measured in bytes. Must be within the [1,131072] range. The total size of all blobs requested must not exceed 131072 bytes.</param>
         /// <returns>A <see cref="RandomResult{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="size" /> is outside the allowable range of values.</exception>
         /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
@@ -464,7 +464,7 @@ namespace Community.RandomOrg
         /// <summary>Generates BLOBs containing true random data with signature as an asynchronous operation.</summary>
         /// <param name="client">The <see cref="RandomOrgClient" /> instance.</param>
         /// <param name="count">How many random blobs to generate. Must be within the [1,100] range.</param>
-        /// <param name="size">The size of each blob, measured in bits. Must be within the [1,1048576] range and must be divisible by 8. The total size of all blobs requested must not exceed 1048576 bits.</param>
+        /// <param name="size">The size of each blob, measured in bytes. Must be within the [1,131072] range. The total size of all blobs requested must not exceed 131072 bytes.</param>
         /// <returns>A <see cref="SignedRandomResult{TRandom, TValue}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="size" /> is outside the allowable range of values.</exception>
         /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
@@ -479,7 +479,7 @@ namespace Community.RandomOrg
         /// <summary>Generates BLOBs containing true random data with signature as an asynchronous operation.</summary>
         /// <param name="client">The <see cref="RandomOrgClient" /> instance.</param>
         /// <param name="count">How many random blobs to generate. Must be within the [1,100] range.</param>
-        /// <param name="size">The size of each blob, measured in bits. Must be within the [1,1048576] range and must be divisible by 8. The total size of all blobs requested must not exceed 1048576 bits.</param>
+        /// <param name="size">The size of each blob, measured in bytes. Must be within the [1,131072] range. The total size of all blobs requested must not exceed 131072 bytes.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
         /// <returns>A <see cref="SignedRandomResult{TRandom, TValue}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="size" /> is outside the allowable range of values.</exception>
@@ -496,7 +496,7 @@ namespace Community.RandomOrg
         /// <summary>Generates BLOBs containing true random data with signature as an asynchronous operation.</summary>
         /// <param name="client">The <see cref="RandomOrgClient" /> instance.</param>
         /// <param name="count">How many random blobs to generate. Must be within the [1,100] range.</param>
-        /// <param name="size">The size of each blob, measured in bits. Must be within the [1,1048576] range and must be divisible by 8. The total size of all blobs requested must not exceed 1048576 bits.</param>
+        /// <param name="size">The size of each blob, measured in bytes. Must be within the [1,131072] range. The total size of all blobs requested must not exceed 131072 bytes.</param>
         /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1000.</param>
         /// <returns>A <see cref="SignedRandomResult{TRandom, TValue}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="size" /> is outside the allowable range of values.</exception>

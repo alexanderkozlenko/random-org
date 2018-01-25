@@ -348,7 +348,7 @@ namespace Community.RandomOrg
 
         /// <summary>Generates BLOBs containing true random data as an asynchronous operation.</summary>
         /// <param name="count">How many random blobs to generate. Must be within the [1,100] range.</param>
-        /// <param name="size">The size of each blob, measured in bits. Must be within the [1,1048576] range and must be divisible by 8. The total size of all blobs requested must not exceed 1048576 bits.</param>
+        /// <param name="size">The size of each blob, measured in bytes. Must be within the [1,131072] range. The total size of all blobs requested must not exceed 131072 bytes.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
         /// <returns>A <see cref="RandomResult{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="size" /> is outside the allowable range of values.</exception>
@@ -363,15 +363,11 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("random.blob.count.invalid_range"));
             }
-            if ((size < 1) || (size > 1048576))
+            if ((size < 1) || (size > 131072))
             {
                 throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("random.blob.size.invalid_range"));
             }
-            if (size % 8 != 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("random.blob.size.invalid_division"));
-            }
-            if (count * size > 1048576)
+            if (count * size > 131072)
             {
                 throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("random.blob.invalid_total_size"));
             }
@@ -380,7 +376,7 @@ namespace Community.RandomOrg
             {
                 ["apiKey"] = _apiKey,
                 ["n"] = count,
-                ["size"] = size,
+                ["size"] = size * 8,
                 ["format"] = "base64"
             };
 
@@ -802,7 +798,7 @@ namespace Community.RandomOrg
 
         /// <summary>Generates BLOBs containing true random data with signature as an asynchronous operation.</summary>
         /// <param name="count">How many random blobs to generate. Must be within the [1,100] range.</param>
-        /// <param name="size">The size of each blob, measured in bits. Must be within the [1,1048576] range and must be divisible by 8. The total size of all blobs requested must not exceed 1048576 bits.</param>
+        /// <param name="size">The size of each blob, measured in bytes. Must be within the [1,131072] range. The total size of all blobs requested must not exceed 131072 bytes.</param>
         /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1000.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
         /// <returns>A <see cref="SignedRandomResult{TRandom, TValue}" /> instance.</returns>
@@ -818,15 +814,11 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("random.blob.count.invalid_range"));
             }
-            if ((size < 1) || (size > 1048576))
+            if ((size < 1) || (size > 131072))
             {
                 throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("random.blob.size.invalid_range"));
             }
-            if (size % 8 != 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("random.blob.size.invalid_division"));
-            }
-            if (count * size > 1048576)
+            if (count * size > 131072)
             {
                 throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("random.blob.invalid_total_size"));
             }
@@ -839,7 +831,7 @@ namespace Community.RandomOrg
             {
                 ["apiKey"] = _apiKey,
                 ["n"] = count,
-                ["size"] = size,
+                ["size"] = size * 8,
                 ["format"] = "base64",
                 ["userData"] = userData
             };
@@ -862,7 +854,7 @@ namespace Community.RandomOrg
                 Data = data
             };
 
-            random.Parameters.Size = response.Random.Size;
+            random.Parameters.Size = response.Random.Size / 8;
 
             TransferSignedRandomData(response.Random, random);
 

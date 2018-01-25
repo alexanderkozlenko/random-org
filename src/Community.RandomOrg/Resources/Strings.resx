@@ -147,14 +147,11 @@
   <data name="random.blob.count.invalid_range" xml:space="preserve">
     <value>The count must be within the [1,100] range</value>
   </data>
-  <data name="random.blob.size.invalid_division" xml:space="preserve">
-    <value>The size of each blob must be divisible by 8</value>
-  </data>
   <data name="random.blob.size.invalid_range" xml:space="preserve">
-    <value>The size of each blob must be within the [1,1048576] range</value>
+    <value>The size of each blob must be within the [1,131072] range</value>
   </data>
   <data name="random.blob.invalid_total_size" xml:space="preserve">
-    <value>The total size of all blobs must not exceed 1048576 bits</value>
+    <value>The total size of all blobs must not exceed 131072 bytes</value>
   </data>
   <data name="random.decimal_fraction.count.invalid_range" xml:space="preserve">
     <value>The count must be within the [1,10000] range</value>

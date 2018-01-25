@@ -8,7 +8,7 @@
         {
         }
 
-        /// <summary>Gets or sets the size of each blob, measured in bits.</summary>
+        /// <summary>Gets or sets the size of each blob, measured in bytes.</summary>
         public int Size
         {
             get;

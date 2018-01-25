@@ -353,12 +353,11 @@ namespace Community.RandomOrg.Tests
         }
 
         [Theory]
-        [InlineData(000, 0000008)]
-        [InlineData(101, 0000008)]
-        [InlineData(001, 0000000)]
-        [InlineData(001, 1048577)]
-        [InlineData(001, 0000007)]
-        [InlineData(002, 1048576)]
+        [InlineData(000, 000008)]
+        [InlineData(101, 000008)]
+        [InlineData(001, 000000)]
+        [InlineData(001, 131073)]
+        [InlineData(002, 131072)]
         public async void GenerateBlobsWithInalidParameter(int count, int size)
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_blb_req.json"));
@@ -383,7 +382,7 @@ namespace Community.RandomOrg.Tests
             {
                 var result = await client.GenerateBlobsAsync(
                     joparams["n"].ToObject<int>(),
-                    joparams["size"].ToObject<int>(),
+                    joparams["size"].ToObject<int>() / 8,
                     CancellationToken.None);
 
                 InternalVerifyResult(result, jores);
@@ -709,12 +708,11 @@ namespace Community.RandomOrg.Tests
         }
 
         [Theory]
-        [InlineData(000, 0000008)]
-        [InlineData(101, 0000008)]
-        [InlineData(001, 0000000)]
-        [InlineData(001, 1048577)]
-        [InlineData(001, 0000007)]
-        [InlineData(002, 1048576)]
+        [InlineData(000, 000008)]
+        [InlineData(101, 000008)]
+        [InlineData(001, 000000)]
+        [InlineData(001, 131073)]
+        [InlineData(002, 131072)]
         public async void GenerateSignedBlobsWithInvalidParameter(int count, int size)
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_blb_req.json"));
@@ -739,7 +737,7 @@ namespace Community.RandomOrg.Tests
             {
                 var result = await client.GenerateSignedBlobsAsync(
                     joparams["n"].ToObject<int>(),
-                    joparams["size"].ToObject<int>(),
+                    joparams["size"].ToObject<int>() / 8,
                     joparams["userData"].ToObject<string>(),
                     CancellationToken.None);
 
@@ -752,7 +750,7 @@ namespace Community.RandomOrg.Tests
                     Assert.Equal(Convert.FromBase64String(jodata[i].ToObject<string>()), result.Random.Data[i]);
                 }
 
-                Assert.Equal(jorandom["size"].ToObject<int>(), result.Random.Parameters.Size);
+                Assert.Equal(jorandom["size"].ToObject<int>(), result.Random.Parameters.Size * 8);
                 Assert.Equal(jorandom["userData"].ToObject<string>(), result.Random.UserData);
             }
         }

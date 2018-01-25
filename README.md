@@ -14,12 +14,12 @@ using (var client = new RandomOrgClient("YOUR_API_KEY_HERE"))
     // Generate a number from a Gaussian distribution with mean of 0.0,
     // standard deviation of 1.0, and 8 significant digits
     var bgs = await client.GenerateGaussiansAsync(1, 0.0m, 1.0m, 8);
-    // Generate a string with length of 5 from the specified letters
-    var bst = await client.GenerateStringsAsync(1, 5, "abcde", false);
+    // Generate a string with length of 8 from the specified letters
+    var bst = await client.GenerateStringsAsync(1, 8, "abcdef", false);
     // Generate an UUID
     var bud = await client.GenerateUuidsAsync(1);
-    // Generate a BLOB with length of 8 bytes (64 bits)
-    var bbl = await client.GenerateBlobsAsync(1, 64);
+    // Generate a BLOB with length of 8 bytes
+    var bbl = await client.GenerateBlobsAsync(1, 8);
     // Each generation method has a corresponding one for generating random data
     // with signature, which can be verified afterwards
     var sin = await client.GenerateSignedIntegersAsync(1, 0, 10, false);
