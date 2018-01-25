@@ -53,7 +53,7 @@ namespace Community.RandomOrg
         /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
-        public async Task<RandomUsage> GetUsageAsync(CancellationToken cancellationToken)
+        public async Task<RandomUsage> GetUsageAsync(CancellationToken cancellationToken = default)
         {
             var parameters = new Dictionary<string, object>(1, StringComparer.Ordinal)
             {
@@ -78,7 +78,7 @@ namespace Community.RandomOrg
         /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
-        public async Task<bool> VerifySignatureAsync<TValue, TParameters>(SignedRandom<TValue, TParameters> random, byte[] signature, CancellationToken cancellationToken)
+        public async Task<bool> VerifySignatureAsync<TValue, TParameters>(SignedRandom<TValue, TParameters> random, byte[] signature, CancellationToken cancellationToken = default)
             where TParameters : RandomParameters, new()
         {
             if (random == null)
@@ -304,8 +304,6 @@ namespace Community.RandomOrg
             where TResult : RpcRandomResultObject<TRandom, TValue>
             where TRandom : RpcRandomObject<TValue>
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             await _requestSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             try
@@ -335,8 +333,6 @@ namespace Community.RandomOrg
         private async Task<TResult> InvokeAccountServiceMethodAsync<TResult>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken)
             where TResult : RpcMethodResult
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             await _requestSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             try
@@ -356,7 +352,11 @@ namespace Community.RandomOrg
 
             using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
             {
-                var httpRequestContent = new StringContent(_jsonRpcSerializer.SerializeRequest(jsonRpcRequest));
+                var httpRequestString = _jsonRpcSerializer.SerializeRequest(jsonRpcRequest);
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var httpRequestContent = new StringContent(httpRequestString);
 
                 httpRequestContent.Headers.ContentType = _mediaTypeHeaderValue;
                 httpRequestMessage.Content = httpRequestContent;
@@ -494,6 +494,7 @@ namespace Community.RandomOrg
         {
             _httpMessageInvoker.Dispose();
             _requestSemaphore.Dispose();
+            _jsonRpcSerializer.Dispose();
         }
     }
 }

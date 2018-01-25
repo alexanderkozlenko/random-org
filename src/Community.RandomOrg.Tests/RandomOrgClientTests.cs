@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading;
 using System.Threading.Tasks;
 using Community.RandomOrg.Data;
 using Community.RandomOrg.Tests.Internal;
@@ -113,7 +112,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                    client.GenerateIntegersAsync(count, minimum, maximum, false, CancellationToken.None));
+                    client.GenerateIntegersAsync(count, minimum, maximum, false));
             }
         }
 
@@ -132,8 +131,7 @@ namespace Community.RandomOrg.Tests
                     joparams["n"].ToObject<int>(),
                     joparams["min"].ToObject<int>(),
                     joparams["max"].ToObject<int>(),
-                    joparams["replacement"].ToObject<bool>(),
-                    CancellationToken.None);
+                    joparams["replacement"].ToObject<bool>());
 
                 InternalVerifyResult(result, jores);
 
@@ -156,8 +154,7 @@ namespace Community.RandomOrg.Tests
                     joparams["n"].ToObject<int[]>(),
                     joparams["min"].ToObject<int[]>(),
                     joparams["max"].ToObject<int[]>(),
-                    joparams["replacement"].ToObject<bool[]>(),
-                    CancellationToken.None);
+                    joparams["replacement"].ToObject<bool[]>());
 
                 InternalVerifyResult(result, jores);
 
@@ -177,7 +174,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                    client.GenerateDecimalFractionsAsync(count, decimalPlaces, false, CancellationToken.None));
+                    client.GenerateDecimalFractionsAsync(count, decimalPlaces, false));
             }
         }
 
@@ -195,8 +192,7 @@ namespace Community.RandomOrg.Tests
                 var result = await client.GenerateDecimalFractionsAsync(
                     joparams["n"].ToObject<int>(),
                     joparams["decimalPlaces"].ToObject<int>(),
-                    joparams["replacement"].ToObject<bool>(),
-                    CancellationToken.None);
+                    joparams["replacement"].ToObject<bool>());
 
                 InternalVerifyResult(result, jores);
 
@@ -223,7 +219,7 @@ namespace Community.RandomOrg.Tests
                 var standardDeviationValue = decimal.Parse(standardDeviation, CultureInfo.InvariantCulture);
 
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                    client.GenerateGaussiansAsync(count, meanValue, standardDeviationValue, significantDigits, CancellationToken.None));
+                    client.GenerateGaussiansAsync(count, meanValue, standardDeviationValue, significantDigits));
             }
         }
 
@@ -242,8 +238,7 @@ namespace Community.RandomOrg.Tests
                     joparams["n"].ToObject<int>(),
                     joparams["mean"].ToObject<decimal>(),
                     joparams["standardDeviation"].ToObject<decimal>(),
-                    joparams["significantDigits"].ToObject<int>(),
-                    CancellationToken.None);
+                    joparams["significantDigits"].ToObject<int>());
 
                 InternalVerifyResult(result, jores);
 
@@ -263,7 +258,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                    client.GenerateStringsAsync(count, length, "abcde", false, CancellationToken.None));
+                    client.GenerateStringsAsync(count, length, "abcde", false));
             }
         }
 
@@ -275,7 +270,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAsync<ArgumentNullException>(() =>
-                    client.GenerateStringsAsync(1, 1, null, false, CancellationToken.None));
+                    client.GenerateStringsAsync(1, 1, null, false));
             }
         }
 
@@ -289,7 +284,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAsync<ArgumentException>(() =>
-                    client.GenerateStringsAsync(1, 1, new string('a', number), false, CancellationToken.None));
+                    client.GenerateStringsAsync(1, 1, new string('a', number), false));
             }
         }
 
@@ -308,8 +303,7 @@ namespace Community.RandomOrg.Tests
                     joparams["n"].ToObject<int>(),
                     joparams["length"].ToObject<int>(),
                     joparams["characters"].ToObject<string>(),
-                    joparams["replacement"].ToObject<bool>(),
-                    CancellationToken.None);
+                    joparams["replacement"].ToObject<bool>());
 
                 InternalVerifyResult(result, jores);
 
@@ -327,7 +321,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                    client.GenerateUuidsAsync(count, CancellationToken.None));
+                    client.GenerateUuidsAsync(count));
             }
         }
 
@@ -343,8 +337,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var result = await client.GenerateUuidsAsync(
-                    joparams["n"].ToObject<int>(),
-                    CancellationToken.None);
+                    joparams["n"].ToObject<int>());
 
                 InternalVerifyResult(result, jores);
 
@@ -365,7 +358,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                    client.GenerateBlobsAsync(count, size, CancellationToken.None));
+                    client.GenerateBlobsAsync(count, size));
             }
         }
 
@@ -382,8 +375,7 @@ namespace Community.RandomOrg.Tests
             {
                 var result = await client.GenerateBlobsAsync(
                     joparams["n"].ToObject<int>(),
-                    joparams["size"].ToObject<int>() / 8,
-                    CancellationToken.None);
+                    joparams["size"].ToObject<int>() / 8);
 
                 InternalVerifyResult(result, jores);
 
@@ -404,7 +396,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAsync<InvalidOperationException>(() =>
-                    client.GetUsageAsync(CancellationToken.None));
+                    client.GetUsageAsync());
             }
         }
 
@@ -419,7 +411,7 @@ namespace Community.RandomOrg.Tests
 
             using (var client = new RandomOrgClient(key, CreateHttpMessageInvoker(joreq, jores)))
             {
-                var result = await client.GetUsageAsync(CancellationToken.None);
+                var result = await client.GetUsageAsync();
 
                 Assert.NotNull(result);
                 Assert.Equal(RandomOrgConvert.ToApiKeyStatus(joresult["status"].ToObject<string>()), result.Status);
@@ -442,7 +434,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                    client.GenerateSignedIntegersAsync(count, minimum, maximum, false, null, CancellationToken.None));
+                    client.GenerateSignedIntegersAsync(count, minimum, maximum, false, null));
             }
         }
 
@@ -462,8 +454,7 @@ namespace Community.RandomOrg.Tests
                     joparams["min"].ToObject<int>(),
                     joparams["max"].ToObject<int>(),
                     joparams["replacement"].ToObject<bool>(),
-                    joparams["userData"].ToObject<string>(),
-                    CancellationToken.None);
+                    joparams["userData"].ToObject<string>());
 
                 InternalVerifyResult(result, jores);
 
@@ -491,8 +482,7 @@ namespace Community.RandomOrg.Tests
                     joparams["min"].ToObject<int[]>(),
                     joparams["max"].ToObject<int[]>(),
                     joparams["replacement"].ToObject<bool[]>(),
-                    joparams["userData"].ToObject<string>(),
-                    CancellationToken.None);
+                    joparams["userData"].ToObject<string>());
 
                 InternalVerifyResult(result, jores);
 
@@ -516,7 +506,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                    client.GenerateSignedDecimalFractionsAsync(count, decimalPlaces, false, null, CancellationToken.None));
+                    client.GenerateSignedDecimalFractionsAsync(count, decimalPlaces, false, null));
             }
         }
 
@@ -535,8 +525,7 @@ namespace Community.RandomOrg.Tests
                     joparams["n"].ToObject<int>(),
                     joparams["decimalPlaces"].ToObject<int>(),
                     joparams["replacement"].ToObject<bool>(),
-                    joparams["userData"].ToObject<string>(),
-                    CancellationToken.None);
+                    joparams["userData"].ToObject<string>());
 
                 InternalVerifyResult(result, jores);
 
@@ -566,7 +555,7 @@ namespace Community.RandomOrg.Tests
                 var standardDeviationValue = decimal.Parse(standardDeviation, CultureInfo.InvariantCulture);
 
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                    client.GenerateSignedGaussiansAsync(count, meanValue, standardDeviationValue, significantDigits, null, CancellationToken.None));
+                    client.GenerateSignedGaussiansAsync(count, meanValue, standardDeviationValue, significantDigits, null));
             }
         }
 
@@ -586,8 +575,7 @@ namespace Community.RandomOrg.Tests
                     joparams["mean"].ToObject<decimal>(),
                     joparams["standardDeviation"].ToObject<decimal>(),
                     joparams["significantDigits"].ToObject<int>(),
-                    joparams["userData"].ToObject<string>(),
-                    CancellationToken.None);
+                    joparams["userData"].ToObject<string>());
 
                 InternalVerifyResult(result, jores);
 
@@ -611,7 +599,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                    client.GenerateSignedStringsAsync(count, length, "abcde", false, null, CancellationToken.None));
+                    client.GenerateSignedStringsAsync(count, length, "abcde", false, null));
             }
         }
 
@@ -623,7 +611,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAsync<ArgumentNullException>(() =>
-                    client.GenerateSignedStringsAsync(1, 1, null, false, null, CancellationToken.None));
+                    client.GenerateSignedStringsAsync(1, 1, null, false, null));
             }
         }
 
@@ -637,7 +625,7 @@ namespace Community.RandomOrg.Tests
                 var characters = new string('a', 81);
 
                 await Assert.ThrowsAsync<ArgumentException>(() =>
-                    client.GenerateSignedStringsAsync(1, 1, characters, false, null, CancellationToken.None));
+                    client.GenerateSignedStringsAsync(1, 1, characters, false, null));
             }
         }
 
@@ -657,8 +645,7 @@ namespace Community.RandomOrg.Tests
                     joparams["length"].ToObject<int>(),
                     joparams["characters"].ToObject<string>(),
                     joparams["replacement"].ToObject<bool>(),
-                    joparams["userData"].ToObject<string>(),
-                    CancellationToken.None);
+                    joparams["userData"].ToObject<string>());
 
                 InternalVerifyResult(result, jores);
 
@@ -680,7 +667,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                    client.GenerateSignedUuidsAsync(count, null, CancellationToken.None));
+                    client.GenerateSignedUuidsAsync(count, null));
             }
         }
 
@@ -697,8 +684,7 @@ namespace Community.RandomOrg.Tests
             {
                 var result = await client.GenerateSignedUuidsAsync(
                     joparams["n"].ToObject<int>(),
-                    joparams["userData"].ToObject<string>(),
-                    CancellationToken.None);
+                    joparams["userData"].ToObject<string>());
 
                 InternalVerifyResult(result, jores);
 
@@ -720,7 +706,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                    client.GenerateSignedBlobsAsync(count, size, null, CancellationToken.None));
+                    client.GenerateSignedBlobsAsync(count, size, null));
             }
         }
 
@@ -738,8 +724,7 @@ namespace Community.RandomOrg.Tests
                 var result = await client.GenerateSignedBlobsAsync(
                     joparams["n"].ToObject<int>(),
                     joparams["size"].ToObject<int>() / 8,
-                    joparams["userData"].ToObject<string>(),
-                    CancellationToken.None);
+                    joparams["userData"].ToObject<string>());
 
                 InternalVerifyResult(result, jores);
 
@@ -767,7 +752,7 @@ namespace Community.RandomOrg.Tests
                 var signature = Convert.FromBase64String(joparams["signature"].ToObject<string>());
 
                 await Assert.ThrowsAsync<ArgumentNullException>(() =>
-                    client.VerifySignatureAsync(default(SignedRandom<int, IntegerParameters>), signature, CancellationToken.None));
+                    client.VerifySignatureAsync(default(SignedRandom<int, IntegerParameters>), signature));
             }
         }
 
@@ -779,7 +764,7 @@ namespace Community.RandomOrg.Tests
                 var random = new SignedRandom<int, IntegerParameters>();
 
                 await Assert.ThrowsAsync<ArgumentNullException>(() =>
-                    client.VerifySignatureAsync(random, null, CancellationToken.None));
+                    client.VerifySignatureAsync(random, null));
             }
         }
 
@@ -812,7 +797,7 @@ namespace Community.RandomOrg.Tests
                 random.License.InfoUrl = new Uri(jolicense["infoUrl"].ToObject<string>());
 
                 var signature = Convert.FromBase64String(joparams["signature"].ToObject<string>());
-                var result = await client.VerifySignatureAsync(random, signature, CancellationToken.None);
+                var result = await client.VerifySignatureAsync(random, signature);
 
                 Assert.Equal(result, jores["result"]["authenticity"].ToObject<bool>());
             }
@@ -849,7 +834,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpMessageHandler(_output, Handler))))
             {
                 var exception = await Assert.ThrowsAsync<RandomOrgRequestException>(() =>
-                    client.GetUsageAsync(CancellationToken.None));
+                    client.GetUsageAsync());
 
                 Assert.Equal(HttpStatusCode.BadRequest, exception.StatusCode);
             }
@@ -869,7 +854,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var exception = await Assert.ThrowsAsync<RandomOrgException>(() =>
-                    client.GetUsageAsync(CancellationToken.None));
+                    client.GetUsageAsync());
 
                 Assert.Equal(joreq["method"].ToObject<string>(), exception.Method);
                 Assert.Equal(joerror["code"].ToObject<long>(), exception.Code);

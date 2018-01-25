@@ -23,7 +23,7 @@ namespace Community.RandomOrg
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
         public async Task<RandomResult<int>> GenerateIntegersAsync(
-            int count, int minimum, int maximum, bool replacement, CancellationToken cancellationToken)
+            int count, int minimum, int maximum, bool replacement, CancellationToken cancellationToken = default)
         {
             if ((count < 1) || (count > 10000))
             {
@@ -76,7 +76,7 @@ namespace Community.RandomOrg
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
         public async Task<RandomResult<int[]>> GenerateIntegerSequencesAsync(
-            IReadOnlyList<int> counts, IReadOnlyList<int> minimums, IReadOnlyList<int> maximums, IReadOnlyList<bool> replacements, CancellationToken cancellationToken)
+            IReadOnlyList<int> counts, IReadOnlyList<int> minimums, IReadOnlyList<int> maximums, IReadOnlyList<bool> replacements, CancellationToken cancellationToken = default)
         {
             if (counts == null)
             {
@@ -168,7 +168,7 @@ namespace Community.RandomOrg
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
         public async Task<RandomResult<decimal>> GenerateDecimalFractionsAsync(
-            int count, int decimalPlaces, bool replacement, CancellationToken cancellationToken)
+            int count, int decimalPlaces, bool replacement, CancellationToken cancellationToken = default)
         {
             if ((count < 1) || (count > 10000))
             {
@@ -213,7 +213,7 @@ namespace Community.RandomOrg
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
         public async Task<RandomResult<decimal>> GenerateGaussiansAsync(
-            int count, decimal mean, decimal standardDeviation, int significantDigits, CancellationToken cancellationToken)
+            int count, decimal mean, decimal standardDeviation, int significantDigits, CancellationToken cancellationToken = default)
         {
             if ((count < 1) || (count > 10000))
             {
@@ -269,7 +269,7 @@ namespace Community.RandomOrg
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
         public async Task<RandomResult<string>> GenerateStringsAsync(
-            int count, int length, string characters, bool replacement, CancellationToken cancellationToken)
+            int count, int length, string characters, bool replacement, CancellationToken cancellationToken = default)
         {
             if ((count < 1) || (count > 10000))
             {
@@ -320,7 +320,7 @@ namespace Community.RandomOrg
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
         public async Task<RandomResult<Guid>> GenerateUuidsAsync(
-            int count, CancellationToken cancellationToken)
+            int count, CancellationToken cancellationToken = default)
         {
             if ((count < 1) || (count > 1000))
             {
@@ -357,7 +357,7 @@ namespace Community.RandomOrg
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
         public async Task<RandomResult<byte[]>> GenerateBlobsAsync(
-            int count, int size, CancellationToken cancellationToken)
+            int count, int size, CancellationToken cancellationToken = default)
         {
             if ((count < 1) || (count > 100))
             {
@@ -417,7 +417,7 @@ namespace Community.RandomOrg
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
         public async Task<SignedRandomResult<int, IntegerParameters>> GenerateSignedIntegersAsync(
-            int count, int minimum, int maximum, bool replacement, string userData, CancellationToken cancellationToken)
+            int count, int minimum, int maximum, bool replacement, string userData = null, CancellationToken cancellationToken = default)
         {
             if ((count < 1) || (count > 10000))
             {
@@ -481,7 +481,7 @@ namespace Community.RandomOrg
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
         public async Task<SignedRandomResult<int[], IntegerSequenceParameters>> GenerateSignedIntegerSequencesAsync(
-            IReadOnlyList<int> counts, IReadOnlyList<int> minimums, IReadOnlyList<int> maximums, IReadOnlyList<bool> replacements, string userData, CancellationToken cancellationToken)
+            IReadOnlyList<int> counts, IReadOnlyList<int> minimums, IReadOnlyList<int> maximums, IReadOnlyList<bool> replacements, string userData = null, CancellationToken cancellationToken = default)
         {
             if (counts == null)
             {
@@ -580,7 +580,7 @@ namespace Community.RandomOrg
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
         public async Task<SignedRandomResult<decimal, DecimalFractionParameters>> GenerateSignedDecimalFractionsAsync(
-            int count, int decimalPlaces, bool replacement, string userData, CancellationToken cancellationToken)
+            int count, int decimalPlaces, bool replacement, string userData = null, CancellationToken cancellationToken = default)
         {
             if ((count < 1) || (count > 10000))
             {
@@ -635,7 +635,7 @@ namespace Community.RandomOrg
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
         public async Task<SignedRandomResult<decimal, GaussianParameters>> GenerateSignedGaussiansAsync(
-            int count, decimal mean, decimal standardDeviation, int significantDigits, string userData, CancellationToken cancellationToken)
+            int count, decimal mean, decimal standardDeviation, int significantDigits, string userData = null, CancellationToken cancellationToken = default)
         {
             if ((count < 1) || (count > 10000))
             {
@@ -702,7 +702,7 @@ namespace Community.RandomOrg
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
         public async Task<SignedRandomResult<string, StringParameters>> GenerateSignedStringsAsync(
-            int count, int length, string characters, bool replacement, string userData, CancellationToken cancellationToken)
+            int count, int length, string characters, bool replacement, string userData = null, CancellationToken cancellationToken = default)
         {
             if ((count < 1) || (count > 10000))
             {
@@ -764,7 +764,7 @@ namespace Community.RandomOrg
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
         public async Task<SignedRandomResult<Guid, UuidParameters>> GenerateSignedUuidsAsync(
-            int count, string userData, CancellationToken cancellationToken)
+            int count, string userData = null, CancellationToken cancellationToken = default)
         {
             if ((count < 1) || (count > 1000))
             {
@@ -808,7 +808,7 @@ namespace Community.RandomOrg
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
         public async Task<SignedRandomResult<byte[], BlobParameters>> GenerateSignedBlobsAsync(
-            int count, int size, string userData, CancellationToken cancellationToken)
+            int count, int size, string userData = null, CancellationToken cancellationToken = default)
         {
             if ((count < 1) || (count > 100))
             {
