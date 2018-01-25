@@ -16,13 +16,13 @@ namespace Community.RandomOrg
     public sealed partial class RandomOrgClient : IDisposable
     {
         private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = new MediaTypeHeaderValue("application/json");
-        private static readonly JsonRpcSerializer _jsonRpcSerializer = new JsonRpcSerializer(null, new Dictionary<JsonRpcId, JsonRpcResponseContract>(1));
         private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/2/invoke", UriKind.Absolute);
-        private static readonly IReadOnlyDictionary<Type, JsonRpcResponseContract> _contracts = CreateContracts();
+        private static readonly IReadOnlyDictionary<string, JsonRpcResponseContract> _contracts = CreateContracts();
 
         private readonly string _apiKey;
         private readonly HttpMessageInvoker _httpMessageInvoker;
         private readonly SemaphoreSlim _requestSemaphore = new SemaphoreSlim(1, 1);
+        private readonly JsonRpcSerializer _jsonRpcSerializer = CreateSerializer(_contracts);
 
         private DateTime? _advisoryTime;
 
@@ -410,7 +410,7 @@ namespace Community.RandomOrg
                         throw new RandomOrgRequestException(Strings.GetString("protocol.http.headers.invalid_set"), httpResponseMessage.StatusCode);
                     }
 
-                    _jsonRpcSerializer.DynamicResponseBindings[jsonRpcRequest.Id] = _contracts[typeof(TResult)];
+                    _jsonRpcSerializer.StaticResponseBindings[jsonRpcRequest.Id] = method;
 
                     var responseData = default(JsonRpcData<JsonRpcResponse>);
 
@@ -424,7 +424,7 @@ namespace Community.RandomOrg
                     }
                     finally
                     {
-                        _jsonRpcSerializer.DynamicResponseBindings.Remove(jsonRpcRequest.Id);
+                        _jsonRpcSerializer.StaticResponseBindings.Remove(jsonRpcRequest.Id);
                     }
 
                     cancellationToken.ThrowIfCancellationRequested();
@@ -478,31 +478,36 @@ namespace Community.RandomOrg
             return httpClient;
         }
 
-        private static IReadOnlyDictionary<Type, JsonRpcResponseContract> CreateContracts()
+        private static IReadOnlyDictionary<string, JsonRpcResponseContract> CreateContracts()
         {
-            var types = new[]
+            return new Dictionary<string, JsonRpcResponseContract>(16)
             {
-                typeof(RpcRandomUsageResult),
-                typeof(RpcRandomResult<int>),
-                typeof(RpcRandomResult<int[]>),
-                typeof(RpcRandomResult<string>),
-                typeof(RpcRandomResult<decimal>),
-                typeof(RpcRandomResult<Guid>),
-                typeof(RpcSignedRandomResult<RpcIntegersRandom, int>),
-                typeof(RpcSignedRandomResult<RpcIntegerSequencesRandom, int[]>),
-                typeof(RpcSignedRandomResult<RpcDecimalFractionsRandom, decimal>),
-                typeof(RpcSignedRandomResult<RpcGaussiansRandom, decimal>),
-                typeof(RpcSignedRandomResult<RpcStringsRandom, string>),
-                typeof(RpcSignedRandomResult<RpcUuidsRandom, Guid>),
-                typeof(RpcSignedRandomResult<RpcBlobsRandom, string>),
-                typeof(RpcVerifyResult)
+                ["getUsage"] = new JsonRpcResponseContract(typeof(RpcRandomUsageResult)),
+                ["generateIntegers"] = new JsonRpcResponseContract(typeof(RpcRandomResult<int>)),
+                ["generateIntegerSequences"] = new JsonRpcResponseContract(typeof(RpcRandomResult<int[]>)),
+                ["generateDecimalFractions"] = new JsonRpcResponseContract(typeof(RpcRandomResult<decimal>)),
+                ["generateGaussians"] = new JsonRpcResponseContract(typeof(RpcRandomResult<decimal>)),
+                ["generateStrings"] = new JsonRpcResponseContract(typeof(RpcRandomResult<string>)),
+                ["generateUUIDs"] = new JsonRpcResponseContract(typeof(RpcRandomResult<Guid>)),
+                ["generateBlobs"] = new JsonRpcResponseContract(typeof(RpcRandomResult<string>)),
+                ["generateSignedIntegers"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcIntegersRandom, int>)),
+                ["generateSignedIntegerSequences"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcIntegerSequencesRandom, int[]>)),
+                ["generateSignedDecimalFractions"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcDecimalFractionsRandom, decimal>)),
+                ["generateSignedGaussians"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcGaussiansRandom, decimal>)),
+                ["generateSignedStrings"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcStringsRandom, string>)),
+                ["generateSignedUUIDs"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcUuidsRandom, Guid>)),
+                ["generateSignedBlobs"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcBlobsRandom, string>)),
+                ["verifySignature"] = new JsonRpcResponseContract(typeof(RpcVerifyResult)),
             };
+        }
 
-            var result = new Dictionary<Type, JsonRpcResponseContract>(types.Length);
+        private static JsonRpcSerializer CreateSerializer(IReadOnlyDictionary<string, JsonRpcResponseContract> contracts)
+        {
+            var result = new JsonRpcSerializer(new Dictionary<JsonRpcId, string>(1), new Dictionary<JsonRpcId, JsonRpcResponseContract>(0));
 
-            for (var i = 0; i < types.Length; i++)
+            foreach (var kvp in contracts)
             {
-                result[types[i]] = new JsonRpcResponseContract(types[i]);
+                result.ResponseContracts[kvp.Key] = kvp.Value;
             }
 
             return result;
