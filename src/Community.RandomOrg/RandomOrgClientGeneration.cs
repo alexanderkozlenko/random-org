@@ -16,7 +16,7 @@ namespace Community.RandomOrg
         /// <param name="maximum">The upper boundary for the range from which the random numbers will be picked. Must be within the [-1000000000,1000000000] range.</param>
         /// <param name="replacement">Specifies whether the random numbers should be picked with replacement.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A <see cref="RandomResult{T}" /> instance.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="RandomResult{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="minimum" />, or <paramref name="maximum" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
@@ -67,7 +67,7 @@ namespace Community.RandomOrg
         /// <param name="maximums">An array specifying the upper boundaries for the requested sequences. Each value must be within the [-1000000000,1000000000] range.</param>
         /// <param name="replacements">An array specifying for each requested sequence whether the random numbers in that sequence should be picked with replacement.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A <see cref="RandomResult{T}" /> instance.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="RandomResult{T}" /> instance.</returns>
         /// <exception cref="ArgumentException">Counts of argument arrays are different, sequences count is greater than 10, or total count is outside the [1,10000] range.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="counts" />, <paramref name="minimums" />, <paramref name="maximums" />, or <paramref name="replacements" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentOutOfRangeException">One of the values from the arguments <paramref name="counts" />, <paramref name="minimums" />, or <paramref name="maximums" /> is outside the allowable range of values.</exception>
@@ -161,7 +161,7 @@ namespace Community.RandomOrg
         /// <param name="decimalPlaces">The number of decimal places to use. Must be within the [1,20] range.</param>
         /// <param name="replacement">Specifies whether the random numbers should be picked with replacement.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A <see cref="RandomResult{T}" /> instance.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="RandomResult{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="decimalPlaces" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
@@ -206,7 +206,7 @@ namespace Community.RandomOrg
         /// <param name="standardDeviation">The distribution's standard deviation. Must be within the [-1000000,1000000] range.</param>
         /// <param name="significantDigits">The number of significant digits to use. Must be within the [2,20] range.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A <see cref="RandomResult{T}" /> instance.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="RandomResult{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="mean" />, <paramref name="standardDeviation" />, or <paramref name="significantDigits" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
@@ -260,7 +260,7 @@ namespace Community.RandomOrg
         /// <param name="characters">A string that contains the set of characters that are allowed to occur in the random strings. The maximum number of characters is 80.</param>
         /// <param name="replacement">Specifies whether the random strings should be picked with replacement.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A <see cref="RandomResult{T}" /> instance.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="RandomResult{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="length" /> is outside the allowable range of values.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="characters" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException"><paramref name="characters" /> contains invalid number of characters .</exception>
@@ -313,7 +313,7 @@ namespace Community.RandomOrg
         /// <summary>Generates version 4 true random UUIDs in accordance with section 4.4 of RFC 4122 as an asynchronous operation.</summary>
         /// <param name="count">How many random UUIDs to generate. Must be within the [1,1000] range.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A <see cref="RandomResult{T}" /> instance.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="RandomResult{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
@@ -350,7 +350,7 @@ namespace Community.RandomOrg
         /// <param name="count">How many random blobs to generate. Must be within the [1,100] range.</param>
         /// <param name="size">The size of each blob, measured in bytes. Must be within the [1,131072] range. The total size of all blobs requested must not exceed 131072 bytes.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A <see cref="RandomResult{T}" /> instance.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="RandomResult{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="size" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
@@ -410,7 +410,7 @@ namespace Community.RandomOrg
         /// <param name="replacement">Specifies whether the random numbers should be picked with replacement.</param>
         /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1000.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A <see cref="SignedRandomResult{TRandom, TValue}" /> instance.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="SignedRandomResult{TValue, TParameters}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="minimum" />, or <paramref name="maximum" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
@@ -472,7 +472,7 @@ namespace Community.RandomOrg
         /// <param name="replacements">An array specifying for each requested sequence whether the random numbers in that sequence should be picked with replacement.</param>
         /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1000.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A <see cref="RandomResult{T}" /> instance.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="RandomResult{T}" /> instance.</returns>
         /// <exception cref="ArgumentException">Counts of argument arrays are different, sequences count is greater than 10, or total count is outside the [1,10000] range.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="counts" />, <paramref name="minimums" />, <paramref name="maximums" />, or <paramref name="replacements" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentOutOfRangeException">One of the values from the arguments <paramref name="counts" />, <paramref name="minimums" />, or <paramref name="maximums" /> is outside the allowable range of values.</exception>
@@ -573,7 +573,7 @@ namespace Community.RandomOrg
         /// <param name="replacement">Specifies whether the random numbers should be picked with replacement.</param>
         /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1000.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A <see cref="SignedRandomResult{TRandom, TValue}" /> instance.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="SignedRandomResult{TValue, TParameters}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="decimalPlaces" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
@@ -628,7 +628,7 @@ namespace Community.RandomOrg
         /// <param name="significantDigits">The number of significant digits to use. Must be within the [2,20] range.</param>
         /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1000.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A <see cref="SignedRandomResult{TRandom, TValue}" /> instance.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="SignedRandomResult{TValue, TParameters}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="mean" />, <paramref name="standardDeviation" />, or <paramref name="significantDigits" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
@@ -693,7 +693,7 @@ namespace Community.RandomOrg
         /// <param name="replacement">Specifies whether the random strings should be picked with replacement.</param>
         /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1000.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A <see cref="SignedRandomResult{TRandom, TValue}" /> instance.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="SignedRandomResult{TValue, TParameters}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="length" /> is outside the allowable range of values.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="characters" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException"><paramref name="characters" /> contains invalid number of characters .</exception>
@@ -757,7 +757,7 @@ namespace Community.RandomOrg
         /// <param name="count">How many random UUIDs to generate. Must be within the [1,1000] range.</param>
         /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1000.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A <see cref="SignedRandomResult{TRandom, TValue}" /> instance.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="SignedRandomResult{TValue, TParameters}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
@@ -801,7 +801,7 @@ namespace Community.RandomOrg
         /// <param name="size">The size of each blob, measured in bytes. Must be within the [1,131072] range. The total size of all blobs requested must not exceed 131072 bytes.</param>
         /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1000.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A <see cref="SignedRandomResult{TRandom, TValue}" /> instance.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="SignedRandomResult{TValue, TParameters}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="size" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>

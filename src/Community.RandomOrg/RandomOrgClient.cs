@@ -48,7 +48,7 @@ namespace Community.RandomOrg
 
         /// <summary>Returns information related to the usage of a given API key as an asynchronous operation.</summary>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A <see cref="RandomUsage" /> instance.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result is API key usage information.</returns>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
@@ -71,7 +71,7 @@ namespace Community.RandomOrg
         /// <param name="random">The signed random objects and associated data.</param>
         /// <param name="signature">The signature from the same response that the random data originates from.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
-        /// <returns>A value, indicating if the random objects are authentic.</returns>
+        /// <returns>A task that represents the asynchronous operation. The task result is a value, indicating if the random objects are authentic.</returns>
         /// <exception cref="ArgumentException"><paramref name="random" /> data is <see langword="null" />.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="random" /> or <paramref name="signature" /> is <see langword="null" />.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
