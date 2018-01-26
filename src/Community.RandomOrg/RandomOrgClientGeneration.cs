@@ -38,15 +38,13 @@ namespace Community.RandomOrg
                 throw new ArgumentOutOfRangeException(nameof(maximum), maximum, Strings.GetString("random.integer.upper_boundary.invalid_range"));
             }
 
-            var parameters = new Dictionary<string, object>(6, StringComparer.Ordinal)
-            {
-                ["apiKey"] = _apiKey,
-                ["n"] = count,
-                ["min"] = minimum,
-                ["max"] = maximum,
-                ["replacement"] = replacement,
-                ["base"] = 10
-            };
+            var parameters = CreateGenerateParameters(5);
+
+            parameters["n"] = count;
+            parameters["min"] = minimum;
+            parameters["max"] = maximum;
+            parameters["replacement"] = replacement;
+            parameters["base"] = 10;
 
             var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<int>, RpcRandom<int>, int>(
                 "generateIntegers", parameters, cancellationToken).ConfigureAwait(false);
@@ -131,15 +129,13 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.sequence.count.invalid_value"));
             }
 
-            var parameters = new Dictionary<string, object>(6, StringComparer.Ordinal)
-            {
-                ["apiKey"] = _apiKey,
-                ["n"] = counts,
-                ["min"] = minimums,
-                ["max"] = maximums,
-                ["replacement"] = replacements,
-                ["base"] = bases
-            };
+            var parameters = CreateGenerateParameters(5);
+
+            parameters["n"] = counts;
+            parameters["min"] = minimums;
+            parameters["max"] = maximums;
+            parameters["replacement"] = replacements;
+            parameters["base"] = bases;
 
             var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<int[]>, RpcRandom<int[]>, int[]>(
                 "generateIntegerSequences", parameters, cancellationToken).ConfigureAwait(false);
@@ -175,13 +171,11 @@ namespace Community.RandomOrg
                 throw new ArgumentOutOfRangeException(nameof(decimalPlaces), decimalPlaces, Strings.GetString("random.decimal_fraction.decimal_places.invalid_range"));
             }
 
-            var parameters = new Dictionary<string, object>(4, StringComparer.Ordinal)
-            {
-                ["apiKey"] = _apiKey,
-                ["n"] = count,
-                ["decimalPlaces"] = decimalPlaces,
-                ["replacement"] = replacement
-            };
+            var parameters = CreateGenerateParameters(3);
+
+            parameters["n"] = count;
+            parameters["decimalPlaces"] = decimalPlaces;
+            parameters["replacement"] = replacement;
 
             var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<decimal>, RpcRandom<decimal>, decimal>(
                 "generateDecimalFractions", parameters, cancellationToken).ConfigureAwait(false);
@@ -226,14 +220,12 @@ namespace Community.RandomOrg
                 throw new ArgumentOutOfRangeException(nameof(significantDigits), significantDigits, Strings.GetString("random.gaussian.significant_digits.invalid_range"));
             }
 
-            var parameters = new Dictionary<string, object>(5, StringComparer.Ordinal)
-            {
-                ["apiKey"] = _apiKey,
-                ["n"] = count,
-                ["mean"] = RandomOrgConvert.DecimalToObject(mean),
-                ["standardDeviation"] = RandomOrgConvert.DecimalToObject(standardDeviation),
-                ["significantDigits"] = significantDigits
-            };
+            var parameters = CreateGenerateParameters(4);
+
+            parameters["n"] = count;
+            parameters["mean"] = RandomOrgConvert.DecimalToObject(mean);
+            parameters["standardDeviation"] = RandomOrgConvert.DecimalToObject(standardDeviation);
+            parameters["significantDigits"] = significantDigits;
 
             var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<decimal>, RpcRandom<decimal>, decimal>(
                 "generateGaussians", parameters, cancellationToken).ConfigureAwait(false);
@@ -280,14 +272,12 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.string.characters.length.invalid_range"), nameof(characters));
             }
 
-            var parameters = new Dictionary<string, object>(5, StringComparer.Ordinal)
-            {
-                ["apiKey"] = _apiKey,
-                ["n"] = count,
-                ["length"] = length,
-                ["characters"] = characters,
-                ["replacement"] = replacement
-            };
+            var parameters = CreateGenerateParameters(4);
+
+            parameters["n"] = count;
+            parameters["length"] = length;
+            parameters["characters"] = characters;
+            parameters["replacement"] = replacement;
 
             var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<string>, RpcRandom<string>, string>(
                 "generateStrings", parameters, cancellationToken).ConfigureAwait(false);
@@ -317,11 +307,9 @@ namespace Community.RandomOrg
                 throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("random.uuid.count.invalid_range"));
             }
 
-            var parameters = new Dictionary<string, object>(2, StringComparer.Ordinal)
-            {
-                ["apiKey"] = _apiKey,
-                ["n"] = count
-            };
+            var parameters = CreateGenerateParameters(1);
+
+            parameters["n"] = count;
 
             var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<Guid>, RpcRandom<Guid>, Guid>(
                 "generateUUIDs", parameters, cancellationToken).ConfigureAwait(false);
@@ -360,13 +348,11 @@ namespace Community.RandomOrg
                 throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("random.blob.invalid_total_size"));
             }
 
-            var parameters = new Dictionary<string, object>(4, StringComparer.Ordinal)
-            {
-                ["apiKey"] = _apiKey,
-                ["n"] = count,
-                ["size"] = size * 8,
-                ["format"] = "base64"
-            };
+            var parameters = CreateGenerateParameters(3);
+
+            parameters["n"] = count;
+            parameters["size"] = size * 8;
+            parameters["format"] = "base64";
 
             var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<byte[]>, RpcRandom<byte[]>, byte[]>(
                 "generateBlobs", parameters, cancellationToken).ConfigureAwait(false);
@@ -412,16 +398,14 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
 
-            var parameters = new Dictionary<string, object>(7, StringComparer.Ordinal)
-            {
-                ["apiKey"] = _apiKey,
-                ["n"] = count,
-                ["min"] = minimum,
-                ["max"] = maximum,
-                ["replacement"] = replacement,
-                ["base"] = 10,
-                ["userData"] = userData
-            };
+            var parameters = CreateGenerateParameters(6);
+
+            parameters["n"] = count;
+            parameters["min"] = minimum;
+            parameters["max"] = maximum;
+            parameters["replacement"] = replacement;
+            parameters["base"] = 10;
+            parameters["userData"] = userData;
 
             var response = await InvokeGenerationServiceMethodAsync<RpcSignedRandomResult<RpcIntegersRandom, int>, RpcIntegersRandom, int>(
                 "generateSignedIntegers", parameters, cancellationToken).ConfigureAwait(false);
@@ -511,16 +495,14 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.sequence.count.invalid_value"));
             }
 
-            var parameters = new Dictionary<string, object>(7, StringComparer.Ordinal)
-            {
-                ["apiKey"] = _apiKey,
-                ["n"] = counts,
-                ["min"] = minimums,
-                ["max"] = maximums,
-                ["replacement"] = replacements,
-                ["base"] = bases,
-                ["userData"] = userData
-            };
+            var parameters = CreateGenerateParameters(6);
+
+            parameters["n"] = counts;
+            parameters["min"] = minimums;
+            parameters["max"] = maximums;
+            parameters["replacement"] = replacements;
+            parameters["base"] = bases;
+            parameters["userData"] = userData;
 
             var response = await InvokeGenerationServiceMethodAsync<RpcSignedRandomResult<RpcIntegerSequencesRandom, int[]>, RpcIntegerSequencesRandom, int[]>(
                 "generateSignedIntegerSequences", parameters, cancellationToken).ConfigureAwait(false);
@@ -565,14 +547,12 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
 
-            var parameters = new Dictionary<string, object>(5, StringComparer.Ordinal)
-            {
-                ["apiKey"] = _apiKey,
-                ["n"] = count,
-                ["decimalPlaces"] = decimalPlaces,
-                ["replacement"] = replacement,
-                ["userData"] = userData
-            };
+            var parameters = CreateGenerateParameters(4);
+
+            parameters["n"] = count;
+            parameters["decimalPlaces"] = decimalPlaces;
+            parameters["replacement"] = replacement;
+            parameters["userData"] = userData;
 
             var response = await InvokeGenerationServiceMethodAsync<RpcSignedRandomResult<RpcDecimalFractionsRandom, decimal>, RpcDecimalFractionsRandom, decimal>(
                 "generateSignedDecimalFractions", parameters, cancellationToken).ConfigureAwait(false);
@@ -625,15 +605,13 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
 
-            var parameters = new Dictionary<string, object>(6, StringComparer.Ordinal)
-            {
-                ["apiKey"] = _apiKey,
-                ["n"] = count,
-                ["mean"] = RandomOrgConvert.DecimalToObject(mean),
-                ["standardDeviation"] = RandomOrgConvert.DecimalToObject(standardDeviation),
-                ["significantDigits"] = significantDigits,
-                ["userData"] = userData
-            };
+            var parameters = CreateGenerateParameters(5);
+
+            parameters["n"] = count;
+            parameters["mean"] = RandomOrgConvert.DecimalToObject(mean);
+            parameters["standardDeviation"] = RandomOrgConvert.DecimalToObject(standardDeviation);
+            parameters["significantDigits"] = significantDigits;
+            parameters["userData"] = userData;
 
             var response = await InvokeGenerationServiceMethodAsync<RpcSignedRandomResult<RpcGaussiansRandom, decimal>, RpcGaussiansRandom, decimal>(
                 "generateSignedGaussians", parameters, cancellationToken).ConfigureAwait(false);
@@ -689,15 +667,13 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
 
-            var parameters = new Dictionary<string, object>(6, StringComparer.Ordinal)
-            {
-                ["apiKey"] = _apiKey,
-                ["n"] = count,
-                ["length"] = length,
-                ["characters"] = characters,
-                ["replacement"] = replacement,
-                ["userData"] = userData
-            };
+            var parameters = CreateGenerateParameters(5);
+
+            parameters["n"] = count;
+            parameters["length"] = length;
+            parameters["characters"] = characters;
+            parameters["replacement"] = replacement;
+            parameters["userData"] = userData;
 
             var response = await InvokeGenerationServiceMethodAsync<RpcSignedRandomResult<RpcStringsRandom, string>, RpcStringsRandom, string>(
                 "generateSignedStrings", parameters, cancellationToken).ConfigureAwait(false);
@@ -736,12 +712,10 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
 
-            var parameters = new Dictionary<string, object>(3, StringComparer.Ordinal)
-            {
-                ["apiKey"] = _apiKey,
-                ["n"] = count,
-                ["userData"] = userData
-            };
+            var parameters = CreateGenerateParameters(2);
+
+            parameters["n"] = count;
+            parameters["userData"] = userData;
 
             var response = await InvokeGenerationServiceMethodAsync<RpcSignedRandomResult<RpcUuidsRandom, Guid>, RpcUuidsRandom, Guid>(
                 "generateSignedUUIDs", parameters, cancellationToken).ConfigureAwait(false);
@@ -785,14 +759,12 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
 
-            var parameters = new Dictionary<string, object>(5, StringComparer.Ordinal)
-            {
-                ["apiKey"] = _apiKey,
-                ["n"] = count,
-                ["size"] = size * 8,
-                ["format"] = "base64",
-                ["userData"] = userData
-            };
+            var parameters = CreateGenerateParameters(4);
+
+            parameters["n"] = count;
+            parameters["size"] = size * 8;
+            parameters["format"] = "base64";
+            parameters["userData"] = userData;
 
             var response = await InvokeGenerationServiceMethodAsync<RpcSignedRandomResult<RpcBlobsRandom, byte[]>, RpcBlobsRandom, byte[]>(
                 "generateSignedBlobs", parameters, cancellationToken).ConfigureAwait(false);

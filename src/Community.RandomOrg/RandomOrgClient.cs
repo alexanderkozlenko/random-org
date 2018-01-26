@@ -264,6 +264,14 @@ namespace Community.RandomOrg
             return response.Authenticity;
         }
 
+        private Dictionary<string, object> CreateGenerateParameters(int capacity)
+        {
+            return new Dictionary<string, object>(capacity + 1, StringComparer.Ordinal)
+            {
+                ["apiKey"] = _apiKey
+            };
+        }
+
         private static void TransferRandom<TData>(Random<TData> source, RpcRandom<TData> target)
         {
             target.Data = source.Data;
