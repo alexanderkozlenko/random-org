@@ -2,7 +2,7 @@
 
 namespace Community.RandomOrg.Internal
 {
-    internal sealed class RpcBlobsRandom : RpcSignedRandom<string>
+    internal sealed class RpcBlobsRandom : RpcSignedRandom<byte[]>
     {
         [JsonProperty("n", Required = Required.Always)]
         public int Count

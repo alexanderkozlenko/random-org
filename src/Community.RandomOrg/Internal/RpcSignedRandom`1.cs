@@ -1,5 +1,4 @@
-﻿using Community.RandomOrg.Converters;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Internal
 {
@@ -18,7 +17,6 @@ namespace Community.RandomOrg.Internal
         }
 
         [JsonProperty("hashedApiKey", Required = Required.Always)]
-        [JsonConverter(typeof(Base64ToByteArrayConverter))]
         public byte[] ApiKeyHash
         {
             get;

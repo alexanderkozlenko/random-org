@@ -245,16 +245,6 @@ namespace Community.RandomOrg
                     break;
                 case SignedRandom<byte[], BlobParameters> x:
                     {
-                        var rpcData = new string[x.Data.Count];
-
-                        for (var i = 0; i < rpcData.Length; i++)
-                        {
-                            if (x.Data[i] != null)
-                            {
-                                rpcData[i] = Convert.ToBase64String(x.Data[i]);
-                            }
-                        }
-
                         var rpcRandom = new RpcBlobsRandom
                         {
                             Method = "generateSignedBlobs",
@@ -262,7 +252,7 @@ namespace Community.RandomOrg
                             Size = x.Parameters.Size * 8,
                             Format = "base64",
                             UserData = x.UserData,
-                            Data = rpcData
+                            Data = x.Data
                         };
 
                         TransferSignedRandomData(x, rpcRandom);
@@ -489,14 +479,14 @@ namespace Community.RandomOrg
                 ["generateGaussians"] = new JsonRpcResponseContract(typeof(RpcRandomResult<decimal>)),
                 ["generateStrings"] = new JsonRpcResponseContract(typeof(RpcRandomResult<string>)),
                 ["generateUUIDs"] = new JsonRpcResponseContract(typeof(RpcRandomResult<Guid>)),
-                ["generateBlobs"] = new JsonRpcResponseContract(typeof(RpcRandomResult<string>)),
+                ["generateBlobs"] = new JsonRpcResponseContract(typeof(RpcRandomResult<byte[]>)),
                 ["generateSignedIntegers"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcIntegersRandom, int>)),
                 ["generateSignedIntegerSequences"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcIntegerSequencesRandom, int[]>)),
                 ["generateSignedDecimalFractions"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcDecimalFractionsRandom, decimal>)),
                 ["generateSignedGaussians"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcGaussiansRandom, decimal>)),
                 ["generateSignedStrings"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcStringsRandom, string>)),
                 ["generateSignedUUIDs"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcUuidsRandom, Guid>)),
-                ["generateSignedBlobs"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcBlobsRandom, string>)),
+                ["generateSignedBlobs"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcBlobsRandom, byte[]>)),
                 ["verifySignature"] = new JsonRpcResponseContract(typeof(RpcVerifyResult)),
             };
         }

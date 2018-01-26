@@ -380,22 +380,12 @@ namespace Community.RandomOrg
                 ["format"] = "base64"
             };
 
-            var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<string>, RpcRandom<string>, string>(
+            var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<byte[]>, RpcRandom<byte[]>, byte[]>(
                 "generateBlobs", parameters, cancellationToken).ConfigureAwait(false);
-
-            var data = new byte[response.Random.Data.Count][];
-
-            for (var i = 0; i < data.Length; i++)
-            {
-                if (response.Random.Data[i] != null)
-                {
-                    data[i] = Convert.FromBase64String(response.Random.Data[i]);
-                }
-            }
 
             var random = new Random<byte[]>
             {
-                Data = data,
+                Data = response.Random.Data,
                 CompletionTime = response.Random.CompletionTime
             };
 
@@ -836,22 +826,12 @@ namespace Community.RandomOrg
                 ["userData"] = userData
             };
 
-            var response = await InvokeGenerationServiceMethodAsync<RpcSignedRandomResult<RpcBlobsRandom, string>, RpcBlobsRandom, string>(
+            var response = await InvokeGenerationServiceMethodAsync<RpcSignedRandomResult<RpcBlobsRandom, byte[]>, RpcBlobsRandom, byte[]>(
                 "generateSignedBlobs", parameters, cancellationToken).ConfigureAwait(false);
-
-            var data = new byte[response.Random.Data.Count][];
-
-            for (var i = 0; i < data.Length; i++)
-            {
-                if (response.Random.Data[i] != null)
-                {
-                    data[i] = Convert.FromBase64String(response.Random.Data[i]);
-                }
-            }
 
             var random = new SignedRandom<byte[], BlobParameters>
             {
-                Data = data
+                Data = response.Random.Data
             };
 
             random.Parameters.Size = response.Random.Size / 8;
