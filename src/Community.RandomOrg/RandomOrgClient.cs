@@ -98,63 +98,61 @@ namespace Community.RandomOrg
 
             switch (random)
             {
-                case SignedRandom<int, IntegerParameters> x:
+                case SignedRandom<int, IntegerParameters> xRandom:
                     {
                         var rpcRandom = new RpcIntegersRandom
                         {
                             Method = "generateSignedIntegers",
-                            Count = x.Data.Count,
-                            Minimum = x.Parameters.Minimum,
-                            Maximum = x.Parameters.Maximum,
-                            Replacement = x.Parameters.Replacement,
-                            Base = 10,
-                            UserData = x.UserData,
-                            Data = x.Data
+                            Count = xRandom.Data.Count,
+                            Minimum = xRandom.Parameters.Minimum,
+                            Maximum = xRandom.Parameters.Maximum,
+                            Replacement = xRandom.Parameters.Replacement,
+                            Base = 10
                         };
 
-                        TransferSignedRandomData(x, rpcRandom);
+                        TransferRandom(xRandom, rpcRandom);
 
                         rpcRandomParam = rpcRandom;
                     }
                     break;
-                case SignedRandom<int[], IntegerSequenceParameters> x:
+                case SignedRandom<int[], IntegerSequenceParameters> xRandom:
                     {
-                        if (x.Parameters.Minimums == null)
+                        if (xRandom.Parameters.Minimums == null)
                         {
                             throw new ArgumentException(Strings.GetString("random.sequence.minimums.not_specified"), nameof(random));
                         }
-                        if (x.Parameters.Maximums == null)
+                        if (xRandom.Parameters.Maximums == null)
                         {
                             throw new ArgumentException(Strings.GetString("random.sequence.maximums.not_specified"), nameof(random));
                         }
-                        if (x.Parameters.Replacements == null)
+                        if (xRandom.Parameters.Replacements == null)
                         {
                             throw new ArgumentException(Strings.GetString("random.sequence.replacements.not_specified"), nameof(random));
                         }
 
-                        if ((x.Data.Count != x.Parameters.Minimums.Count) ||
-                            (x.Data.Count != x.Parameters.Maximums.Count) ||
-                            (x.Data.Count != x.Parameters.Replacements.Count))
+                        if ((xRandom.Data.Count != xRandom.Parameters.Minimums.Count) ||
+                            (xRandom.Data.Count != xRandom.Parameters.Maximums.Count) ||
+                            (xRandom.Data.Count != xRandom.Parameters.Replacements.Count))
                         {
                             throw new ArgumentException(Strings.GetString("random.sequence.arguments.different_size"), nameof(random));
                         }
 
-                        var counts = new int[x.Data.Count];
-                        var minimums = new int[x.Parameters.Minimums.Count];
-                        var maximums = new int[x.Parameters.Maximums.Count];
-                        var replacements = new bool[x.Parameters.Replacements.Count];
+                        var counts = new int[xRandom.Data.Count];
+                        var minimums = new int[xRandom.Parameters.Minimums.Count];
+                        var maximums = new int[xRandom.Parameters.Maximums.Count];
+                        var replacements = new bool[xRandom.Parameters.Replacements.Count];
                         var bases = new int[counts.Length];
 
                         for (var i = 0; i < counts.Length; i++)
                         {
-                            if (x.Data[i] != null)
+                            if (xRandom.Data[i] != null)
                             {
-                                counts[i] = x.Data[i].Length;
+                                counts[i] = xRandom.Data[i].Length;
                             }
 
-                            minimums[i] = x.Parameters.Minimums[i];
-                            maximums[i] = x.Parameters.Maximums[i];
-                            replacements[i] = x.Parameters.Replacements[i];
+                            minimums[i] = xRandom.Parameters.Minimums[i];
+                            maximums[i] = xRandom.Parameters.Maximums[i];
+                            replacements[i] = xRandom.Parameters.Replacements[i];
                             bases[i] = 10;
                         }
 
@@ -165,97 +163,85 @@ namespace Community.RandomOrg
                             Minimums = minimums,
                             Maximums = maximums,
                             Replacements = replacements,
-                            Bases = bases,
-                            UserData = x.UserData,
-                            Data = x.Data
+                            Bases = bases
                         };
 
-                        TransferSignedRandomData(x, rpcRandom);
+                        TransferRandom(xRandom, rpcRandom);
 
                         rpcRandomParam = rpcRandom;
                     }
                     break;
-                case SignedRandom<decimal, DecimalFractionParameters> x:
+                case SignedRandom<decimal, DecimalFractionParameters> xRandom:
                     {
                         var rpcRandom = new RpcDecimalFractionsRandom
                         {
                             Method = "generateSignedDecimalFractions",
-                            Count = x.Data.Count,
-                            DecimalPlaces = x.Parameters.DecimalPlaces,
-                            Replacement = x.Parameters.Replacement,
-                            UserData = x.UserData,
-                            Data = x.Data
+                            Count = xRandom.Data.Count,
+                            DecimalPlaces = xRandom.Parameters.DecimalPlaces,
+                            Replacement = xRandom.Parameters.Replacement
                         };
 
-                        TransferSignedRandomData(x, rpcRandom);
+                        TransferRandom(xRandom, rpcRandom);
 
                         rpcRandomParam = rpcRandom;
                     }
                     break;
-                case SignedRandom<decimal, GaussianParameters> x:
+                case SignedRandom<decimal, GaussianParameters> xRandom:
                     {
                         var rpcRandom = new RpcGaussiansRandom
                         {
                             Method = "generateSignedGaussians",
-                            Count = x.Data.Count,
-                            Mean = x.Parameters.Mean,
-                            StandardDeviation = x.Parameters.StandardDeviation,
-                            SignificantDigits = x.Parameters.SignificantDigits,
-                            UserData = x.UserData,
-                            Data = x.Data
+                            Count = xRandom.Data.Count,
+                            Mean = xRandom.Parameters.Mean,
+                            StandardDeviation = xRandom.Parameters.StandardDeviation,
+                            SignificantDigits = xRandom.Parameters.SignificantDigits
                         };
 
-                        TransferSignedRandomData(x, rpcRandom);
+                        TransferRandom(xRandom, rpcRandom);
 
                         rpcRandomParam = rpcRandom;
                     }
                     break;
-                case SignedRandom<string, StringParameters> x:
+                case SignedRandom<string, StringParameters> xRandom:
                     {
                         var rpcRandom = new RpcStringsRandom
                         {
                             Method = "generateSignedStrings",
-                            Count = x.Data.Count,
-                            Length = x.Parameters.Length,
-                            Characters = x.Parameters.Characters,
-                            Replacement = x.Parameters.Replacement,
-                            UserData = x.UserData,
-                            Data = x.Data
+                            Count = xRandom.Data.Count,
+                            Length = xRandom.Parameters.Length,
+                            Characters = xRandom.Parameters.Characters,
+                            Replacement = xRandom.Parameters.Replacement
                         };
 
-                        TransferSignedRandomData(x, rpcRandom);
+                        TransferRandom(xRandom, rpcRandom);
 
                         rpcRandomParam = rpcRandom;
                     }
                     break;
-                case SignedRandom<Guid, UuidParameters> x:
+                case SignedRandom<Guid, UuidParameters> xRandom:
                     {
                         var rpcRandom = new RpcUuidsRandom
                         {
                             Method = "generateSignedUUIDs",
-                            Count = x.Data.Count,
-                            UserData = x.UserData,
-                            Data = x.Data
+                            Count = xRandom.Data.Count
                         };
 
-                        TransferSignedRandomData(x, rpcRandom);
+                        TransferRandom(xRandom, rpcRandom);
 
                         rpcRandomParam = rpcRandom;
                     }
                     break;
-                case SignedRandom<byte[], BlobParameters> x:
+                case SignedRandom<byte[], BlobParameters> xRandom:
                     {
                         var rpcRandom = new RpcBlobsRandom
                         {
                             Method = "generateSignedBlobs",
-                            Count = x.Data.Count,
-                            Size = x.Parameters.Size * 8,
-                            Format = "base64",
-                            UserData = x.UserData,
-                            Data = x.Data
+                            Count = xRandom.Data.Count,
+                            Size = xRandom.Parameters.Size * 8,
+                            Format = "base64"
                         };
 
-                        TransferSignedRandomData(x, rpcRandom);
+                        TransferRandom(xRandom, rpcRandom);
 
                         rpcRandomParam = rpcRandom;
                     }
@@ -278,12 +264,26 @@ namespace Community.RandomOrg
             return response.Authenticity;
         }
 
-        private static void TransferSignedRandomData<TSource, TTarget, TParameters>(SignedRandom<TSource, TParameters> source, RpcSignedRandom<TTarget> target)
+        private static void TransferRandom<TData>(Random<TData> source, RpcRandom<TData> target)
+        {
+            target.Data = source.Data;
+            target.CompletionTime = source.CompletionTime;
+        }
+
+        private static void TransferRandom<TData>(RpcRandom<TData> source, Random<TData> target)
+        {
+            target.Data = source.Data;
+            target.CompletionTime = source.CompletionTime;
+        }
+
+        private static void TransferRandom<TData, TParameters>(SignedRandom<TData, TParameters> source, RpcSignedRandom<TData> target)
             where TParameters : RandomParameters, new()
         {
+            target.Data = source.Data;
             target.ApiKeyHash = source.ApiKeyHash;
             target.CompletionTime = source.CompletionTime;
             target.SerialNumber = source.SerialNumber;
+            target.UserData = source.UserData;
             target.License.Type = source.License.Type;
             target.License.Text = source.License.Text;
 
@@ -293,9 +293,10 @@ namespace Community.RandomOrg
             }
         }
 
-        private static void TransferSignedRandomData<TSource, TTarget, TParameters>(RpcSignedRandom<TSource> source, SignedRandom<TTarget, TParameters> target)
+        private static void TransferRandom<TData, TParameters>(RpcSignedRandom<TData> source, SignedRandom<TData, TParameters> target)
             where TParameters : RandomParameters, new()
         {
+            target.Data = source.Data;
             target.ApiKeyHash = source.ApiKeyHash;
             target.CompletionTime = source.CompletionTime;
             target.SerialNumber = source.SerialNumber;
