@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Converters;
+﻿using System.Globalization;
+using Newtonsoft.Json.Converters;
 
 namespace Community.RandomOrg.Converters
 {
@@ -6,8 +7,9 @@ namespace Community.RandomOrg.Converters
     {
         public RandomDateTimeConverter()
         {
-            DateTimeFormat = "yyyy'-'MM'-'dd' 'HH':'mm':'ss.FFFFFFFK";
-            DateTimeStyles = System.Globalization.DateTimeStyles.AdjustToUniversal;
+            DateTimeFormat = "yyyy-MM-dd HH:mm:ss.FFFFFFFK";
+            DateTimeStyles = DateTimeStyles.AdjustToUniversal;
+            Culture = CultureInfo.InvariantCulture;
         }
     }
 }
