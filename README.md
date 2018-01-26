@@ -1,6 +1,6 @@
 ## Community.RandomOrg
 
-A client for the [RANDOM.ORG](https://www.random.org) service ([Core API v2](https://api.random.org/json-rpc/2)).
+[RANDOM.ORG](https://www.random.org) service client based on [RANDOM.ORG API v2](https://api.random.org/json-rpc/2) (Core APIs).
 
 [![NuGet package](https://img.shields.io/nuget/v/Community.RandomOrg.svg?style=flat-square)](https://www.nuget.org/packages/Community.RandomOrg)
 
