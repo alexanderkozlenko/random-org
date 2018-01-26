@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Community.RandomOrg.Data
+﻿namespace Community.RandomOrg.Data
 {
     /// <summary>Encapsulates random data generation result.</summary>
     /// <typeparam name="TRandom">The type of random data container.</typeparam>
@@ -10,11 +8,6 @@ namespace Community.RandomOrg.Data
     {
         internal RandomResultObject(TRandom random, long bitsUsed, long bitsLeft, long requestsLeft)
         {
-            if (random == null)
-            {
-                throw new ArgumentNullException(nameof(random));
-            }
-
             Random = random;
             BitsUsed = bitsUsed;
             BitsLeft = bitsLeft;
