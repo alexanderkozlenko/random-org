@@ -494,6 +494,10 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentException(Strings.GetString("random.sequence.count.invalid_value"));
             }
+            if ((userData != null) && (userData.Length > 1000))
+            {
+                throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
+            }
 
             var parameters = CreateGenerationParameters(6);
 

@@ -145,6 +145,56 @@ namespace Community.RandomOrg.Tests
             }
         }
 
+        [Theory]
+        [InlineData(00000, +0000000000, +0000000005)]
+        [InlineData(10001, +0000000000, +0000000005)]
+        [InlineData(00001, -1000000001, +0000000005)]
+        [InlineData(00001, +1000000001, +0000000005)]
+        [InlineData(00001, +0000000000, -1000000001)]
+        [InlineData(00001, +0000000000, +1000000001)]
+        public async void GenerateIntegerSequenceWithInvalidParameter(int count, int minimum, int maximum)
+        {
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_seq_req.json"));
+
+            var counts = new[] { count };
+            var minimums = new[] { minimum };
+            var maximums = new[] { maximum };
+            var replacements = new[] { false };
+
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
+            {
+                await Assert.ThrowsAnyAsync<ArgumentException>(() =>
+                    client.GenerateIntegerSequencesAsync(counts, minimums, maximums, replacements));
+            }
+        }
+
+        [Theory]
+        [InlineData(11, 0000000001)]
+        [InlineData(02, 1000000000)]
+        public async void GenerateIntegerSequenceWithInvalidCount(int sequencesCount, int sequnceCount)
+        {
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_seq_req.json"));
+
+            var counts = new int[sequencesCount];
+            var minimums = new int[sequencesCount];
+            var maximums = new int[sequencesCount];
+            var replacements = new bool[sequencesCount];
+
+            for (var i = 0; i < sequencesCount; i++)
+            {
+                counts[i] = sequnceCount;
+                minimums[i] = 1;
+                maximums[i] = 5;
+                replacements[i] = false;
+            }
+
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
+            {
+                await Assert.ThrowsAnyAsync<ArgumentException>(() =>
+                    client.GenerateIntegerSequencesAsync(counts, minimums, maximums, replacements));
+            }
+        }
+
         [Fact]
         public async void GenerateIntegerSequences()
         {
@@ -468,6 +518,59 @@ namespace Community.RandomOrg.Tests
                 Assert.Equal(jorandom["max"].ToObject<int>(), result.Random.Parameters.Maximum);
                 Assert.Equal(jorandom["replacement"].ToObject<bool>(), result.Random.Parameters.Replacement);
                 Assert.Equal(jorandom["userData"].ToObject<string>(), result.Random.UserData);
+            }
+        }
+
+        [Theory]
+        [InlineData(00000, +0000000000, +0000000005, -0001)]
+        [InlineData(10001, +0000000000, +0000000005, -0001)]
+        [InlineData(00001, -1000000001, +0000000005, -0001)]
+        [InlineData(00001, +1000000001, +0000000005, -0001)]
+        [InlineData(00001, +0000000000, -1000000001, -0001)]
+        [InlineData(00001, +0000000000, +1000000001, -0001)]
+        [InlineData(00001, +0000000001, +0000000001, +1001)]
+        public async void GenerateSignedIntegerSequenceWithInvalidParameter(int count, int minimum, int maximum, int userDataLength)
+        {
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_seq_req.json"));
+
+            var counts = new[] { count };
+            var minimums = new[] { minimum };
+            var maximums = new[] { maximum };
+            var replacements = new[] { false };
+
+            var userData = CreateTestString(userDataLength);
+
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
+            {
+                await Assert.ThrowsAnyAsync<ArgumentException>(() =>
+                    client.GenerateSignedIntegerSequencesAsync(counts, minimums, maximums, replacements, userData));
+            }
+        }
+
+        [Theory]
+        [InlineData(11, 0000000001)]
+        [InlineData(02, 1000000000)]
+        public async void GenerateSignedIntegerSequenceWithInvalidCount(int sequencesCount, int sequnceCount)
+        {
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_seq_req.json"));
+
+            var counts = new int[sequencesCount];
+            var minimums = new int[sequencesCount];
+            var maximums = new int[sequencesCount];
+            var replacements = new bool[sequencesCount];
+
+            for (var i = 0; i < sequencesCount; i++)
+            {
+                counts[i] = sequnceCount;
+                minimums[i] = 1;
+                maximums[i] = 5;
+                replacements[i] = false;
+            }
+
+            using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
+            {
+                await Assert.ThrowsAnyAsync<ArgumentException>(() =>
+                    client.GenerateSignedIntegerSequencesAsync(counts, minimums, maximums, replacements));
             }
         }
 
