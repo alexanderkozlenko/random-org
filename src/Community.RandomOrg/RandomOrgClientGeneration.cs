@@ -38,7 +38,7 @@ namespace Community.RandomOrg
                 throw new ArgumentOutOfRangeException(nameof(maximum), maximum, Strings.GetString("random.integer.upper_boundary.invalid_range"));
             }
 
-            var parameters = CreateGenerateParameters(5);
+            var parameters = CreateGenerationParameters(5);
 
             parameters["n"] = count;
             parameters["min"] = minimum;
@@ -129,7 +129,7 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.sequence.count.invalid_value"));
             }
 
-            var parameters = CreateGenerateParameters(5);
+            var parameters = CreateGenerationParameters(5);
 
             parameters["n"] = counts;
             parameters["min"] = minimums;
@@ -171,7 +171,7 @@ namespace Community.RandomOrg
                 throw new ArgumentOutOfRangeException(nameof(decimalPlaces), decimalPlaces, Strings.GetString("random.decimal_fraction.decimal_places.invalid_range"));
             }
 
-            var parameters = CreateGenerateParameters(3);
+            var parameters = CreateGenerationParameters(3);
 
             parameters["n"] = count;
             parameters["decimalPlaces"] = decimalPlaces;
@@ -220,7 +220,7 @@ namespace Community.RandomOrg
                 throw new ArgumentOutOfRangeException(nameof(significantDigits), significantDigits, Strings.GetString("random.gaussian.significant_digits.invalid_range"));
             }
 
-            var parameters = CreateGenerateParameters(4);
+            var parameters = CreateGenerationParameters(4);
 
             parameters["n"] = count;
             parameters["mean"] = RandomOrgConvert.DecimalToObject(mean);
@@ -272,7 +272,7 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.string.characters.length.invalid_range"), nameof(characters));
             }
 
-            var parameters = CreateGenerateParameters(4);
+            var parameters = CreateGenerationParameters(4);
 
             parameters["n"] = count;
             parameters["length"] = length;
@@ -307,7 +307,7 @@ namespace Community.RandomOrg
                 throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("random.uuid.count.invalid_range"));
             }
 
-            var parameters = CreateGenerateParameters(1);
+            var parameters = CreateGenerationParameters(1);
 
             parameters["n"] = count;
 
@@ -348,7 +348,7 @@ namespace Community.RandomOrg
                 throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("random.blob.invalid_total_size"));
             }
 
-            var parameters = CreateGenerateParameters(3);
+            var parameters = CreateGenerationParameters(3);
 
             parameters["n"] = count;
             parameters["size"] = size * 8;
@@ -398,7 +398,7 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
 
-            var parameters = CreateGenerateParameters(6);
+            var parameters = CreateGenerationParameters(6);
 
             parameters["n"] = count;
             parameters["min"] = minimum;
@@ -495,7 +495,7 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.sequence.count.invalid_value"));
             }
 
-            var parameters = CreateGenerateParameters(6);
+            var parameters = CreateGenerationParameters(6);
 
             parameters["n"] = counts;
             parameters["min"] = minimums;
@@ -547,7 +547,7 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
 
-            var parameters = CreateGenerateParameters(4);
+            var parameters = CreateGenerationParameters(4);
 
             parameters["n"] = count;
             parameters["decimalPlaces"] = decimalPlaces;
@@ -605,7 +605,7 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
 
-            var parameters = CreateGenerateParameters(5);
+            var parameters = CreateGenerationParameters(5);
 
             parameters["n"] = count;
             parameters["mean"] = RandomOrgConvert.DecimalToObject(mean);
@@ -667,7 +667,7 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
 
-            var parameters = CreateGenerateParameters(5);
+            var parameters = CreateGenerationParameters(5);
 
             parameters["n"] = count;
             parameters["length"] = length;
@@ -712,7 +712,7 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
 
-            var parameters = CreateGenerateParameters(2);
+            var parameters = CreateGenerationParameters(2);
 
             parameters["n"] = count;
             parameters["userData"] = userData;
@@ -759,7 +759,7 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
 
-            var parameters = CreateGenerateParameters(4);
+            var parameters = CreateGenerationParameters(4);
 
             parameters["n"] = count;
             parameters["size"] = size * 8;

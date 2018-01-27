@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Threading;
 using System.Threading.Tasks;
 using Community.RandomOrg.Data;
 using Community.RandomOrg.Tests.Internal;
@@ -21,6 +22,11 @@ namespace Community.RandomOrg.Tests
         public RandomOrgClientTests(ITestOutputHelper output)
         {
             _output = output;
+        }
+
+        private static string CreateUserData(int length)
+        {
+            return length > 0 ? new string('*', length) : null;
         }
 
         private async Task<HttpResponseMessage> InternalHandleRequest(HttpRequestMessage request, JObject joreq, JObject jores)
@@ -346,12 +352,12 @@ namespace Community.RandomOrg.Tests
         }
 
         [Theory]
-        [InlineData(000, 000008)]
-        [InlineData(101, 000008)]
+        [InlineData(000, 000001)]
+        [InlineData(101, 000001)]
         [InlineData(001, 000000)]
         [InlineData(001, 131073)]
         [InlineData(002, 131072)]
-        public async void GenerateBlobsWithInalidParameter(int count, int size)
+        public async void GenerateBlobsWithInvalidParameter(int count, int size)
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_blb_req.json"));
 
@@ -420,21 +426,42 @@ namespace Community.RandomOrg.Tests
             }
         }
 
-        [Theory]
-        [InlineData(00000, +0000000000, +0000000005)]
-        [InlineData(10001, +0000000000, +0000000005)]
-        [InlineData(00001, -1000000001, +0000000005)]
-        [InlineData(00001, +1000000001, +0000000005)]
-        [InlineData(00001, +0000000000, -1000000001)]
-        [InlineData(00001, +0000000000, +1000000001)]
-        public async void GenerateSignedIntegersWithInvalidParameter(int count, int minimum, int maximum)
+        [Fact]
+        public async void GetUsageWithCancelledToken()
         {
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_req.json"));
+            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.get_usg_res.json"));
+
+            var key = joreq["params"]["apiKey"].ToString();
+
+            using (var client = new RandomOrgClient(key, CreateHttpMessageInvoker(joreq, jores)))
+            {
+                var cancellationTokenSource = new CancellationTokenSource();
+
+                cancellationTokenSource.Cancel();
+
+                await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+                    client.GetUsageAsync(cancellationTokenSource.Token));
+            }
+        }
+
+        [Theory]
+        [InlineData(00000, +0000000000, +0000000005, 0000)]
+        [InlineData(10001, +0000000000, +0000000005, 0000)]
+        [InlineData(00001, -1000000001, +0000000005, 0000)]
+        [InlineData(00001, +1000000001, +0000000005, 0000)]
+        [InlineData(00001, +0000000000, -1000000001, 0000)]
+        [InlineData(00001, +0000000000, +1000000001, 0000)]
+        [InlineData(00001, +0000000001, +0000000001, 1001)]
+        public async void GenerateSignedIntegersWithInvalidParameter(int count, int minimum, int maximum, int userDataLength)
+        {
+            var userData = CreateUserData(userDataLength);
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_int_req.json"));
 
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                    client.GenerateSignedIntegersAsync(count, minimum, maximum, false, null));
+                    client.GenerateSignedIntegersAsync(count, minimum, maximum, false, userData));
             }
         }
 
@@ -495,18 +522,20 @@ namespace Community.RandomOrg.Tests
         }
 
         [Theory]
-        [InlineData(00000, 02)]
-        [InlineData(10001, 02)]
-        [InlineData(00001, 00)]
-        [InlineData(00001, 21)]
-        public async void GenerateSignedDecimalFractionsWithInvalidParameter(int count, int decimalPlaces)
+        [InlineData(00000, 02, 0000)]
+        [InlineData(10001, 02, 0000)]
+        [InlineData(00001, 00, 0000)]
+        [InlineData(00001, 21, 0000)]
+        [InlineData(00001, 01, 1001)]
+        public async void GenerateSignedDecimalFractionsWithInvalidParameter(int count, int decimalPlaces, int userDataLength)
         {
+            var userData = CreateUserData(userDataLength);
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_dfr_req.json"));
 
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                    client.GenerateSignedDecimalFractionsAsync(count, decimalPlaces, false, null));
+                    client.GenerateSignedDecimalFractionsAsync(count, decimalPlaces, false, userData));
             }
         }
 
@@ -537,16 +566,18 @@ namespace Community.RandomOrg.Tests
         }
 
         [Theory]
-        [InlineData(00000, "+0000000.0", "+0000000.0", 02)]
-        [InlineData(10001, "+0000000.0", "+0000000.0", 02)]
-        [InlineData(00001, "-1000001.0", "+0000000.0", 02)]
-        [InlineData(00001, "+1000001.0", "+0000000.0", 02)]
-        [InlineData(00001, "+0000000.0", "-1000001.0", 02)]
-        [InlineData(00001, "+0000000.0", "+1000001.0", 02)]
-        [InlineData(00001, "+0000000.0", "+0000000.0", 01)]
-        [InlineData(00001, "+0000000.0", "+0000000.0", 21)]
-        public async void GenerateSignedGaussiansWithInvalidParameter(int count, string mean, string standardDeviation, int significantDigits)
+        [InlineData(00000, "+0000000.0", "+0000000.0", 02, 0000)]
+        [InlineData(10001, "+0000000.0", "+0000000.0", 02, 0000)]
+        [InlineData(00001, "-1000001.0", "+0000000.0", 02, 0000)]
+        [InlineData(00001, "+1000001.0", "+0000000.0", 02, 0000)]
+        [InlineData(00001, "+0000000.0", "-1000001.0", 02, 0000)]
+        [InlineData(00001, "+0000000.0", "+1000001.0", 02, 0000)]
+        [InlineData(00001, "+0000000.0", "+0000000.0", 01, 0000)]
+        [InlineData(00001, "+0000000.0", "+0000000.0", 21, 0000)]
+        [InlineData(00001, "+0000000.0", "+0000000.0", 02, 1001)]
+        public async void GenerateSignedGaussiansWithInvalidParameter(int count, string mean, string standardDeviation, int significantDigits, int userDataLength)
         {
+            var userData = CreateUserData(userDataLength);
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_gss_req.json"));
 
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
@@ -555,7 +586,7 @@ namespace Community.RandomOrg.Tests
                 var standardDeviationValue = decimal.Parse(standardDeviation, CultureInfo.InvariantCulture);
 
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                    client.GenerateSignedGaussiansAsync(count, meanValue, standardDeviationValue, significantDigits, null));
+                    client.GenerateSignedGaussiansAsync(count, meanValue, standardDeviationValue, significantDigits, userData));
             }
         }
 
@@ -588,18 +619,20 @@ namespace Community.RandomOrg.Tests
         }
 
         [Theory]
-        [InlineData(00000, 01)]
-        [InlineData(10001, 01)]
-        [InlineData(00001, 00)]
-        [InlineData(00001, 21)]
-        public async void GenerateSignedStringsWithInvalidParameter(int count, int length)
+        [InlineData(00000, 01, 0000)]
+        [InlineData(10001, 01, 0000)]
+        [InlineData(00001, 00, 0000)]
+        [InlineData(00001, 21, 0000)]
+        [InlineData(00001, 01, 1001)]
+        public async void GenerateSignedStringsWithInvalidParameter(int count, int length, int userDataLength)
         {
+            var userData = CreateUserData(userDataLength);
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_str_req.json"));
 
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                    client.GenerateSignedStringsAsync(count, length, "abcde", false, null));
+                    client.GenerateSignedStringsAsync(count, length, "abcde", false, userData));
             }
         }
 
@@ -658,16 +691,18 @@ namespace Community.RandomOrg.Tests
         }
 
         [Theory]
-        [InlineData(0000)]
-        [InlineData(1001)]
-        public async void GenerateSignedUuidsWithInvalidParameter(int count)
+        [InlineData(0000, 0000)]
+        [InlineData(1001, 0000)]
+        [InlineData(0001, 1001)]
+        public async void GenerateSignedUuidsWithInvalidParameter(int count, int userDataLength)
         {
+            var userData = CreateUserData(userDataLength);
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_uid_req.json"));
 
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                    client.GenerateSignedUuidsAsync(count, null));
+                    client.GenerateSignedUuidsAsync(count, userData));
             }
         }
 
@@ -694,19 +729,21 @@ namespace Community.RandomOrg.Tests
         }
 
         [Theory]
-        [InlineData(000, 000008)]
-        [InlineData(101, 000008)]
-        [InlineData(001, 000000)]
-        [InlineData(001, 131073)]
-        [InlineData(002, 131072)]
-        public async void GenerateSignedBlobsWithInvalidParameter(int count, int size)
+        [InlineData(000, 000001, 0000)]
+        [InlineData(101, 000001, 0000)]
+        [InlineData(001, 000000, 0000)]
+        [InlineData(001, 131073, 0000)]
+        [InlineData(002, 131072, 0000)]
+        [InlineData(001, 000001, 1001)]
+        public async void GenerateSignedBlobsWithInvalidParameter(int count, int size, int userDataLength)
         {
+            var userData = CreateUserData(userDataLength);
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_sig_blb_req.json"));
 
             using (var client = new RandomOrgClient(joreq["params"]["apiKey"].ToString(), new HttpClient(new TestHttpMessageHandler())))
             {
                 await Assert.ThrowsAnyAsync<ArgumentException>(() =>
-                    client.GenerateSignedBlobsAsync(count, size, null));
+                    client.GenerateSignedBlobsAsync(count, size, userData));
             }
         }
 

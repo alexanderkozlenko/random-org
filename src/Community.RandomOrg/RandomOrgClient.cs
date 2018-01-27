@@ -264,7 +264,7 @@ namespace Community.RandomOrg
             return response.Authenticity;
         }
 
-        private Dictionary<string, object> CreateGenerateParameters(int capacity)
+        private Dictionary<string, object> CreateGenerationParameters(int capacity)
         {
             return new Dictionary<string, object>(capacity + 1, StringComparer.Ordinal)
             {
