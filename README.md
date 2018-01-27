@@ -7,37 +7,39 @@
 ```cs
 using (var client = new RandomOrgClient("YOUR_API_KEY_HERE"))
 {
-    // Generate an integer from the [0,10] range without replacement
+    // Generate an integer from the [0,10] range w/o replacement
     var bin = await client.GenerateIntegersAsync(1, 0, 10, false);
-    // Generate a decimal fraction with 8 decimal places without replacement
+    // Generate a decimal fraction with 8 decimal places w/o replacement
     var bdf = await client.GenerateDecimalFractionsAsync(1, 8, false);
     // Generate a number from a Gaussian distribution with mean of 0.0,
     // standard deviation of 1.0, and 8 significant digits
     var bgs = await client.GenerateGaussiansAsync(1, 0.0m, 1.0m, 8);
-    // Generate a string with length of 8 from the specified letters
+    // Generate a string with length of 8 from the specified letters w/o replacement
     var bst = await client.GenerateStringsAsync(1, 8, "abcdef", false);
-    // Generate an UUID
+    // Generate an UUID of version 4
     var bud = await client.GenerateUuidsAsync(1);
     // Generate a BLOB with length of 8 bytes
     var bbl = await client.GenerateBlobsAsync(1, 8);
     // Each generation method has a corresponding one for generating random data
     // with signature, which can be verified afterwards
     var sin = await client.GenerateSignedIntegersAsync(1, 0, 10, false);
-    var vin = await client.VerifySignatureAsync(sin.Random, sin.Signature);
+    var ain = await client.VerifySignatureAsync(sin.Random, sin.Signature);
 
     Console.WriteLine("Random integer: " + bin.Random.Data[0]);
     Console.WriteLine("Random decimal fraction: " + bdf.Random.Data[0]);
-    Console.WriteLine("Random gaussian number: " + bgs.Random.Data[0]);
+    Console.WriteLine("Random Gaussian number: " + bgs.Random.Data[0]);
     Console.WriteLine("Random string: " + bst.Random.Data[0]);
     Console.WriteLine("Random UUID: " + bud.Random.Data[0]);
     Console.WriteLine("Random BLOB: " + Convert.ToBase64String(bbl.Random.Data[0]));
-    Console.WriteLine("Signed data verification: " + vin);
+    Console.WriteLine("Signed data is authentic: " + ain);
 }
 ```
 
+Signed data verification doesn't require an API key, and thus an empty UUID can be used as API key for this case as well.
+
 ### Features
 
-- The client has an ability to use a custom `HttpMessageInvoker` instanse to do HTTP requests.
+- The client has an ability to use a custom `HttpMessageInvoker` instanse to do HTTP requests. A custom message invoker must have at least 2 minutes timeout for a request according to RANDOM.ORG API requirements.
 - All operations support cancellation via `CancellationToken`.
 
 ### Limitations
