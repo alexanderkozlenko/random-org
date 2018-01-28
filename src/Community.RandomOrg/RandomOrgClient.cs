@@ -17,12 +17,14 @@ namespace Community.RandomOrg
     {
         private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = new MediaTypeHeaderValue("application/json");
         private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/2/invoke", UriKind.Absolute);
-        private static readonly IReadOnlyDictionary<string, JsonRpcResponseContract> _contracts = CreateContracts();
+        private static readonly IDictionary<string, JsonRpcResponseContract> _contracts = CreateContracts();
 
         private readonly string _apiKey;
         private readonly HttpMessageInvoker _httpMessageInvoker;
         private readonly SemaphoreSlim _requestSemaphore = new SemaphoreSlim(1, 1);
-        private readonly JsonRpcSerializer _jsonRpcSerializer = CreateSerializer(_contracts);
+
+        private readonly JsonRpcSerializer _jsonRpcSerializer =
+            new JsonRpcSerializer(new Dictionary<string, JsonRpcRequestContract>(0), _contracts, new Dictionary<JsonRpcId, string>(1), new Dictionary<JsonRpcId, JsonRpcResponseContract>(0));
 
         private DateTime? _advisoryTime;
 
@@ -477,7 +479,7 @@ namespace Community.RandomOrg
             return httpClient;
         }
 
-        private static IReadOnlyDictionary<string, JsonRpcResponseContract> CreateContracts()
+        private static IDictionary<string, JsonRpcResponseContract> CreateContracts()
         {
             return new Dictionary<string, JsonRpcResponseContract>(16)
             {
@@ -498,18 +500,6 @@ namespace Community.RandomOrg
                 ["generateSignedBlobs"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcBlobsRandom, byte[]>)),
                 ["verifySignature"] = new JsonRpcResponseContract(typeof(RpcVerifyResult)),
             };
-        }
-
-        private static JsonRpcSerializer CreateSerializer(IReadOnlyDictionary<string, JsonRpcResponseContract> contracts)
-        {
-            var result = new JsonRpcSerializer(new Dictionary<JsonRpcId, string>(1), new Dictionary<JsonRpcId, JsonRpcResponseContract>(0));
-
-            foreach (var kvp in contracts)
-            {
-                result.ResponseContracts[kvp.Key] = kvp.Value;
-            }
-
-            return result;
         }
 
         /// <summary>Releases all resources used by the current instance of the <see cref="RandomOrgClient" />.</summary>
