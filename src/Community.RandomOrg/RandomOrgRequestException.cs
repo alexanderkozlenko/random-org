@@ -3,7 +3,7 @@ using System.Net.Http;
 
 namespace Community.RandomOrg
 {
-    /// <summary>Represents an error for an unsuccessful HTTP request to RANDOM.ORG.</summary>
+    /// <summary>Represents an error for an unsuccessful HTTP request to RANDOM.ORG service.</summary>
     public sealed class RandomOrgRequestException : HttpRequestException
     {
         internal RandomOrgRequestException(string message, HttpStatusCode statusCode)

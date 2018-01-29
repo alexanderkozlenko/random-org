@@ -12,7 +12,7 @@ using Community.RandomOrg.Resources;
 
 namespace Community.RandomOrg
 {
-    /// <summary>A RANDOM.ORG service client.</summary>
+    /// <summary>Represents RANDOM.ORG service client.</summary>
     public sealed partial class RandomOrgClient : IDisposable
     {
         private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = new MediaTypeHeaderValue("application/json");
@@ -31,7 +31,7 @@ namespace Community.RandomOrg
         /// <summary>Initializes a new instance of the <see cref="RandomOrgClient" /> class.</summary>
         /// <param name="apiKey">The API key, which is used to track the true random bit usage for the client.</param>
         /// <param name="httpMessageInvoker">The component for sending HTTP requests.</param>
-        /// <exception cref="ArgumentException"><paramref name="apiKey" /> is not of UUID format.</exception>
+        /// <exception cref="ArgumentException"><paramref name="apiKey" /> is not of UUID format (32 digits separated by hyphens).</exception>
         /// <exception cref="ArgumentNullException"><paramref name="apiKey" /> is <see langword="null" />.</exception>
         public RandomOrgClient(string apiKey, HttpMessageInvoker httpMessageInvoker = null)
         {

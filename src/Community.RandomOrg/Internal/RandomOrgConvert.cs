@@ -1,4 +1,4 @@
-﻿namespace Community.RandomOrg
+﻿namespace Community.RandomOrg.Internal
 {
     internal static class RandomOrgConvert
     {

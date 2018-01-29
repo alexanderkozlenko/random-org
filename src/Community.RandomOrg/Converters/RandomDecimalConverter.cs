@@ -1,4 +1,5 @@
 ﻿using System;
+using Community.RandomOrg.Internal;
 using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Converters
