@@ -5,7 +5,8 @@
         "random": {
             "method": "generateSignedIntegerSequences",
             "hashedApiKey": "FG+7TLaIoH+9IUeE8vc0ln2AL2EoPmGfd63M/40XPWSd8uJ/3cnpVBQnNhppoKiYeFCwy5PaS1A/jmdUPfRWzQ==",
-            "n": [
+            "n": 2,
+            "length": [
                 3,
                 5
             ],

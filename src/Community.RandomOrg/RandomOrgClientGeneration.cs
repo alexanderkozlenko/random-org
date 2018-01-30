@@ -57,26 +57,26 @@ namespace Community.RandomOrg
                 random, response.BitsUsed, response.BitsLeft, response.RequestsLeft);
         }
 
-        /// <summary>Generates true random integers within a user-defined range as an asynchronous operation.</summary>
-        /// <param name="counts">An array specifying the lengths of the requested sequences. Each value must be within the [1,10000] range and the total sum of all the lengths must be in the [1,10000] range. Up to 10 sequences can be requested.</param>
-        /// <param name="minimums">An array specifying the lower boundaries for the requested sequences. Each value must be within the [-1000000000,1000000000] range.</param>
-        /// <param name="maximums">An array specifying the upper boundaries for the requested sequences. Each value must be within the [-1000000000,1000000000] range.</param>
-        /// <param name="replacements">An array specifying for each requested sequence whether the random numbers in that sequence should be picked with replacement.</param>
+        /// <summary>Generates true random integer sequences within a user-defined ranges as an asynchronous operation.</summary>
+        /// <param name="lengths">A collection specifying the lengths of the requested sequences. Each value must be within the [1,10000] range and the total sum of all the lengths must be in the [1,10000] range. The count of sequences must be within the [1,1000] range.</param>
+        /// <param name="minimums">A collection specifying the lower boundaries for the requested sequences. Each value must be within the [-1000000000,1000000000] range.</param>
+        /// <param name="maximums">A collection specifying the upper boundaries for the requested sequences. Each value must be within the [-1000000000,1000000000] range.</param>
+        /// <param name="replacements">A collection specifying for each requested sequence whether the random numbers in that sequence should be picked with replacement.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
         /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="RandomResult{T}" /> instance.</returns>
         /// <exception cref="ArgumentException">Counts of argument arrays are different, sequences count is greater than 10, or total count is outside the [1,10000] range.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="counts" />, <paramref name="minimums" />, <paramref name="maximums" />, or <paramref name="replacements" /> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">One of the values from the arguments <paramref name="counts" />, <paramref name="minimums" />, or <paramref name="maximums" /> is outside the allowable range of values.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="lengths" />, <paramref name="minimums" />, <paramref name="maximums" />, or <paramref name="replacements" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">One of the values from the arguments <paramref name="lengths" />, <paramref name="minimums" />, or <paramref name="maximums" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
-        public async Task<RandomResult<int[]>> GenerateIntegerSequencesAsync(
-            IReadOnlyList<int> counts, IReadOnlyList<int> minimums, IReadOnlyList<int> maximums, IReadOnlyList<bool> replacements, CancellationToken cancellationToken = default)
+        public async Task<RandomResult<IReadOnlyList<int>>> GenerateIntegerSequencesAsync(
+            IReadOnlyList<int> lengths, IReadOnlyList<int> minimums, IReadOnlyList<int> maximums, IReadOnlyList<bool> replacements, CancellationToken cancellationToken = default)
         {
-            if (counts == null)
+            if (lengths == null)
             {
-                throw new ArgumentNullException(nameof(counts));
+                throw new ArgumentNullException(nameof(lengths));
             }
             if (minimums == null)
             {
@@ -91,25 +91,27 @@ namespace Community.RandomOrg
                 throw new ArgumentNullException(nameof(replacements));
             }
 
-            if ((counts.Count != minimums.Count) ||
-                (counts.Count != maximums.Count) ||
-                (counts.Count != replacements.Count))
+            var count = lengths.Count;
+
+            if ((count != minimums.Count) ||
+                (count != maximums.Count) ||
+                (count != replacements.Count))
             {
                 throw new ArgumentException(Strings.GetString("random.sequence.arguments.different_size"));
             }
-            if (counts.Count > 10)
+            if ((count < 1) || (count > 1000))
             {
                 throw new ArgumentException(Strings.GetString("random.sequence.count.invalid_range"));
             }
 
-            var count = 0;
-            var bases = new int[counts.Count];
+            var total = 0;
+            var bases = new int[count];
 
-            for (var i = 0; i < bases.Length; i++)
+            for (var i = 0; i < count; i++)
             {
-                if ((counts[i] < 1) || (counts[i] > 10000))
+                if ((lengths[i] < 1) || (lengths[i] > 10000))
                 {
-                    throw new ArgumentOutOfRangeException(nameof(counts) + "." + i, counts[i], Strings.GetString("random.integer.count.invalid_range"));
+                    throw new ArgumentOutOfRangeException(nameof(lengths) + "." + i, lengths[i], Strings.GetString("random.integer.count.invalid_range"));
                 }
                 if ((minimums[i] < -1000000000) || (minimums[i] > 1000000000))
                 {
@@ -120,31 +122,32 @@ namespace Community.RandomOrg
                     throw new ArgumentOutOfRangeException(nameof(maximums) + "." + i, maximums[i], Strings.GetString("random.integer.upper_boundary.invalid_range"));
                 }
 
-                count += counts[i];
+                total += lengths[i];
                 bases[i] = 10;
             }
 
-            if (count > 10000)
+            if (total > 10000)
             {
-                throw new ArgumentException(Strings.GetString("random.sequence.count.invalid_value"));
+                throw new ArgumentException(Strings.GetString("random.sequence.total.invalid_range"));
             }
 
-            var parameters = CreateGenerationParameters(5);
+            var parameters = CreateGenerationParameters(6);
 
-            parameters["n"] = counts;
+            parameters["n"] = count;
+            parameters["length"] = lengths;
             parameters["min"] = minimums;
             parameters["max"] = maximums;
             parameters["replacement"] = replacements;
             parameters["base"] = bases;
 
-            var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<int[]>, RpcRandom<int[]>, int[]>(
+            var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<IReadOnlyList<int>>, RpcRandom<IReadOnlyList<int>>, IReadOnlyList<int>>(
                 "generateIntegerSequences", parameters, cancellationToken).ConfigureAwait(false);
 
-            var random = new Random<int[]>();
+            var random = new Random<IReadOnlyList<int>>();
 
             TransferRandom(response.Random, random);
 
-            return new RandomResult<int[]>(
+            return new RandomResult<IReadOnlyList<int>>(
                 random, response.BitsUsed, response.BitsLeft, response.RequestsLeft);
         }
 
@@ -422,27 +425,27 @@ namespace Community.RandomOrg
                 random, response.BitsUsed, response.BitsLeft, response.RequestsLeft, response.Signature);
         }
 
-        /// <summary>Generates true random integers within a user-defined range with signature as an asynchronous operation.</summary>
-        /// <param name="counts">An array specifying the lengths of the requested sequences. Each value must be within the [1,10000] range and the total sum of all the lengths must be in the [1,10000] range. Up to 10 sequences can be requested.</param>
-        /// <param name="minimums">An array specifying the lower boundaries for the requested sequences. Each value must be within the [-1000000000,1000000000] range.</param>
-        /// <param name="maximums">An array specifying the upper boundaries for the requested sequences. Each value must be within the [-1000000000,1000000000] range.</param>
-        /// <param name="replacements">An array specifying for each requested sequence whether the random numbers in that sequence should be picked with replacement.</param>
+        /// <summary>Generates true random integer sequences within a user-defined ranges with signature as an asynchronous operation.</summary>
+        /// <param name="lengths">A collection specifying the lengths of the requested sequences. Each value must be within the [1,10000] range and the total sum of all the lengths must be in the [1,10000] range. The count of sequences must be within the [1,1000] range.</param>
+        /// <param name="minimums">A collection specifying the lower boundaries for the requested sequences. Each value must be within the [-1000000000,1000000000] range.</param>
+        /// <param name="maximums">A collection specifying the upper boundaries for the requested sequences. Each value must be within the [-1000000000,1000000000] range.</param>
+        /// <param name="replacements">A collection specifying for each requested sequence whether the random numbers in that sequence should be picked with replacement.</param>
         /// <param name="userData">The optional string that will be included in unmodified form in the signed response along with the random data. The maximum number of characters is 1000.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
         /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="RandomResult{T}" /> instance.</returns>
         /// <exception cref="ArgumentException">Counts of argument arrays are different, sequences count is greater than 10, or total count is outside the [1,10000] range.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="counts" />, <paramref name="minimums" />, <paramref name="maximums" />, or <paramref name="replacements" /> is <see langword="null" />.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">One of the values from the arguments <paramref name="counts" />, <paramref name="minimums" />, or <paramref name="maximums" /> is outside the allowable range of values.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="lengths" />, <paramref name="minimums" />, <paramref name="maximums" />, or <paramref name="replacements" /> is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">One of the values from the arguments <paramref name="lengths" />, <paramref name="minimums" />, or <paramref name="maximums" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
         /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
-        public async Task<SignedRandomResult<int[], IntegerSequenceParameters>> GenerateSignedIntegerSequencesAsync(
-            IReadOnlyList<int> counts, IReadOnlyList<int> minimums, IReadOnlyList<int> maximums, IReadOnlyList<bool> replacements, string userData = null, CancellationToken cancellationToken = default)
+        public async Task<SignedRandomResult<IReadOnlyList<int>, IntegerSequenceParameters>> GenerateSignedIntegerSequencesAsync(
+             IReadOnlyList<int> lengths, IReadOnlyList<int> minimums, IReadOnlyList<int> maximums, IReadOnlyList<bool> replacements, string userData = null, CancellationToken cancellationToken = default)
         {
-            if (counts == null)
+            if (lengths == null)
             {
-                throw new ArgumentNullException(nameof(counts));
+                throw new ArgumentNullException(nameof(lengths));
             }
             if (minimums == null)
             {
@@ -457,25 +460,27 @@ namespace Community.RandomOrg
                 throw new ArgumentNullException(nameof(replacements));
             }
 
-            if ((counts.Count != minimums.Count) ||
-                (counts.Count != maximums.Count) ||
-                (counts.Count != replacements.Count))
+            var count = lengths.Count;
+
+            if ((count != minimums.Count) ||
+                (count != maximums.Count) ||
+                (count != replacements.Count))
             {
                 throw new ArgumentException(Strings.GetString("random.sequence.arguments.different_size"));
             }
-            if (counts.Count > 10)
+            if ((count < 1) || (count > 1000))
             {
                 throw new ArgumentException(Strings.GetString("random.sequence.count.invalid_range"));
             }
 
-            var count = 0;
-            var bases = new int[counts.Count];
+            var total = 0;
+            var bases = new int[count];
 
-            for (var i = 0; i < bases.Length; i++)
+            for (var i = 0; i < count; i++)
             {
-                if ((counts[i] < 1) || (counts[i] > 10000))
+                if ((lengths[i] < 1) || (lengths[i] > 10000))
                 {
-                    throw new ArgumentOutOfRangeException(nameof(counts) + "." + i, counts[i], Strings.GetString("random.integer.count.invalid_range"));
+                    throw new ArgumentOutOfRangeException(nameof(lengths) + "." + i, lengths[i], Strings.GetString("random.integer.count.invalid_range"));
                 }
                 if ((minimums[i] < -1000000000) || (minimums[i] > 1000000000))
                 {
@@ -486,32 +491,33 @@ namespace Community.RandomOrg
                     throw new ArgumentOutOfRangeException(nameof(maximums) + "." + i, maximums[i], Strings.GetString("random.integer.upper_boundary.invalid_range"));
                 }
 
-                count += counts[i];
+                total += lengths[i];
                 bases[i] = 10;
             }
 
-            if (count > 10000)
+            if (total > 10000)
             {
-                throw new ArgumentException(Strings.GetString("random.sequence.count.invalid_value"));
+                throw new ArgumentException(Strings.GetString("random.sequence.total.invalid_range"));
             }
             if ((userData != null) && (userData.Length > 1000))
             {
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
 
-            var parameters = CreateGenerationParameters(6);
+            var parameters = CreateGenerationParameters(7);
 
-            parameters["n"] = counts;
+            parameters["n"] = count;
+            parameters["length"] = lengths;
             parameters["min"] = minimums;
             parameters["max"] = maximums;
             parameters["replacement"] = replacements;
             parameters["base"] = bases;
             parameters["userData"] = userData;
 
-            var response = await InvokeGenerationServiceMethodAsync<RpcSignedRandomResult<RpcIntegerSequencesRandom, int[]>, RpcIntegerSequencesRandom, int[]>(
+            var response = await InvokeGenerationServiceMethodAsync<RpcSignedRandomResult<RpcIntegerSequencesRandom, IReadOnlyList<int>>, RpcIntegerSequencesRandom, IReadOnlyList<int>>(
                 "generateSignedIntegerSequences", parameters, cancellationToken).ConfigureAwait(false);
 
-            var random = new SignedRandom<int[], IntegerSequenceParameters>();
+            var random = new SignedRandom<IReadOnlyList<int>, IntegerSequenceParameters>();
 
             TransferRandom(response.Random, random);
 
@@ -519,7 +525,7 @@ namespace Community.RandomOrg
             random.Parameters.Maximums = response.Random.Maximums;
             random.Parameters.Replacements = response.Random.Replacements;
 
-            return new SignedRandomResult<int[], IntegerSequenceParameters>(
+            return new SignedRandomResult<IReadOnlyList<int>, IntegerSequenceParameters>(
                 random, response.BitsUsed, response.BitsLeft, response.RequestsLeft, response.Signature);
         }
 

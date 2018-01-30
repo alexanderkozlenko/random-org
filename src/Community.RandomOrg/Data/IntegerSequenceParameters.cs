@@ -10,21 +10,21 @@ namespace Community.RandomOrg.Data
         {
         }
 
-        /// <summary>Gets or sets the lower boundary for the range from which the random numbers will be picked.</summary>
+        /// <summary>Gets or sets a collection specifying the lower boundaries for the requested sequences.</summary>
         public IReadOnlyList<int> Minimums
         {
             get;
             set;
         }
 
-        /// <summary>Gets or sets the upper boundary for the range from which the random numbers will be picked.</summary>
+        /// <summary>Gets or sets a collection specifying the upper boundaries for the requested sequences.</summary>
         public IReadOnlyList<int> Maximums
         {
             get;
             set;
         }
 
-        /// <summary>Gets or sets a value which specifies whether the random numbers should be picked with replacement.</summary>
+        /// <summary>Gets or sets a collection specifying for each requested sequence whether the random numbers in that sequence should be picked with replacement.</summary>
         public IReadOnlyList<bool> Replacements
         {
             get;

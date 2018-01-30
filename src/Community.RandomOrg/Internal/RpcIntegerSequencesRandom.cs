@@ -1,12 +1,19 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Internal
 {
-    internal sealed class RpcIntegerSequencesRandom : RpcSignedRandom<int[]>
+    internal sealed class RpcIntegerSequencesRandom : RpcSignedRandom<IReadOnlyList<int>>
     {
         [JsonProperty("n", Required = Required.Always)]
-        public int[] Counts
+        public int Count
+        {
+            get;
+            set;
+        }
+
+        [JsonProperty("length", Required = Required.Always)]
+        public int[] Lengths
         {
             get;
             set;
@@ -27,7 +34,6 @@ namespace Community.RandomOrg.Internal
         }
 
         [JsonProperty("replacement", Required = Required.Always)]
-        [DefaultValue(true)]
         public bool[] Replacements
         {
             get;

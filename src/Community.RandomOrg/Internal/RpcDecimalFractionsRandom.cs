@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Internal
 {
@@ -20,7 +19,6 @@ namespace Community.RandomOrg.Internal
         }
 
         [JsonProperty("replacement", Required = Required.Always)]
-        [DefaultValue(true)]
         public bool Replacement
         {
             get;

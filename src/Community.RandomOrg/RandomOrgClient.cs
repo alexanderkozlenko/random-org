@@ -117,7 +117,7 @@ namespace Community.RandomOrg
                         rpcRandomParam = rpcRandom;
                     }
                     break;
-                case SignedRandom<int[], IntegerSequenceParameters> xRandom:
+                case SignedRandom<IReadOnlyList<int>, IntegerSequenceParameters> xRandom:
                     {
                         if (xRandom.Parameters.Minimums == null)
                         {
@@ -132,26 +132,29 @@ namespace Community.RandomOrg
                             throw new ArgumentException(Strings.GetString("random.sequence.replacements.not_specified"), nameof(random));
                         }
 
-                        if ((xRandom.Data.Count != xRandom.Parameters.Minimums.Count) ||
-                            (xRandom.Data.Count != xRandom.Parameters.Maximums.Count) ||
-                            (xRandom.Data.Count != xRandom.Parameters.Replacements.Count))
+                        var count = xRandom.Data.Count;
+
+                        if ((count != xRandom.Parameters.Minimums.Count) ||
+                            (count != xRandom.Parameters.Maximums.Count) ||
+                            (count != xRandom.Parameters.Replacements.Count))
                         {
                             throw new ArgumentException(Strings.GetString("random.sequence.arguments.different_size"), nameof(random));
                         }
 
-                        var counts = new int[xRandom.Data.Count];
-                        var minimums = new int[xRandom.Parameters.Minimums.Count];
-                        var maximums = new int[xRandom.Parameters.Maximums.Count];
-                        var replacements = new bool[xRandom.Parameters.Replacements.Count];
-                        var bases = new int[counts.Length];
+                        var lengths = new int[count];
+                        var minimums = new int[count];
+                        var maximums = new int[count];
+                        var replacements = new bool[count];
+                        var bases = new int[count];
 
-                        for (var i = 0; i < counts.Length; i++)
+                        for (var i = 0; i < count; i++)
                         {
-                            if (xRandom.Data[i] != null)
+                            if (xRandom.Data[i] == null)
                             {
-                                counts[i] = xRandom.Data[i].Length;
+                                throw new ArgumentException(Strings.GetString("random.sequence.sequence.not_specified"), nameof(random));
                             }
 
+                            lengths[i] = xRandom.Data[i].Count;
                             minimums[i] = xRandom.Parameters.Minimums[i];
                             maximums[i] = xRandom.Parameters.Maximums[i];
                             replacements[i] = xRandom.Parameters.Replacements[i];
@@ -161,7 +164,8 @@ namespace Community.RandomOrg
                         var rpcRandom = new RpcIntegerSequencesRandom
                         {
                             Method = "generateSignedIntegerSequences",
-                            Counts = counts,
+                            Count = count,
+                            Lengths = lengths,
                             Minimums = minimums,
                             Maximums = maximums,
                             Replacements = replacements,
@@ -485,14 +489,14 @@ namespace Community.RandomOrg
             {
                 ["getUsage"] = new JsonRpcResponseContract(typeof(RpcRandomUsageResult)),
                 ["generateIntegers"] = new JsonRpcResponseContract(typeof(RpcRandomResult<int>)),
-                ["generateIntegerSequences"] = new JsonRpcResponseContract(typeof(RpcRandomResult<int[]>)),
+                ["generateIntegerSequences"] = new JsonRpcResponseContract(typeof(RpcRandomResult<IReadOnlyList<int>>)),
                 ["generateDecimalFractions"] = new JsonRpcResponseContract(typeof(RpcRandomResult<decimal>)),
                 ["generateGaussians"] = new JsonRpcResponseContract(typeof(RpcRandomResult<decimal>)),
                 ["generateStrings"] = new JsonRpcResponseContract(typeof(RpcRandomResult<string>)),
                 ["generateUUIDs"] = new JsonRpcResponseContract(typeof(RpcRandomResult<Guid>)),
                 ["generateBlobs"] = new JsonRpcResponseContract(typeof(RpcRandomResult<byte[]>)),
                 ["generateSignedIntegers"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcIntegersRandom, int>)),
-                ["generateSignedIntegerSequences"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcIntegerSequencesRandom, int[]>)),
+                ["generateSignedIntegerSequences"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcIntegerSequencesRandom, IReadOnlyList<int>>)),
                 ["generateSignedDecimalFractions"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcDecimalFractionsRandom, decimal>)),
                 ["generateSignedGaussians"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcGaussiansRandom, decimal>)),
                 ["generateSignedStrings"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcStringsRandom, string>)),

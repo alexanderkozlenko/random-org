@@ -45,6 +45,7 @@ Signed data verification doesn't require an API key, and thus an empty UUID can 
 ### Limitations
 
 - API key usage information doesn't contain information about key creation time and total count of used bits and requests
+- Generation and verification of integer sequences support only vector parameters
 - A method for retrieving previously generated results is not supported (Signed API)
 - `string` is the only supported type for user data optional parameter (Signed API)
 - `base64` is the only supported format for BLOBs representation in JSON

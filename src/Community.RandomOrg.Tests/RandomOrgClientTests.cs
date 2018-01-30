@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -169,8 +171,9 @@ namespace Community.RandomOrg.Tests
         }
 
         [Theory]
-        [InlineData(11, 0000000001)]
-        [InlineData(02, 1000000000)]
+        [InlineData(0000, 0000000001)]
+        [InlineData(1001, 0000000001)]
+        [InlineData(0002, 1000000000)]
         public async void GenerateIntegerSequenceWithInvalidCount(int sequencesCount, int sequnceCount)
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_seq_req.json"));
@@ -207,7 +210,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var result = await client.GenerateIntegerSequencesAsync(
-                    joparams["n"].ToObject<int[]>(),
+                    joparams["length"].ToObject<int[]>(),
                     joparams["min"].ToObject<int[]>(),
                     joparams["max"].ToObject<int[]>(),
                     joparams["replacement"].ToObject<bool[]>());
@@ -513,6 +516,7 @@ namespace Community.RandomOrg.Tests
 
                 InternalVerifyResult(result, jores);
 
+                Assert.Equal(jorandom["n"].ToObject<int>(), result.Random.Data.Count);
                 Assert.Equal(jorandom["data"].ToObject<int[]>(), result.Random.Data);
                 Assert.Equal(jorandom["min"].ToObject<int>(), result.Random.Parameters.Minimum);
                 Assert.Equal(jorandom["max"].ToObject<int>(), result.Random.Parameters.Maximum);
@@ -548,8 +552,9 @@ namespace Community.RandomOrg.Tests
         }
 
         [Theory]
-        [InlineData(11, 0000000001)]
-        [InlineData(02, 1000000000)]
+        [InlineData(0000, 0000000001)]
+        [InlineData(1001, 0000000001)]
+        [InlineData(0002, 1000000000)]
         public async void GenerateSignedIntegerSequenceWithInvalidCount(int sequencesCount, int sequnceCount)
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.gen_bas_seq_req.json"));
@@ -586,7 +591,7 @@ namespace Community.RandomOrg.Tests
             using (var client = new RandomOrgClient(joparams["apiKey"].ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
                 var result = await client.GenerateSignedIntegerSequencesAsync(
-                    joparams["n"].ToObject<int[]>(),
+                    joparams["length"].ToObject<int[]>(),
                     joparams["min"].ToObject<int[]>(),
                     joparams["max"].ToObject<int[]>(),
                     joparams["replacement"].ToObject<bool[]>(),
@@ -594,6 +599,8 @@ namespace Community.RandomOrg.Tests
 
                 InternalVerifyResult(result, jores);
 
+                Assert.Equal(jorandom["n"].ToObject<int>(), result.Random.Data.Count);
+                Assert.Equal(jorandom["length"].ToObject<int[]>(), result.Random.Data.Select(s => s.Count));
                 Assert.Equal(jorandom["data"].ToObject<int[][]>(), result.Random.Data);
                 Assert.Equal(jorandom["min"].ToObject<int[]>(), result.Random.Parameters.Minimums);
                 Assert.Equal(jorandom["max"].ToObject<int[]>(), result.Random.Parameters.Maximums);
@@ -639,6 +646,7 @@ namespace Community.RandomOrg.Tests
 
                 InternalVerifyResult(result, jores);
 
+                Assert.Equal(jorandom["n"].ToObject<int>(), result.Random.Data.Count);
                 Assert.Equal(jorandom["data"].ToObject<decimal[]>(), result.Random.Data);
                 Assert.Equal(jorandom["decimalPlaces"].ToObject<int>(), result.Random.Parameters.DecimalPlaces);
                 Assert.Equal(jorandom["replacement"].ToObject<bool>(), result.Random.Parameters.Replacement);
@@ -691,6 +699,7 @@ namespace Community.RandomOrg.Tests
 
                 InternalVerifyResult(result, jores);
 
+                Assert.Equal(jorandom["n"].ToObject<int>(), result.Random.Data.Count);
                 Assert.Equal(jorandom["data"].ToObject<decimal[]>(), result.Random.Data);
                 Assert.Equal(jorandom["mean"].ToObject<decimal>(), result.Random.Parameters.Mean);
                 Assert.Equal(jorandom["standardDeviation"].ToObject<decimal>(), result.Random.Parameters.StandardDeviation);
@@ -741,6 +750,7 @@ namespace Community.RandomOrg.Tests
 
                 InternalVerifyResult(result, jores);
 
+                Assert.Equal(jorandom["n"].ToObject<int>(), result.Random.Data.Count);
                 Assert.Equal(jorandom["data"].ToObject<string[]>(), result.Random.Data);
                 Assert.Equal(jorandom["length"].ToObject<int>(), result.Random.Parameters.Length);
                 Assert.Equal(jorandom["characters"].ToObject<string>(), result.Random.Parameters.Characters);
@@ -782,6 +792,7 @@ namespace Community.RandomOrg.Tests
 
                 InternalVerifyResult(result, jores);
 
+                Assert.Equal(jorandom["n"].ToObject<int>(), result.Random.Data.Count);
                 Assert.Equal(jorandom["data"].ToObject<Guid[]>(), result.Random.Data);
                 Assert.Equal(jorandom["userData"].ToObject<string>(), result.Random.UserData);
             }
@@ -823,6 +834,8 @@ namespace Community.RandomOrg.Tests
                     joparams["userData"].ToObject<string>());
 
                 InternalVerifyResult(result, jores);
+
+                Assert.Equal(jorandom["n"].ToObject<int>(), result.Random.Data.Count);
 
                 var jodata = (JArray)jorandom["data"];
 
@@ -900,6 +913,40 @@ namespace Community.RandomOrg.Tests
         }
 
         [Fact]
+        public async void VerifyIntegerSequencesWhenSequenceIsNull()
+        {
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.ver_seq_req.json"));
+
+            var joparams = joreq["params"];
+            var jorandom = joreq["params"]["random"];
+            var jolicense = joreq["params"]["random"]["license"];
+
+            using (var client = new RandomOrgClient(Guid.Empty.ToString(), new HttpClient(new TestHttpMessageHandler())))
+            {
+                var random = new SignedRandom<IReadOnlyList<int>, IntegerSequenceParameters>
+                {
+                    ApiKeyHash = Convert.FromBase64String(jorandom["hashedApiKey"].ToObject<string>()),
+                    CompletionTime = jorandom["completionTime"].ToObject<DateTime>(),
+                    SerialNumber = jorandom["serialNumber"].ToObject<int>(),
+                    Data = new IReadOnlyList<int>[jorandom["data"].ToObject<IReadOnlyList<int>[]>().Length],
+                    UserData = jorandom["userData"].ToObject<string>()
+                };
+
+                random.Parameters.Minimums = jorandom["min"].ToObject<int[]>();
+                random.Parameters.Maximums = jorandom["max"].ToObject<int[]>();
+                random.Parameters.Replacements = jorandom["replacement"].ToObject<bool[]>();
+                random.License.Type = jolicense["type"].ToObject<string>();
+                random.License.Text = jolicense["text"].ToObject<string>();
+                random.License.InfoUrl = new Uri(jolicense["infoUrl"].ToObject<string>());
+
+                var signature = Convert.FromBase64String(joparams["signature"].ToObject<string>());
+
+                await Assert.ThrowsAnyAsync<ArgumentException>(() =>
+                    client.VerifySignatureAsync(random, signature));
+            }
+        }
+
+        [Fact]
         public async void VerifyIntegerSequences()
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.ver_seq_req.json"));
@@ -911,12 +958,12 @@ namespace Community.RandomOrg.Tests
 
             using (var client = new RandomOrgClient(Guid.Empty.ToString(), CreateHttpMessageInvoker(joreq, jores)))
             {
-                var random = new SignedRandom<int[], IntegerSequenceParameters>
+                var random = new SignedRandom<IReadOnlyList<int>, IntegerSequenceParameters>
                 {
                     ApiKeyHash = Convert.FromBase64String(jorandom["hashedApiKey"].ToObject<string>()),
                     CompletionTime = jorandom["completionTime"].ToObject<DateTime>(),
                     SerialNumber = jorandom["serialNumber"].ToObject<int>(),
-                    Data = jorandom["data"].ToObject<int[][]>(),
+                    Data = jorandom["data"].ToObject<IReadOnlyList<int>[]>(),
                     UserData = jorandom["userData"].ToObject<string>()
                 };
 

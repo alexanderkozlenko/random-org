@@ -3,7 +3,8 @@
     "method": "generateSignedIntegerSequences",
     "params": {
         "apiKey": "55ea5fe3-ab48-47f1-a0ed-952648e1a8c2",
-        "n": [
+        "n": 2,
+        "length": [
             3,
             5
         ],

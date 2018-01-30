@@ -121,7 +121,7 @@
     <value>The format of API key is invalid</value>
   </data>
   <data name="client.verify.data.not_specified" xml:space="preserve">
-    <value>The random data is not specified</value>
+    <value>The random data is null</value>
   </data>
   <data name="client.verify.random.invalid_type" xml:space="preserve">
     <value>The random type is invalid</value>
@@ -181,21 +181,24 @@
     <value>The upper boundary must be within the [-1000000000,1000000000] range</value>
   </data>
   <data name="random.sequence.arguments.different_size" xml:space="preserve">
-    <value>Dimensions of argument collections are different</value>
-  </data>
-  <data name="random.sequence.maximums.not_specified" xml:space="preserve">
-    <value>The maximums collection is not specified</value>
-  </data>
-  <data name="random.sequence.minimums.not_specified" xml:space="preserve">
-    <value>The minimums collection is not specified</value>
-  </data>
-  <data name="random.sequence.replacements.not_specified" xml:space="preserve">
-    <value>The replacements collection is not specified</value>
+    <value>The dimensions of the specified collections are different</value>
   </data>
   <data name="random.sequence.count.invalid_range" xml:space="preserve">
-    <value>The count of sequences must be within the [1,10] range</value>
+    <value>The count of sequences must be within the [1,1000] range</value>
   </data>
-  <data name="random.sequence.count.invalid_value" xml:space="preserve">
+  <data name="random.sequence.maximums.not_specified" xml:space="preserve">
+    <value>The maximums collection is null</value>
+  </data>
+  <data name="random.sequence.minimums.not_specified" xml:space="preserve">
+    <value>The minimums collection is null</value>
+  </data>
+  <data name="random.sequence.replacements.not_specified" xml:space="preserve">
+    <value>The replacements collection is null</value>
+  </data>
+  <data name="random.sequence.sequence.not_specified" xml:space="preserve">
+    <value>The sequences collection contains null value</value>
+  </data>
+  <data name="random.sequence.total.invalid_range" xml:space="preserve">
     <value>The total count must be within the [1,10000] range</value>
   </data>
   <data name="random.string.characters.length.invalid_range" xml:space="preserve">
