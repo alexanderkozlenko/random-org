@@ -35,7 +35,8 @@ using (var client = new RandomOrgClient("YOUR_API_KEY_HERE"))
 }
 ```
 
-Signed data verification doesn't require an API key, and thus an empty UUID can be used as API key for this case as well.
+- Signed data verification doesn't require an API key, and thus an empty UUID can be used as API key for this case as well.
+- The client respects an advisory delay between generation requests from the server. However, guarantees that it will take no longer than 24 hours.
 
 ### Features
 

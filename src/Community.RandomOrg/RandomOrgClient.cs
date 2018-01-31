@@ -15,6 +15,7 @@ namespace Community.RandomOrg
     /// <summary>Represents RANDOM.ORG service client.</summary>
     public sealed partial class RandomOrgClient : IDisposable
     {
+        private static readonly long _maximumAdvisoryDelay = TimeSpan.FromDays(1).Ticks;
         private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = new MediaTypeHeaderValue("application/json");
         private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/2/invoke", UriKind.Absolute);
         private static readonly IDictionary<string, JsonRpcResponseContract> _contracts = CreateContracts();
@@ -24,7 +25,11 @@ namespace Community.RandomOrg
         private readonly SemaphoreSlim _requestSemaphore = new SemaphoreSlim(1, 1);
 
         private readonly JsonRpcSerializer _jsonRpcSerializer =
-            new JsonRpcSerializer(new Dictionary<string, JsonRpcRequestContract>(0), _contracts, new Dictionary<JsonRpcId, string>(1), new Dictionary<JsonRpcId, JsonRpcResponseContract>(0));
+            new JsonRpcSerializer(
+                new Dictionary<string, JsonRpcRequestContract>(0),
+                _contracts,
+                new Dictionary<JsonRpcId, string>(1),
+                new Dictionary<JsonRpcId, JsonRpcResponseContract>(0));
 
         private DateTime? _advisoryTime;
 
@@ -334,11 +339,11 @@ namespace Community.RandomOrg
             {
                 if (_advisoryTime != null)
                 {
-                    var advisoryDelay = _advisoryTime.Value - DateTime.UtcNow;
+                    var advisoryDelay = (_advisoryTime.Value - DateTime.UtcNow).Ticks;
 
-                    if (advisoryDelay.Ticks > 0)
+                    if (advisoryDelay > 0)
                     {
-                        await Task.Delay(advisoryDelay, cancellationToken).ConfigureAwait(false);
+                        await Task.Delay(TimeSpan.FromTicks(Math.Min(advisoryDelay, _maximumAdvisoryDelay)), cancellationToken).ConfigureAwait(false);
                     }
                 }
 
@@ -471,7 +476,7 @@ namespace Community.RandomOrg
             var httpHandler = new HttpClientHandler
             {
                 AllowAutoRedirect = false,
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+                AutomaticDecompression = DecompressionMethods.GZip
             };
 
             var httpClient = new HttpClient(httpHandler);
@@ -512,6 +517,7 @@ namespace Community.RandomOrg
             _httpMessageInvoker.Dispose();
             _requestSemaphore.Dispose();
             _jsonRpcSerializer.Dispose();
+            _advisoryTime = null;
         }
     }
 }
