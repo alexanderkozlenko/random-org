@@ -9,7 +9,7 @@ namespace Community.RandomOrg.Converters
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(string);
+            return true;
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

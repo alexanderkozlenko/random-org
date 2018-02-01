@@ -147,9 +147,6 @@ namespace Community.RandomOrg
                         }
 
                         var lengths = new int[count];
-                        var minimums = new int[count];
-                        var maximums = new int[count];
-                        var replacements = new bool[count];
                         var bases = new int[count];
 
                         for (var i = 0; i < count; i++)
@@ -160,9 +157,6 @@ namespace Community.RandomOrg
                             }
 
                             lengths[i] = xRandom.Data[i].Count;
-                            minimums[i] = xRandom.Parameters.Minimums[i];
-                            maximums[i] = xRandom.Parameters.Maximums[i];
-                            replacements[i] = xRandom.Parameters.Replacements[i];
                             bases[i] = 10;
                         }
 
@@ -171,9 +165,9 @@ namespace Community.RandomOrg
                             Method = "generateSignedIntegerSequences",
                             Count = count,
                             Lengths = lengths,
-                            Minimums = minimums,
-                            Maximums = maximums,
-                            Replacements = replacements,
+                            Minimums = xRandom.Parameters.Minimums,
+                            Maximums = xRandom.Parameters.Maximums,
+                            Replacements = xRandom.Parameters.Replacements,
                             Bases = bases
                         };
 

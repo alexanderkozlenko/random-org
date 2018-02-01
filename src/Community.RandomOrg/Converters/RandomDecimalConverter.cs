@@ -8,7 +8,7 @@ namespace Community.RandomOrg.Converters
     {
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(decimal);
+            return true;
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -18,7 +18,7 @@ namespace Community.RandomOrg.Converters
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            writer.WriteValue(RandomOrgConvert.DecimalToObject((decimal)value));
+            writer.WriteValue(RandomOrgConvert.DecimalToNumber((decimal)value));
         }
     }
 }

@@ -13,35 +13,35 @@ namespace Community.RandomOrg.Internal
         }
 
         [JsonProperty("length", Required = Required.Always)]
-        public int[] Lengths
+        public IReadOnlyList<int> Lengths
         {
             get;
             set;
         }
 
         [JsonProperty("min", Required = Required.Always)]
-        public int[] Minimums
+        public IReadOnlyList<int> Minimums
         {
             get;
             set;
         }
 
         [JsonProperty("max", Required = Required.Always)]
-        public int[] Maximums
+        public IReadOnlyList<int> Maximums
         {
             get;
             set;
         }
 
         [JsonProperty("replacement", Required = Required.Always)]
-        public bool[] Replacements
+        public IReadOnlyList<bool> Replacements
         {
             get;
             set;
         }
 
         [JsonProperty("base", Required = Required.Always)]
-        public int[] Bases
+        public IReadOnlyList<int> Bases
         {
             get;
             set;
