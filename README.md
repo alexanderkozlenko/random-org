@@ -1,10 +1,10 @@
 ## Community.RandomOrg
 
-[RANDOM.ORG](https://www.random.org) service client based on [RANDOM.ORG API v2](https://api.random.org/json-rpc/2) (Core APIs).
+[RANDOM.ORG](https://www.random.org) service client based on [RANDOM.ORG API v2](https://api.random.org/json-rpc/2).
 
 [![NuGet package](https://img.shields.io/nuget/v/Community.RandomOrg.svg?style=flat-square)](https://www.nuget.org/packages/Community.RandomOrg)
 
-### API Support Matrix
+### Core API Support Matrix
 
 Category | Method | Support
 :---: | --- | :---:
@@ -38,11 +38,11 @@ Signed | `verifySignature` | Yes
 
 ### Limitations
 
-- API key usage information doesn't contain information about key creation time and total count of used bits and requests
+- API key usage information doesn't contain information about key creation time and total count of used bits / requests
 - Generation and verification of integer sequences support only vector parameters
 - `string` is the only supported type for the optional user data parameter
-- `base64` is the only supported format for BLOBs representation in JSON
-- `10` is the only supported base for integers representation in JSON
+- `base64` is the only supported format for BLOBs in JSON
+- `10` is the only supported base for integers in JSON
 
 ### Samples
 
@@ -62,10 +62,12 @@ using (var client = new RandomOrgClient("YOUR_API_KEY_HERE"))
     var bud = await client.GenerateUuidsAsync(1);
     // Generate a BLOB with length of 8 bytes
     var bbl = await client.GenerateBlobsAsync(1, 8);
-    // Each generation method has a corresponding one for generating random data
-    // with signature, which can be verified afterwards
+    // Generate an integer from the [0,10] range w/o replacement with signature
     var sin = await client.GenerateSignedIntegersAsync(1, 0, 10, false);
+    // Verify the signature of the previously generated random integer
     var ain = await client.VerifySignatureAsync(sin.Random, sin.Signature);
+    // Get usage information of the current API key
+    var usg = await client.GetUsageAsync();
 
     Console.WriteLine("Random integer: " + bin.Random.Data[0]);
     Console.WriteLine("Random decimal fraction: " + bdf.Random.Data[0]);
@@ -74,5 +76,6 @@ using (var client = new RandomOrgClient("YOUR_API_KEY_HERE"))
     Console.WriteLine("Random UUID: " + bud.Random.Data[0]);
     Console.WriteLine("Random BLOB: " + Convert.ToBase64String(bbl.Random.Data[0]));
     Console.WriteLine("Signed data is authentic: " + ain);
+    Console.WriteLine("Daily quota requests left: " + usg.RequestsLeft);
 }
 ```

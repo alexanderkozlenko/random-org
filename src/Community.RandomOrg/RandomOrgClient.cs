@@ -53,7 +53,7 @@ namespace Community.RandomOrg
             _httpMessageInvoker = httpMessageInvoker ?? CreateHttpMessageInvoker();
         }
 
-        /// <summary>Returns information related to the usage of a given API key as an asynchronous operation.</summary>
+        /// <summary>Returns usage information of the current API key as an asynchronous operation.</summary>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
         /// <returns>A task that represents the asynchronous operation. The task result is API key usage information.</returns>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>

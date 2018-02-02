@@ -16,13 +16,13 @@
             get;
         }
 
-        /// <summary>Gets an integer containing the (estimated) number of remaining true random bits available to the client in the daily quota.</summary>
+        /// <summary>Gets an integer containing the (estimated) number of remaining true random bits available to the client from the daily quota.</summary>
         public long BitsLeft
         {
             get;
         }
 
-        /// <summary>Gets an integer containing the (estimated) number of remaining API requests available to the client in the daily quota.</summary>
+        /// <summary>Gets an integer containing the (estimated) number of remaining API requests available to the client from the daily quota.</summary>
         public long RequestsLeft
         {
             get;
