@@ -120,6 +120,9 @@
   <data name="client.api_key.invalid_format" xml:space="preserve">
     <value>The format of API key is invalid</value>
   </data>
+  <data name="client.verify.license.type.not_specified" xml:space="preserve">
+    <value>The license type is null</value>
+  </data>
   <data name="client.verify.data.not_specified" xml:space="preserve">
     <value>The random data is null</value>
   </data>
@@ -203,6 +206,9 @@
   </data>
   <data name="random.string.characters.length.invalid_range" xml:space="preserve">
     <value>The number of characters must be within the [1,80] range</value>
+  </data>
+  <data name="random.string.characters.not_specified" xml:space="preserve">
+    <value>The set of characters is null</value>
   </data>
   <data name="random.string.count.invalid_range" xml:space="preserve">
     <value>The count must be within the [1,10000] range</value>

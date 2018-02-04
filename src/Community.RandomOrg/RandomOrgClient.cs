@@ -79,7 +79,7 @@ namespace Community.RandomOrg
         /// <param name="signature">The signature from the same response that the random data originates from.</param>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
         /// <returns>A task that represents the asynchronous operation. The task result is a value, indicating if the random objects are authentic.</returns>
-        /// <exception cref="ArgumentException"><paramref name="random" /> data is <see langword="null" />.</exception>
+        /// <exception cref="ArgumentException">Random data, or license type, or a random parameter is <see langword="null" />.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="random" /> or <paramref name="signature" /> is <see langword="null" />.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
         /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
@@ -99,6 +99,10 @@ namespace Community.RandomOrg
             if (random.Data == null)
             {
                 throw new ArgumentException(Strings.GetString("client.verify.data.not_specified"), nameof(random));
+            }
+            if (random.License.Type == null)
+            {
+                throw new ArgumentException(Strings.GetString("client.verify.license.type.not_specified"), nameof(random));
             }
 
             var rpcRandomParam = default(object);
@@ -209,6 +213,11 @@ namespace Community.RandomOrg
                     break;
                 case SignedRandom<string, StringParameters> xRandom:
                     {
+                        if (xRandom.Parameters.Characters == null)
+                        {
+                            throw new ArgumentException(Strings.GetString("random.string.characters.not_specified"), nameof(random));
+                        }
+
                         var rpcRandom = new RpcStringsRandom
                         {
                             Method = "generateSignedStrings",

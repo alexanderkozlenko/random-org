@@ -4,7 +4,7 @@ namespace Community.RandomOrg.Internal
 {
     internal sealed class RpcRandomLicense
     {
-        [JsonProperty("type")]
+        [JsonProperty("type", Required = Required.Always)]
         public string Type
         {
             get;
