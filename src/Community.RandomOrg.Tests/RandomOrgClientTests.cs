@@ -902,13 +902,12 @@ namespace Community.RandomOrg.Tests
         public async void VerifySignatureForIntegerSequencesWhenMinimumsIsNull()
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.ver_seq_req.json"));
-            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.ver_seq_res.json"));
 
             var joparams = joreq["params"];
             var jorandom = joreq["params"]["random"];
             var jolicense = joreq["params"]["random"]["license"];
 
-            using (var client = new RandomOrgClient(Guid.Empty.ToString(), CreateHttpMessageInvoker(joreq, jores)))
+            using (var client = new RandomOrgClient(Guid.Empty.ToString(), CreateEmptyHttpMessageInvoker()))
             {
                 var random = new SignedRandom<IReadOnlyList<int>, IntegerSequenceParameters>
                 {
@@ -937,13 +936,12 @@ namespace Community.RandomOrg.Tests
         public async void VerifySignatureForIntegerSequencesWhenMaximumsIsNull()
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.ver_seq_req.json"));
-            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.ver_seq_res.json"));
 
             var joparams = joreq["params"];
             var jorandom = joreq["params"]["random"];
             var jolicense = joreq["params"]["random"]["license"];
 
-            using (var client = new RandomOrgClient(Guid.Empty.ToString(), CreateHttpMessageInvoker(joreq, jores)))
+            using (var client = new RandomOrgClient(Guid.Empty.ToString(), CreateEmptyHttpMessageInvoker()))
             {
                 var random = new SignedRandom<IReadOnlyList<int>, IntegerSequenceParameters>
                 {
@@ -972,13 +970,12 @@ namespace Community.RandomOrg.Tests
         public async void VerifySignatureForIntegerSequencesWhenReplacementsIsNull()
         {
             var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.ver_seq_req.json"));
-            var jores = JObject.Parse(EmbeddedResourceManager.GetString("Assets.ver_seq_res.json"));
 
             var joparams = joreq["params"];
             var jorandom = joreq["params"]["random"];
             var jolicense = joreq["params"]["random"]["license"];
 
-            using (var client = new RandomOrgClient(Guid.Empty.ToString(), CreateHttpMessageInvoker(joreq, jores)))
+            using (var client = new RandomOrgClient(Guid.Empty.ToString(), CreateEmptyHttpMessageInvoker()))
             {
                 var random = new SignedRandom<IReadOnlyList<int>, IntegerSequenceParameters>
                 {
@@ -992,6 +989,43 @@ namespace Community.RandomOrg.Tests
                 random.Parameters.Minimums = jorandom["min"].ToObject<int[]>();
                 random.Parameters.Maximums = jorandom["max"].ToObject<int[]>();
                 random.Parameters.Replacements = null;
+                random.License.Type = jolicense["type"].ToObject<string>();
+                random.License.Text = jolicense["text"].ToObject<string>();
+                random.License.InfoUrl = new Uri(jolicense["infoUrl"].ToObject<string>());
+
+                var signature = Convert.FromBase64String(joparams["signature"].ToObject<string>());
+
+                await Assert.ThrowsAnyAsync<ArgumentException>(() =>
+                    client.VerifySignatureAsync(random, signature));
+            }
+        }
+
+        [Theory]
+        [InlineData(1, 0, 0)]
+        [InlineData(0, 1, 0)]
+        [InlineData(0, 0, 1)]
+        public async void VerifySignatureForIntegerSequencesWithInvalidCount(int minimumsDelta, int maximumsDelta, int replacementsDelta)
+        {
+            var joreq = JObject.Parse(EmbeddedResourceManager.GetString("Assets.ver_seq_req.json"));
+
+            var joparams = joreq["params"];
+            var jorandom = joreq["params"]["random"];
+            var jolicense = joreq["params"]["random"]["license"];
+
+            using (var client = new RandomOrgClient(Guid.Empty.ToString(), CreateEmptyHttpMessageInvoker()))
+            {
+                var random = new SignedRandom<IReadOnlyList<int>, IntegerSequenceParameters>
+                {
+                    ApiKeyHash = Convert.FromBase64String(jorandom["hashedApiKey"].ToObject<string>()),
+                    CompletionTime = jorandom["completionTime"].ToObject<DateTime>(),
+                    SerialNumber = jorandom["serialNumber"].ToObject<int>(),
+                    Data = jorandom["data"].ToObject<IReadOnlyList<int>[]>(),
+                    UserData = jorandom["userData"].ToObject<string>()
+                };
+
+                random.Parameters.Minimums = new int[jorandom["min"].ToObject<int[]>().Length + minimumsDelta];
+                random.Parameters.Maximums = new int[jorandom["max"].ToObject<int[]>().Length + maximumsDelta];
+                random.Parameters.Replacements = new bool[jorandom["replacement"].ToObject<bool[]>().Length + replacementsDelta];
                 random.License.Type = jolicense["type"].ToObject<string>();
                 random.License.Text = jolicense["text"].ToObject<string>();
                 random.License.InfoUrl = new Uri(jolicense["infoUrl"].ToObject<string>());
