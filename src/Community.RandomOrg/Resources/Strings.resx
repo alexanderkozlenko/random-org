@@ -133,7 +133,7 @@
     <value>The HTTP response has invalid set of JSON-RPC transport headers</value>
   </data>
   <data name="protocol.http.status_code.invalid_value" xml:space="preserve">
-    <value>The HTTP response status code does not indicate success</value>
+    <value>The HTTP response status code does not indicate a successful service response</value>
   </data>
   <data name="protocol.random.api_key_status.invalid_value" xml:space="preserve">
     <value>The value for the API key status is invalid</value>
