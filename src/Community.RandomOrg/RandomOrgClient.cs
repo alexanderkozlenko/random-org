@@ -395,7 +395,7 @@ namespace Community.RandomOrg
 
                 using (var httpResponseMessage = await _httpMessageInvoker.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false))
                 {
-                    if (!httpResponseMessage.IsSuccessStatusCode)
+                    if (httpResponseMessage.StatusCode != HttpStatusCode.OK)
                     {
                         throw new RandomOrgRequestException(Strings.GetString("protocol.http.status_code.invalid_value"), httpResponseMessage.StatusCode);
                     }
