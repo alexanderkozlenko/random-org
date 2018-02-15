@@ -44,7 +44,7 @@ Signed | `verifySignature` | Yes
 - `base64` is the only supported format for BLOBs in JSON.
 - `10` is the only supported base for integers in JSON.
 
-### Samples
+### Examples
 
 ```cs
 using (var client = new RandomOrgClient("YOUR_API_KEY_HERE"))
