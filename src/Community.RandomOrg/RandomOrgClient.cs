@@ -442,12 +442,12 @@ namespace Community.RandomOrg
 
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    if (!responseData.IsSingle)
+                    if (responseData.IsBatch)
                     {
                         throw new RandomOrgContractException(method, Strings.GetString("protocol.random.message.invalid_value"));
                     }
 
-                    var jsonRpcItem = responseData.SingleItem;
+                    var jsonRpcItem = responseData.Item;
 
                     if (!jsonRpcItem.IsValid)
                     {
