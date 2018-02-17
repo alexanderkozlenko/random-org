@@ -350,7 +350,10 @@ namespace Community.RandomOrg
                     }
                 }
 
-                var result = await InvokeServiceMethodAsync<TResult>(method, parameters, cancellationToken).ConfigureAwait(false);
+                var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString("D")), parameters);
+                var jsonRpcResponse = await InvokeServiceMethodAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
+
+                var result = (TResult)jsonRpcResponse.Result;
 
                 _advisoryTime = result.Random.CompletionTime + TimeSpan.FromMilliseconds(result.AdvisoryDelay);
 
@@ -369,7 +372,10 @@ namespace Community.RandomOrg
 
             try
             {
-                return await InvokeServiceMethodAsync<TResult>(method, parameters, cancellationToken).ConfigureAwait(false);
+                var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString("D")), parameters);
+                var jsonRpcResponse = await InvokeServiceMethodAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
+
+                return (TResult)jsonRpcResponse.Result;
             }
             finally
             {
@@ -377,11 +383,8 @@ namespace Community.RandomOrg
             }
         }
 
-        private async Task<TResult> InvokeServiceMethodAsync<TResult>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken)
-            where TResult : RpcMethodResult
+        private async Task<JsonRpcResponse> InvokeServiceMethodAsync(JsonRpcRequest jsonRpcRequest, CancellationToken cancellationToken)
         {
-            var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString("D")), parameters);
-
             using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
             {
                 var httpRequestString = _jsonRpcSerializer.SerializeRequest(jsonRpcRequest);
@@ -423,7 +426,7 @@ namespace Community.RandomOrg
                         throw new RandomOrgRequestException(Strings.GetString("protocol.http.headers.invalid_set"), httpResponseMessage.StatusCode);
                     }
 
-                    _jsonRpcSerializer.StaticResponseBindings[jsonRpcRequest.Id] = method;
+                    _jsonRpcSerializer.StaticResponseBindings[jsonRpcRequest.Id] = jsonRpcRequest.Method;
 
                     var responseData = default(JsonRpcData<JsonRpcResponse>);
 
@@ -433,7 +436,7 @@ namespace Community.RandomOrg
                     }
                     catch (JsonRpcException e)
                     {
-                        throw new RandomOrgContractException(method, Strings.GetString("protocol.rpc.message.invalid_value"), e);
+                        throw new RandomOrgContractException(jsonRpcRequest.Method, Strings.GetString("protocol.rpc.message.invalid_value"), e);
                     }
                     finally
                     {
@@ -444,32 +447,32 @@ namespace Community.RandomOrg
 
                     if (responseData.IsBatch)
                     {
-                        throw new RandomOrgContractException(method, Strings.GetString("protocol.random.message.invalid_value"));
+                        throw new RandomOrgContractException(jsonRpcRequest.Method, Strings.GetString("protocol.random.message.invalid_value"));
                     }
 
                     var jsonRpcItem = responseData.Item;
 
                     if (!jsonRpcItem.IsValid)
                     {
-                        throw new RandomOrgContractException(method, Strings.GetString("protocol.random.message.invalid_value"), jsonRpcItem.Exception);
+                        throw new RandomOrgContractException(jsonRpcRequest.Method, Strings.GetString("protocol.random.message.invalid_value"), jsonRpcItem.Exception);
                     }
 
                     var jsonRpcResponse = jsonRpcItem.Message;
 
-                    if (!jsonRpcResponse.Success)
-                    {
-                        throw new RandomOrgException(method, jsonRpcResponse.Error.Code, jsonRpcResponse.Error.Message);
-                    }
                     if (jsonRpcRequest.Id != jsonRpcResponse.Id)
                     {
-                        throw new RandomOrgContractException(method, Strings.GetString("protocol.rpc.id.invalid_value"));
+                        throw new RandomOrgContractException(jsonRpcRequest.Method, Strings.GetString("protocol.rpc.id.invalid_value"));
+                    }
+                    if (!jsonRpcResponse.Success)
+                    {
+                        throw new RandomOrgException(jsonRpcRequest.Method, jsonRpcResponse.Error.Code, jsonRpcResponse.Error.Message);
                     }
                     if (jsonRpcResponse.Result == null)
                     {
-                        throw new RandomOrgContractException(method, Strings.GetString("protocol.random.message.invalid_value"));
+                        throw new RandomOrgContractException(jsonRpcRequest.Method, Strings.GetString("protocol.random.message.invalid_value"));
                     }
 
-                    return (TResult)jsonRpcResponse.Result;
+                    return jsonRpcResponse;
                 }
             }
         }

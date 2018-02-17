@@ -8,8 +8,8 @@ namespace Community.RandomOrg
         internal RandomOrgException(string method, long code, string message)
             : base(message)
         {
-            Code = code;
             Method = method;
+            Code = code;
         }
 
         /// <summary>Gets the method name.</summary>
