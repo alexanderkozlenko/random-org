@@ -53,6 +53,15 @@ namespace Community.RandomOrg
             _httpMessageInvoker = httpMessageInvoker ?? CreateHttpMessageInvoker();
         }
 
+        /// <summary>Releases all resources used by the current instance of the <see cref="RandomOrgClient" />.</summary>
+        public void Dispose()
+        {
+            _httpMessageInvoker.Dispose();
+            _requestSemaphore.Dispose();
+            _jsonRpcSerializer.Dispose();
+            _advisoryTime = null;
+        }
+
         /// <summary>Returns usage information of the current API key as an asynchronous operation.</summary>
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
         /// <returns>A task that represents the asynchronous operation. The task result is API key usage information.</returns>
@@ -350,8 +359,7 @@ namespace Community.RandomOrg
                     }
                 }
 
-                var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString("D")), parameters);
-                var jsonRpcResponse = await InvokeServiceMethodAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
+                var jsonRpcResponse = await InvokeServiceMethodAsync(CreateRequest(method, parameters), cancellationToken).ConfigureAwait(false);
 
                 var result = (TResult)jsonRpcResponse.Result;
 
@@ -372,8 +380,7 @@ namespace Community.RandomOrg
 
             try
             {
-                var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString("D")), parameters);
-                var jsonRpcResponse = await InvokeServiceMethodAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
+                var jsonRpcResponse = await InvokeServiceMethodAsync(CreateRequest(method, parameters), cancellationToken).ConfigureAwait(false);
 
                 return (TResult)jsonRpcResponse.Result;
             }
@@ -459,10 +466,6 @@ namespace Community.RandomOrg
 
                     var jsonRpcResponse = jsonRpcItem.Message;
 
-                    if (jsonRpcRequest.Id != jsonRpcResponse.Id)
-                    {
-                        throw new RandomOrgContractException(jsonRpcRequest.Method, Strings.GetString("protocol.rpc.id.invalid_value"));
-                    }
                     if (!jsonRpcResponse.Success)
                     {
                         throw new RandomOrgException(jsonRpcRequest.Method, jsonRpcResponse.Error.Code, jsonRpcResponse.Error.Message);
@@ -475,6 +478,11 @@ namespace Community.RandomOrg
                     return jsonRpcResponse;
                 }
             }
+        }
+
+        private static JsonRpcRequest CreateRequest(string method, IReadOnlyDictionary<string, object> parameters)
+        {
+            return new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString("D")), parameters);
         }
 
         private static HttpMessageInvoker CreateHttpMessageInvoker()
@@ -513,17 +521,8 @@ namespace Community.RandomOrg
                 ["generateSignedStrings"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcStringsRandom, string>)),
                 ["generateSignedUUIDs"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcUuidsRandom, Guid>)),
                 ["generateSignedBlobs"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcBlobsRandom, byte[]>)),
-                ["verifySignature"] = new JsonRpcResponseContract(typeof(RpcVerifyResult)),
+                ["verifySignature"] = new JsonRpcResponseContract(typeof(RpcVerifyResult))
             };
-        }
-
-        /// <summary>Releases all resources used by the current instance of the <see cref="RandomOrgClient" />.</summary>
-        public void Dispose()
-        {
-            _httpMessageInvoker.Dispose();
-            _requestSemaphore.Dispose();
-            _jsonRpcSerializer.Dispose();
-            _advisoryTime = null;
         }
     }
 }

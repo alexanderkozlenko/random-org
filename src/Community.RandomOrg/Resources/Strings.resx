@@ -141,9 +141,6 @@
   <data name="protocol.random.message.invalid_value" xml:space="preserve">
     <value>The RANDOM.ORG response is invalid</value>
   </data>
-  <data name="protocol.rpc.id.invalid_value" xml:space="preserve">
-    <value>The JSON-RPC response identifier does not match the request identifier</value>
-  </data>
   <data name="protocol.rpc.message.invalid_value" xml:space="preserve">
     <value>The JSON-RPC response is invalid</value>
   </data>
