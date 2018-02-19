@@ -28,8 +28,8 @@ Signed | `verifySignature` | Yes
 
 ### Features
 
-- The client has an ability to use a custom `HttpMessageInvoker` instance to do HTTP requests. A custom message invoker must have at least `2` minutes timeout for a request according to RANDOM.ORG API requirements.
-- All operations support cancellation via `CancellationToken`.
+- The client supports operation cancellation via the `CancellationToken`.
+- The client supports usage of a custom `HttpMessageInvoker` instance to execute HTTP requests. A custom message invoker must have at least `2` minutes timeout for a request according to RANDOM.ORG API requirements.
 
 ### Specifics
 
