@@ -16,15 +16,15 @@ namespace Community.RandomOrg
     public sealed partial class RandomOrgClient : IDisposable
     {
         private static readonly long _maximumAdvisoryDelay = TimeSpan.FromDays(1).Ticks;
-        private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = new MediaTypeHeaderValue("application/json");
+        private static readonly MediaTypeHeaderValue _mediaTypeValue = new MediaTypeHeaderValue("application/json");
         private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/2/invoke", UriKind.Absolute);
         private static readonly IDictionary<string, JsonRpcResponseContract> _contracts = CreateContracts();
 
         private readonly string _apiKey;
-        private readonly HttpMessageInvoker _httpMessageInvoker;
-        private readonly SemaphoreSlim _requestSemaphore = new SemaphoreSlim(1, 1);
+        private readonly HttpMessageInvoker _httpInvoker;
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
-        private readonly JsonRpcSerializer _jsonRpcSerializer =
+        private readonly JsonRpcSerializer _serializer =
             new JsonRpcSerializer(
                 new Dictionary<string, JsonRpcRequestContract>(0),
                 _contracts,
@@ -50,15 +50,15 @@ namespace Community.RandomOrg
             }
 
             _apiKey = apiKey;
-            _httpMessageInvoker = httpMessageInvoker ?? CreateHttpMessageInvoker();
+            _httpInvoker = httpMessageInvoker ?? CreateHttpMessageInvoker();
         }
 
         /// <summary>Releases all resources used by the current instance of the <see cref="RandomOrgClient" />.</summary>
         public void Dispose()
         {
-            _httpMessageInvoker.Dispose();
-            _requestSemaphore.Dispose();
-            _jsonRpcSerializer.Dispose();
+            _httpInvoker.Dispose();
+            _semaphore.Dispose();
+            _serializer.Dispose();
             _advisoryTime = null;
         }
 
@@ -345,7 +345,7 @@ namespace Community.RandomOrg
             where TResult : RpcRandomResultObject<TRandom, TValue>
             where TRandom : RpcRandomObject<TValue>
         {
-            await _requestSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+            await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             try
             {
@@ -369,14 +369,14 @@ namespace Community.RandomOrg
             }
             finally
             {
-                _requestSemaphore.Release();
+                _semaphore.Release();
             }
         }
 
         private async Task<TResult> InvokeAccountServiceMethodAsync<TResult>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken)
             where TResult : RpcMethodResult
         {
-            await _requestSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+            await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             try
             {
@@ -386,96 +386,96 @@ namespace Community.RandomOrg
             }
             finally
             {
-                _requestSemaphore.Release();
+                _semaphore.Release();
             }
         }
 
-        private async Task<JsonRpcResponse> InvokeServiceMethodAsync(JsonRpcRequest jsonRpcRequest, CancellationToken cancellationToken)
+        private async Task<JsonRpcResponse> InvokeServiceMethodAsync(JsonRpcRequest request, CancellationToken cancellationToken)
         {
-            using (var httpRequestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
+            using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
             {
-                var httpRequestString = _jsonRpcSerializer.SerializeRequest(jsonRpcRequest);
+                var requestString = _serializer.SerializeRequest(request);
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var httpRequestContent = new StringContent(httpRequestString);
+                var requestContent = new StringContent(requestString);
 
-                httpRequestContent.Headers.ContentType = _mediaTypeHeaderValue;
-                httpRequestMessage.Content = httpRequestContent;
+                requestContent.Headers.ContentType = _mediaTypeValue;
+                requestMessage.Content = requestContent;
 
-                using (var httpResponseMessage = await _httpMessageInvoker.SendAsync(httpRequestMessage, cancellationToken).ConfigureAwait(false))
+                using (var responseMessage = await _httpInvoker.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
                 {
-                    if (httpResponseMessage.StatusCode != HttpStatusCode.OK)
+                    if (responseMessage.StatusCode != HttpStatusCode.OK)
                     {
-                        throw new RandomOrgRequestException(Strings.GetString("protocol.http.status_code.invalid_value"), httpResponseMessage.StatusCode);
+                        throw new RandomOrgRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.status_code.invalid_value"));
                     }
 
-                    var contentType = httpResponseMessage.Content.Headers.ContentType;
+                    var contentType = responseMessage.Content.Headers.ContentType;
 
-                    if ((contentType == null) || (string.Compare(contentType.MediaType, _mediaTypeHeaderValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0))
+                    if ((contentType == null) || (string.Compare(contentType.MediaType, _mediaTypeValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0))
                     {
-                        throw new RandomOrgRequestException(Strings.GetString("protocol.http.headers.invalid_set"), httpResponseMessage.StatusCode);
+                        throw new RandomOrgRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_set"));
                     }
 
-                    var contentLength = httpResponseMessage.Content.Headers.ContentLength;
+                    var contentLength = responseMessage.Content.Headers.ContentLength;
 
                     if (contentLength == null)
                     {
-                        throw new RandomOrgRequestException(Strings.GetString("protocol.http.headers.invalid_set"), httpResponseMessage.StatusCode);
+                        throw new RandomOrgRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_set"));
                     }
 
-                    var httpResponseString = await httpResponseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    var responseString = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
 
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    if (httpResponseString?.Length != contentLength)
+                    if (responseString?.Length != contentLength)
                     {
-                        throw new RandomOrgRequestException(Strings.GetString("protocol.http.headers.invalid_set"), httpResponseMessage.StatusCode);
+                        throw new RandomOrgRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_set"));
                     }
 
-                    _jsonRpcSerializer.StaticResponseBindings[jsonRpcRequest.Id] = jsonRpcRequest.Method;
+                    _serializer.StaticResponseBindings[request.Id] = request.Method;
 
                     var responseData = default(JsonRpcData<JsonRpcResponse>);
 
                     try
                     {
-                        responseData = _jsonRpcSerializer.DeserializeResponseData(httpResponseString);
+                        responseData = _serializer.DeserializeResponseData(responseString);
                     }
                     catch (JsonRpcException e)
                     {
-                        throw new RandomOrgContractException(jsonRpcRequest.Id.ToString(), Strings.GetString("protocol.rpc.message.invalid_value"), e);
+                        throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.rpc.message.invalid_value"), e);
                     }
                     finally
                     {
-                        _jsonRpcSerializer.StaticResponseBindings.Remove(jsonRpcRequest.Id);
+                        _serializer.StaticResponseBindings.Remove(request.Id);
                     }
 
                     cancellationToken.ThrowIfCancellationRequested();
 
                     if (responseData.IsBatch)
                     {
-                        throw new RandomOrgContractException(jsonRpcRequest.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
+                        throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
                     }
 
-                    var jsonRpcItem = responseData.Item;
+                    var responseItem = responseData.Item;
 
-                    if (!jsonRpcItem.IsValid)
+                    if (!responseItem.IsValid)
                     {
-                        throw new RandomOrgContractException(jsonRpcRequest.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"), jsonRpcItem.Exception);
+                        throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"), responseItem.Exception);
                     }
 
-                    var jsonRpcResponse = jsonRpcItem.Message;
+                    var response = responseItem.Message;
 
-                    if (!jsonRpcResponse.Success)
+                    if (!response.Success)
                     {
-                        throw new RandomOrgException(jsonRpcRequest.Method, jsonRpcResponse.Error.Code, jsonRpcResponse.Error.Message);
+                        throw new RandomOrgException(request.Method, response.Error.Code, response.Error.Message);
                     }
-                    if (jsonRpcResponse.Result == null)
+                    if (response.Result == null)
                     {
-                        throw new RandomOrgContractException(jsonRpcRequest.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
+                        throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
                     }
 
-                    return jsonRpcResponse;
+                    return response;
                 }
             }
         }
@@ -495,7 +495,7 @@ namespace Community.RandomOrg
 
             var httpClient = new HttpClient(httpHandler);
 
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(_mediaTypeHeaderValue.MediaType));
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(_mediaTypeValue.MediaType));
             httpClient.DefaultRequestHeaders.ExpectContinue = false;
             httpClient.Timeout = TimeSpan.FromMinutes(2);
 
