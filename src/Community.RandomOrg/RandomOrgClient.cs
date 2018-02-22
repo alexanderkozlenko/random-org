@@ -443,7 +443,7 @@ namespace Community.RandomOrg
                     }
                     catch (JsonRpcException e)
                     {
-                        throw new RandomOrgContractException(jsonRpcRequest.Method, Strings.GetString("protocol.rpc.message.invalid_value"), e);
+                        throw new RandomOrgContractException(jsonRpcRequest.Id.ToString(), Strings.GetString("protocol.rpc.message.invalid_value"), e);
                     }
                     finally
                     {
@@ -454,14 +454,14 @@ namespace Community.RandomOrg
 
                     if (responseData.IsBatch)
                     {
-                        throw new RandomOrgContractException(jsonRpcRequest.Method, Strings.GetString("protocol.random.message.invalid_value"));
+                        throw new RandomOrgContractException(jsonRpcRequest.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
                     }
 
                     var jsonRpcItem = responseData.Item;
 
                     if (!jsonRpcItem.IsValid)
                     {
-                        throw new RandomOrgContractException(jsonRpcRequest.Method, Strings.GetString("protocol.random.message.invalid_value"), jsonRpcItem.Exception);
+                        throw new RandomOrgContractException(jsonRpcRequest.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"), jsonRpcItem.Exception);
                     }
 
                     var jsonRpcResponse = jsonRpcItem.Message;
@@ -472,7 +472,7 @@ namespace Community.RandomOrg
                     }
                     if (jsonRpcResponse.Result == null)
                     {
-                        throw new RandomOrgContractException(jsonRpcRequest.Method, Strings.GetString("protocol.random.message.invalid_value"));
+                        throw new RandomOrgContractException(jsonRpcRequest.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
                     }
 
                     return jsonRpcResponse;

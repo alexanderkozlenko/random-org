@@ -5,20 +5,20 @@ namespace Community.RandomOrg
     /// <summary>Represents an error that occur during RANDOM.ORG result handling.</summary>
     public sealed class RandomOrgContractException : Exception
     {
-        internal RandomOrgContractException(string method, string message)
+        internal RandomOrgContractException(string requestId, string message)
             : base(message)
         {
-            Method = method;
+            RequestId = requestId;
         }
 
-        internal RandomOrgContractException(string method, string message, Exception inner)
+        internal RandomOrgContractException(string requestId, string message, Exception inner)
             : base(message, inner)
         {
-            Method = method;
+            RequestId = requestId;
         }
 
-        /// <summary>Gets the method name.</summary>
-        public string Method
+        /// <summary>Gets the request identifier.</summary>
+        public string RequestId
         {
             get;
         }
