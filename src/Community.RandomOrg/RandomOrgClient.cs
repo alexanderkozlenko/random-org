@@ -15,7 +15,8 @@ namespace Community.RandomOrg
     /// <summary>Represents RANDOM.ORG service client.</summary>
     public sealed partial class RandomOrgClient : IDisposable
     {
-        private static readonly long _maximumAdvisoryDelay = TimeSpan.FromDays(1).Ticks;
+        private const long _maximumAdvisoryDelay = TimeSpan.TicksPerDay;
+
         private static readonly MediaTypeHeaderValue _mediaTypeValue = new MediaTypeHeaderValue("application/json");
         private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/2/invoke", UriKind.Absolute);
         private static readonly IDictionary<string, JsonRpcResponseContract> _contracts = CreateContracts();
@@ -26,10 +27,10 @@ namespace Community.RandomOrg
 
         private readonly JsonRpcSerializer _serializer =
             new JsonRpcSerializer(
-                new Dictionary<string, JsonRpcRequestContract>(0),
+                EmptyDictionary<string, JsonRpcRequestContract>.Instance,
                 _contracts,
                 new Dictionary<JsonRpcId, string>(1),
-                new Dictionary<JsonRpcId, JsonRpcResponseContract>(0));
+                EmptyDictionary<JsonRpcId, JsonRpcResponseContract>.Instance);
 
         private DateTime? _advisoryTime;
 
