@@ -5,14 +5,9 @@ using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Converters
 {
-    internal sealed class ApiKeyStatusConverter : JsonConverter
+    internal sealed class ApiKeyStatusConverter : JsonConverter<ApiKeyStatus>
     {
-        public override bool CanConvert(Type objectType)
-        {
-            return true;
-        }
-
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override ApiKeyStatus ReadJson(JsonReader reader, Type objectType, ApiKeyStatus existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             switch ((string)reader.Value)
             {
@@ -35,7 +30,7 @@ namespace Community.RandomOrg.Converters
             }
         }
 
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, ApiKeyStatus value, JsonSerializer serializer)
         {
         }
     }

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>1.6.2</Version>
+    <Version>1.7.0</Version>
     <Description><![CDATA[RANDOM.ORG service client based on RANDOM.ORG API v2 (Core APIs)]]></Description>
     <Authors><![CDATA[Alexander Kozlenko]]></Authors>
     <Copyright><![CDATA[© Alexander Kozlenko. All rights reserved.]]></Copyright>
@@ -20,7 +20,6 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="System.Data.JsonRpc" Version="1.10.0" />
+    <PackageReference Include="System.Data.JsonRpc" Version="1.10.1" />
   </ItemGroup>
 </Project>
