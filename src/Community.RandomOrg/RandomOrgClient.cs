@@ -15,8 +15,6 @@ namespace Community.RandomOrg
     /// <summary>Represents RANDOM.ORG service client.</summary>
     public sealed partial class RandomOrgClient : IDisposable
     {
-        private const long _maximumAdvisoryDelay = TimeSpan.TicksPerDay;
-
         private static readonly MediaTypeHeaderValue _mediaTypeValue = new MediaTypeHeaderValue("application/json");
         private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/2/invoke", UriKind.Absolute);
         private static readonly IDictionary<string, JsonRpcResponseContract> _contracts = CreateContracts();
@@ -36,10 +34,10 @@ namespace Community.RandomOrg
 
         /// <summary>Initializes a new instance of the <see cref="RandomOrgClient" /> class.</summary>
         /// <param name="apiKey">The API key, which is used to track the true random bit usage for the client.</param>
-        /// <param name="httpMessageInvoker">The component for sending HTTP requests.</param>
+        /// <param name="httpInvoker">The component for sending HTTP requests.</param>
         /// <exception cref="ArgumentException"><paramref name="apiKey" /> is not of UUID format (32 digits separated by hyphens).</exception>
         /// <exception cref="ArgumentNullException"><paramref name="apiKey" /> is <see langword="null" />.</exception>
-        public RandomOrgClient(string apiKey, HttpMessageInvoker httpMessageInvoker = null)
+        public RandomOrgClient(string apiKey, HttpMessageInvoker httpInvoker = null)
         {
             if (apiKey == null)
             {
@@ -51,7 +49,7 @@ namespace Community.RandomOrg
             }
 
             _apiKey = apiKey;
-            _httpInvoker = httpMessageInvoker ?? CreateHttpMessageInvoker();
+            _httpInvoker = httpInvoker ?? CreateHttpInvoker();
         }
 
         /// <summary>Releases all resources used by the current instance of the <see cref="RandomOrgClient" />.</summary>
@@ -356,7 +354,7 @@ namespace Community.RandomOrg
 
                     if (advisoryDelay > 0)
                     {
-                        await Task.Delay(TimeSpan.FromTicks(Math.Min(advisoryDelay, _maximumAdvisoryDelay)), cancellationToken).ConfigureAwait(false);
+                        await Task.Delay(TimeSpan.FromTicks(Math.Min(advisoryDelay, TimeSpan.TicksPerDay)), cancellationToken).ConfigureAwait(false);
                     }
                 }
 
@@ -486,7 +484,7 @@ namespace Community.RandomOrg
             return new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString("D")), parameters);
         }
 
-        private static HttpMessageInvoker CreateHttpMessageInvoker()
+        private static HttpMessageInvoker CreateHttpInvoker()
         {
             var httpHandler = new HttpClientHandler
             {

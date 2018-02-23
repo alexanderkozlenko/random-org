@@ -48,14 +48,14 @@ namespace Community.RandomOrg.Tests
             };
         }
 
-        private HttpClient CreateHttpMessageInvoker(JObject joreq, JObject jores)
+        private HttpClient CreateHttpInvoker(JObject joreq, JObject jores)
         {
-            return new HttpClient(new TestHttpMessageHandler(_output, request => HandleRequest(request, joreq, jores)));
+            return new HttpClient(new TestHttpHandler(_output, request => HandleRequest(request, joreq, jores)));
         }
 
-        private HttpClient CreateEmptyHttpMessageInvoker()
+        private HttpClient CreateEmptyHttpInvoker()
         {
-            return new HttpClient(new TestHttpMessageHandler());
+            return new HttpClient(new TestHttpHandler());
         }
 
         private static void VerifyResult<TValue>(RandomResult<TValue> result, JObject jores)
