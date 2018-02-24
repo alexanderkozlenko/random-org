@@ -9,7 +9,7 @@
     <PackageLicenseUrl>https://raw.github.com/alexanderkozlenko/random-org/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>netstandard1.1</TargetFramework>
+    <TargetFramework>netstandard1.3</TargetFramework>
     <OutputPath>$(RepositoryPath)/bin/bin/$(AssemblyName)/$(Configuration)/</OutputPath>
     <BaseIntermediateOutputPath>$(RepositoryPath)/bin/obj/$(AssemblyName)/</BaseIntermediateOutputPath>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)../solution.snk</AssemblyOriginatorKeyFile>
