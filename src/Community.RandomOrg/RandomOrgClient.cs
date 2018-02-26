@@ -16,6 +16,7 @@ namespace Community.RandomOrg
     public sealed partial class RandomOrgClient : IDisposable
     {
         private static readonly MediaTypeHeaderValue _mediaTypeValue = new MediaTypeHeaderValue("application/json");
+        private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityValue = new MediaTypeWithQualityHeaderValue("application/json");
         private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/2/invoke", UriKind.Absolute);
         private static readonly IDictionary<string, JsonRpcResponseContract> _contracts = CreateContracts();
 
@@ -70,6 +71,8 @@ namespace Community.RandomOrg
         /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
         public async Task<RandomUsage> GetUsageAsync(CancellationToken cancellationToken = default)
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var parameters = new Dictionary<string, object>(1, StringComparer.Ordinal)
             {
                 ["apiKey"] = _apiKey
@@ -112,6 +115,8 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentException(Strings.GetString("client.verify.license.type.not_specified"), nameof(random));
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             var rpcRandomParam = default(object);
 
@@ -391,12 +396,12 @@ namespace Community.RandomOrg
 
         private async Task<JsonRpcResponse> InvokeServiceMethodAsync(JsonRpcRequest request, CancellationToken cancellationToken)
         {
+            var requestString = _serializer.SerializeRequest(request);
+
+            cancellationToken.ThrowIfCancellationRequested();
+
             using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
             {
-                var requestString = _serializer.SerializeRequest(request);
-
-                cancellationToken.ThrowIfCancellationRequested();
-
                 var requestContent = new StringContent(requestString);
 
                 requestContent.Headers.ContentType = _mediaTypeValue;
@@ -494,7 +499,7 @@ namespace Community.RandomOrg
 
             var httpClient = new HttpClient(httpHandler);
 
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(_mediaTypeValue.MediaType));
+            httpClient.DefaultRequestHeaders.Accept.Add(_mediaTypeWithQualityValue);
             httpClient.DefaultRequestHeaders.ExpectContinue = false;
             httpClient.Timeout = TimeSpan.FromMinutes(2);
 

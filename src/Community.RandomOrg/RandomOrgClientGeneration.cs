@@ -38,6 +38,8 @@ namespace Community.RandomOrg
                 throw new ArgumentOutOfRangeException(nameof(maximum), maximum, Strings.GetString("random.integer.upper_boundary.invalid_range"));
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
+
             var parameters = CreateGenerationParameters(5);
 
             parameters["n"] = count;
@@ -90,6 +92,8 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentNullException(nameof(replacements));
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             var count = lengths.Count;
 
@@ -174,6 +178,8 @@ namespace Community.RandomOrg
                 throw new ArgumentOutOfRangeException(nameof(decimalPlaces), decimalPlaces, Strings.GetString("random.decimal_fraction.decimal_places.invalid_range"));
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
+
             var parameters = CreateGenerationParameters(3);
 
             parameters["n"] = count;
@@ -222,6 +228,8 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentOutOfRangeException(nameof(significantDigits), significantDigits, Strings.GetString("random.gaussian.significant_digits.invalid_range"));
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             var parameters = CreateGenerationParameters(4);
 
@@ -275,6 +283,8 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.string.characters.length.invalid_range"), nameof(characters));
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
+
             var parameters = CreateGenerationParameters(4);
 
             parameters["n"] = count;
@@ -309,6 +319,8 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("random.uuid.count.invalid_range"));
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             var parameters = CreateGenerationParameters(1);
 
@@ -350,6 +362,8 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("random.blob.invalid_total_size"));
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             var parameters = CreateGenerationParameters(3);
 
@@ -400,6 +414,8 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             var parameters = CreateGenerationParameters(6);
 
@@ -459,6 +475,8 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentNullException(nameof(replacements));
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             var count = lengths.Count;
 
@@ -557,6 +575,8 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
+
             var parameters = CreateGenerationParameters(4);
 
             parameters["n"] = count;
@@ -614,6 +634,8 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             var parameters = CreateGenerationParameters(5);
 
@@ -677,6 +699,8 @@ namespace Community.RandomOrg
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
+
             var parameters = CreateGenerationParameters(5);
 
             parameters["n"] = count;
@@ -721,6 +745,8 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             var parameters = CreateGenerationParameters(2);
 
@@ -768,6 +794,8 @@ namespace Community.RandomOrg
             {
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
+
+            cancellationToken.ThrowIfCancellationRequested();
 
             var parameters = CreateGenerationParameters(4);
 
