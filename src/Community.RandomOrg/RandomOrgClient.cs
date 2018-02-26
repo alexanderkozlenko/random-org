@@ -413,14 +413,14 @@ namespace Community.RandomOrg
 
                     if ((contentType == null) || (string.Compare(contentType.MediaType, _mediaTypeValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0))
                     {
-                        throw new RandomOrgRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_set"));
+                        throw new RandomOrgRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_values"));
                     }
 
                     var contentLength = responseMessage.Content.Headers.ContentLength;
 
                     if (contentLength == null)
                     {
-                        throw new RandomOrgRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_set"));
+                        throw new RandomOrgRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_values"));
                     }
 
                     var responseString = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
@@ -429,7 +429,7 @@ namespace Community.RandomOrg
 
                     if (responseString?.Length != contentLength)
                     {
-                        throw new RandomOrgRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_set"));
+                        throw new RandomOrgRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_values"));
                     }
 
                     _serializer.StaticResponseBindings[request.Id] = request.Method;

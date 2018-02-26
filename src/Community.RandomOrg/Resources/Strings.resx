@@ -129,8 +129,8 @@
   <data name="client.verify.random.invalid_type" xml:space="preserve">
     <value>The random type is invalid</value>
   </data>
-  <data name="protocol.http.headers.invalid_set" xml:space="preserve">
-    <value>The HTTP response has invalid set of JSON-RPC transport headers</value>
+  <data name="protocol.http.headers.invalid_values" xml:space="preserve">
+    <value>The HTTP response has invalid JSON-RPC transport headers</value>
   </data>
   <data name="protocol.http.status_code.invalid_value" xml:space="preserve">
     <value>The HTTP response status code does not indicate a successful service response</value>
