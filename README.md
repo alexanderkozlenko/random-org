@@ -4,7 +4,9 @@
 
 [![NuGet package](https://img.shields.io/nuget/v/Community.RandomOrg.svg?style=flat-square)](https://www.nuget.org/packages/Community.RandomOrg)
 
-### Core API Support Matrix
+### API Support Matrix
+
+Core API:
 
 Category | Method | Support
 :---: | --- | :---:
@@ -29,20 +31,21 @@ Signed | `verifySignature` | Yes
 ### Features
 
 - The client supports operation cancellation via the `CancellationToken`.
-- The client supports usage of a custom `HttpMessageInvoker` instance to execute HTTP requests. A custom message invoker must have at least `2` minutes timeout for a request according to RANDOM.ORG API requirements.
+- The client supports usage of a custom `HttpMessageInvoker` instance to execute HTTP requests.
 
 ### Specifics
 
 - Signed data verification does not require an API key, and thus an empty UUID can be used as API key for this case as well.
-- The client respects an advisory delay between generation requests from the server. However, guarantees that it will take no longer than `24` hours.
+- The client respects service advisory delay between generation requests (however, not longer than `24` hours).
+- A custom message invoker must have at least `2` minutes timeout for a request according to RANDOM.ORG API requirements.
 
 ### Limitations
 
 - API key usage information does not contain information about key creation time and total count of used bits / requests.
 - Generation and verification of integer sequences support only vector parameters.
-- `string` is the only supported type for the optional user data parameter.
-- `base64` is the only supported format for BLOBs in JSON.
-- `10` is the only supported base for integers in JSON.
+- The `string` is the only supported type for the optional user data parameter.
+- The `base64` is the only supported format for BLOBs in JSON.
+- The `10` is the only supported base for integers in JSON.
 
 ### Examples
 
