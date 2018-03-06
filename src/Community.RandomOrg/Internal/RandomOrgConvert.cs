@@ -2,7 +2,7 @@
 {
     internal static class RandomOrgConvert
     {
-        public static object DecimalToNumber(decimal value)
+        public static object DecimalToNumber(in decimal value)
         {
             // The service uses numbers without specifying an empty fraction part
 
