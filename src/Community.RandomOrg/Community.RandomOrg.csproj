@@ -12,7 +12,7 @@
     <TargetFramework>netstandard1.3</TargetFramework>
     <OutputPath>$(RepositoryPath)/bin/bin/$(AssemblyName)/$(Configuration)/</OutputPath>
     <BaseIntermediateOutputPath>$(RepositoryPath)/bin/obj/$(AssemblyName)/</BaseIntermediateOutputPath>
-    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)../solution.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)../Open.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>True</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
