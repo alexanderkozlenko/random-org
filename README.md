@@ -37,7 +37,7 @@ Signed | `verifySignature` | Yes
 
 - Signed data verification does not require an API key, and thus an empty UUID can be used as API key for this case as well.
 - The client respects service advisory delay between generation requests (however, not longer than `24` hours).
-- A custom message invoker must have at least `2` minutes timeout for a request according to RANDOM.ORG API requirements.
+- A custom message invoker must have at least `2` minutes timeout for a request according to service API requirements.
 
 ### Limitations
 

@@ -17,12 +17,13 @@ namespace Community.RandomOrg.Benchmarks
         {
             var configuration = ManualConfig.CreateEmpty();
 
-            configuration.Set(SummaryStyle.Default.WithSizeUnit(SizeUnit.B));
-            configuration.Add(DefaultConfig.Instance.GetColumnProviders().ToArray());
-            configuration.Add(Job.Dry.With(RunStrategy.Throughput).WithTargetCount(2));
-            configuration.Add(ConsoleLogger.Default);
-            configuration.Add(MemoryDiagnoser.Default);
             configuration.Add(JitOptimizationsValidator.DontFailOnError);
+            configuration.Add(Job.Dry.With(RunStrategy.Throughput).WithTargetCount(2));
+            configuration.Add(MemoryDiagnoser.Default);
+            configuration.Add(ConsoleLogger.Default);
+            configuration.Add(new SimpleBenchmarkExporter());
+            configuration.Add(DefaultConfig.Instance.GetColumnProviders().ToArray());
+            configuration.Set(SummaryStyle.Default.WithSizeUnit(SizeUnit.B));
 
             BenchmarkSuiteRunner.Run(typeof(Program).Assembly, configuration);
         }
