@@ -8,7 +8,7 @@ using Community.RandomOrg.Resources;
 
 namespace Community.RandomOrg
 {
-    partial class RandomOrgClient
+    public partial class RandomOrgClient
     {
         /// <summary>Generates true random integers within a user-defined range as an asynchronous operation.</summary>
         /// <param name="count">How many random integers to generate. Must be within the [1,10000] range.</param>
