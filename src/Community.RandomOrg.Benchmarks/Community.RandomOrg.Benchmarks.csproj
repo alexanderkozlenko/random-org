@@ -6,7 +6,7 @@
     <IsPackable>False</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.10.13" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.10.14" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="./Assets/**/*" />
