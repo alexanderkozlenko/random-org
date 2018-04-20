@@ -30,14 +30,14 @@ Signed | `verifySignature` | Yes
 
 ### Features
 
-- The client supports operation cancellation via the `CancellationToken`.
-- The client supports usage of a custom `HttpMessageInvoker` instance to execute HTTP requests.
+- The client supports operation cancellation via a cancellation token.
+- The client supports usage of a custom HTTP message invoker instance.
 
 ### Specifics
 
-- Signed data verification does not require an API key, and thus an empty UUID can be used as API key for this case as well.
-- The client respects service advisory delay between generation requests (however, not longer than `24` hours).
-- A custom message invoker must have at least `2` minutes timeout for a request according to service API requirements.
+- Signed data verification can be invoked with the default key (the empty UUID).
+- The client respects service advisory delay between generation requests not longer than `24` hours.
+- A custom message invoker must have at least `2`-minute timeout for a request due to service requirements.
 
 ### Limitations
 
