@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>1.7.3</Version>
+    <Version>1.8.0</Version>
     <Description><![CDATA[RANDOM.ORG service client based on RANDOM.ORG API v2 (Core APIs)]]></Description>
     <Authors><![CDATA[Alexander Kozlenko]]></Authors>
     <Copyright><![CDATA[© Alexander Kozlenko. All rights reserved.]]></Copyright>
@@ -9,7 +9,7 @@
     <PackageLicenseUrl>https://raw.github.com/alexanderkozlenko/random-org/master/LICENSE</PackageLicenseUrl>
   </PropertyGroup>
   <PropertyGroup>
-    <TargetFramework>netstandard1.3</TargetFramework>
+    <TargetFrameworks>netstandard1.1;netstandard2.0</TargetFrameworks>
     <OutputPath>$(RepositoryPath)/bin/bin/$(AssemblyName)/$(Configuration)/</OutputPath>
     <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)../Open.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>True</SignAssembly>
@@ -19,6 +19,6 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Data.JsonRpc" Version="1.11.2" />
+    <PackageReference Include="System.Data.JsonRpc" Version="1.12.0" />
   </ItemGroup>
 </Project>
