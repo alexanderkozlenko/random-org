@@ -6,7 +6,7 @@ namespace Community.RandomOrg.Resources
     internal static class Strings
     {
         private static readonly ResourceManager _resourceManager =
-            new ResourceManager(typeof(Strings).Namespace + "." + typeof(Strings).Name, typeof(Strings).GetTypeInfo().Assembly);
+            new ResourceManager(typeof(Strings).Namespace + "." + nameof(Strings), typeof(Strings).GetTypeInfo().Assembly);
 
         public static string GetString(string name)
         {

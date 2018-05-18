@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -8,37 +9,33 @@ using Newtonsoft.Json.Linq;
 
 namespace Community.RandomOrg.Benchmarks.Internal
 {
-    /// <summary>A benchmark HTTP message handler for the <see cref="RandomOrgClient" />.</summary>
     internal sealed class RandomOrgBenchmarkHandler : HttpMessageHandler
     {
         private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = new MediaTypeHeaderValue("application/json");
 
-        private readonly string _content;
+        private readonly IReadOnlyDictionary<string, string> _contents;
 
-        /// <summary>Initializes a new instance of the <see cref="RandomOrgBenchmarkHandler" /> class.</summary>
-        /// <param name="content">The handler response.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="content" /> is <see langword="null" />.</exception>
-        public RandomOrgBenchmarkHandler(string content)
+        public RandomOrgBenchmarkHandler(IReadOnlyDictionary<string, string> contents)
         {
-            if (content == null)
+            if (contents == null)
             {
-                throw new ArgumentNullException(nameof(content));
+                throw new ArgumentNullException(nameof(contents));
             }
 
-            _content = content;
+            _contents = contents;
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var requestToken = JObject.Parse(await request.Content.ReadAsStringAsync().ConfigureAwait(false));
-            var content = new StringContent(_content.Replace("{id}", (string)requestToken["id"]));
+            var requestToken = JObject.Parse(await request.Content.ReadAsStringAsync());
+            var responseContent = new StringContent(_contents[(string)requestToken["method"]].Replace("{id}", (string)requestToken["id"]));
 
-            content.Headers.ContentType = _mediaTypeHeaderValue;
+            responseContent.Headers.ContentType = _mediaTypeHeaderValue;
 
             return new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = content
+                Content = responseContent
             };
         }
     }

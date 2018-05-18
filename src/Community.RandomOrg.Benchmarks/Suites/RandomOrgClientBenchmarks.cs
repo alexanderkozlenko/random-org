@@ -1,150 +1,159 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.JsonRpc;
 using System.Net.Http;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
-using Community.RandomOrg.Benchmarks.Framework;
 using Community.RandomOrg.Benchmarks.Internal;
 using Community.RandomOrg.Benchmarks.Resources;
 
 namespace Community.RandomOrg.Benchmarks.Suites
 {
-    [BenchmarkSuite(nameof(JsonRpcSerializer))]
     public abstract class RandomOrgClientBenchmarks
     {
-        private const string _apiKey = "00000000-0000-0000-0000-000000000000";
+        private static readonly IReadOnlyDictionary<string, string> _resources = CreateResourceDictionary();
+        private static readonly (int[] Lengths, int[] Minimums, int[] Maximums, bool[] Replacements) _integerSequenceParameters = CreateIntegerSequenceParameters();
 
-        private readonly IReadOnlyDictionary<string, HttpMessageInvoker> _invokers;
+        private readonly RandomOrgClient _client;
 
         protected RandomOrgClientBenchmarks()
         {
-            var assets = new[]
+            var contents = new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["generateIntegers"] = _resources["bas_int"],
+                ["generateIntegerSequences"] = _resources["bas_seq"],
+                ["generateDecimalFractions"] = _resources["bas_dfr"],
+                ["generateGaussians"] = _resources["bas_gss"],
+                ["generateStrings"] = _resources["bas_str"],
+                ["generateUUIDs"] = _resources["bas_uid"],
+                ["generateBlobs"] = _resources["bas_blb"],
+                ["generateSignedIntegers"] = _resources["sig_int"],
+                ["generateSignedIntegerSequences"] = _resources["sig_seq"],
+                ["generateSignedDecimalFractions"] = _resources["sig_dfr"],
+                ["generateSignedGaussians"] = _resources["sig_gss"],
+                ["generateSignedStrings"] = _resources["sig_str"],
+                ["generateSignedUUIDs"] = _resources["sig_uid"],
+                ["generateSignedBlobs"] = _resources["sig_blb"]
+            };
+
+            _client = new RandomOrgClient("00000000-0000-0000-0000-000000000000", new HttpClient(new RandomOrgBenchmarkHandler(contents)));
+        }
+
+        private static IReadOnlyDictionary<string, string> CreateResourceDictionary()
+        {
+            var resources = new Dictionary<string, string>(StringComparer.Ordinal);
+
+            foreach (var code in GetResponseCodes())
+            {
+                resources[code] = EmbeddedResourceManager.GetString($"Assets.{code}.json");
+            }
+
+            return resources;
+        }
+
+        private static (int[], int[], int[], bool[]) CreateIntegerSequenceParameters()
+        {
+            return (new[] { 3, 5 }, new[] { 1, 2 }, new[] { 128, 256 }, new[] { true, true });
+        }
+
+        private static IEnumerable<string> GetResponseCodes()
+        {
+            return new[]
             {
                 "bas_blb", "bas_dfr", "bas_gss", "bas_int", "bas_seq", "bas_str", "bas_uid",
                 "sig_blb", "sig_dfr", "sig_gss", "sig_int", "sig_seq", "sig_str", "sig_uid"
             };
-
-            var clients = new Dictionary<string, HttpMessageInvoker>(assets.Length, StringComparer.Ordinal);
-
-            foreach (var asset in assets)
-            {
-                clients[asset] = new HttpClient(new RandomOrgBenchmarkHandler(EmbeddedResourceManager.GetString($"Assets.{asset}.json")));
-            }
-
-            _invokers = clients;
         }
 
         [Benchmark(Description = "bas-blb")]
-        public async Task GenerateBasicBlobsAsync()
+        public async Task<object> GenerateBasicBlobsAsync()
         {
-            await new RandomOrgClient(_apiKey, _invokers["bas_blb"])
-                .GenerateBlobsAsync(2, 128)
-                .ConfigureAwait(false);
+            return await _client.GenerateBlobsAsync(2, 128);
         }
 
         [Benchmark(Description = "bas-dfr")]
-        public async Task GenerateBasicDecimalFractionsAsync()
+        public async Task<object> GenerateBasicDecimalFractionsAsync()
         {
-            await new RandomOrgClient(_apiKey, _invokers["bas_dfr"])
-                .GenerateDecimalFractionsAsync(2, 8, true)
-                .ConfigureAwait(false);
+            return await _client.GenerateDecimalFractionsAsync(2, 8, true);
         }
 
         [Benchmark(Description = "bas-gss")]
-        public async Task GenerateBasicGaussiansAsync()
+        public async Task<object> GenerateBasicGaussiansAsync()
         {
-            await new RandomOrgClient(_apiKey, _invokers["bas_gss"])
-                .GenerateGaussiansAsync(2, 0, 1, 8)
-                .ConfigureAwait(false);
+            return await _client.GenerateGaussiansAsync(2, 0, 1, 8);
         }
 
         [Benchmark(Description = "bas-int")]
-        public async Task GenerateBasicIntegersAsync()
+        public async Task<object> GenerateBasicIntegersAsync()
         {
-            await new RandomOrgClient(_apiKey, _invokers["bas_int"])
-                .GenerateIntegersAsync(8, 1, 256, true)
-                .ConfigureAwait(false);
+            return await _client.GenerateIntegersAsync(8, 1, 256, true);
         }
 
         [Benchmark(Description = "bas-seq")]
-        public async Task GenerateBasicIntegeGenerateIntegerSequencesAsyncrsAsync()
+        public async Task<object> GenerateBasicIntegeGenerateIntegerSequencesAsyncrsAsync()
         {
-            await new RandomOrgClient(_apiKey, _invokers["bas_seq"])
-                .GenerateIntegerSequencesAsync(new[] { 3, 5 }, new[] { 1, 2 }, new[] { 128, 256 }, new[] { true, true })
-                .ConfigureAwait(false);
+            return await _client.GenerateIntegerSequencesAsync(
+                _integerSequenceParameters.Lengths,
+                _integerSequenceParameters.Minimums,
+                _integerSequenceParameters.Maximums,
+                _integerSequenceParameters.Replacements);
         }
 
         [Benchmark(Description = "bas-str")]
-        public async Task GenerateBasicStringsAsync()
+        public async Task<object> GenerateBasicStringsAsync()
         {
-            await new RandomOrgClient(_apiKey, _invokers["bas_str"])
-                .GenerateStringsAsync(2, 16, "01234567abcdefgh", true)
-                .ConfigureAwait(false);
+            return await _client.GenerateStringsAsync(2, 16, "01234567abcdefgh", true);
         }
 
         [Benchmark(Description = "bas-uid")]
-        public async Task GenerateBasicUuidsAsync()
+        public async Task<object> GenerateBasicUuidsAsync()
         {
-            await new RandomOrgClient(_apiKey, _invokers["bas_uid"])
-                .GenerateUuidsAsync(2)
-                .ConfigureAwait(false);
+            return await _client.GenerateUuidsAsync(2);
         }
 
         [Benchmark(Description = "sig-blb")]
-        public async Task GenerateSignedBlobsAsync()
+        public async Task<object> GenerateSignedBlobsAsync()
         {
-            await new RandomOrgClient(_apiKey, _invokers["sig_blb"])
-                .GenerateSignedBlobsAsync(2, 128)
-                .ConfigureAwait(false);
+            return await _client.GenerateSignedBlobsAsync(2, 128);
         }
 
         [Benchmark(Description = "sig-dfr")]
-        public async Task GenerateSignedDecimalFractionsAsync()
+        public async Task<object> GenerateSignedDecimalFractionsAsync()
         {
-            await new RandomOrgClient(_apiKey, _invokers["sig_dfr"])
-                .GenerateSignedDecimalFractionsAsync(2, 8, true)
-                .ConfigureAwait(false);
+            return await _client.GenerateSignedDecimalFractionsAsync(2, 8, true);
         }
 
         [Benchmark(Description = "sig-gss")]
-        public async Task GenerateSignedGaussiansAsync()
+        public async Task<object> GenerateSignedGaussiansAsync()
         {
-            await new RandomOrgClient(_apiKey, _invokers["sig_gss"])
-                .GenerateSignedGaussiansAsync(2, 0, 1, 8)
-                .ConfigureAwait(false);
+            return await _client.GenerateSignedGaussiansAsync(2, 0, 1, 8);
         }
 
         [Benchmark(Description = "sig-int")]
-        public async Task GenerateSignedIntegersAsync()
+        public async Task<object> GenerateSignedIntegersAsync()
         {
-            await new RandomOrgClient(_apiKey, _invokers["sig_int"])
-                .GenerateSignedIntegersAsync(8, 1, 256, true)
-                .ConfigureAwait(false);
+            return await _client.GenerateSignedIntegersAsync(8, 1, 256, true);
         }
 
         [Benchmark(Description = "sig-seq")]
-        public async Task GenerateSignedIntegeGenerateIntegerSequencesAsyncrsAsync()
+        public async Task<object> GenerateSignedIntegeGenerateIntegerSequencesAsyncrsAsync()
         {
-            await new RandomOrgClient(_apiKey, _invokers["sig_seq"])
-                .GenerateSignedIntegerSequencesAsync(new[] { 3, 5 }, new[] { 1, 2 }, new[] { 128, 256 }, new[] { true, true })
-                .ConfigureAwait(false);
+            return await _client.GenerateSignedIntegerSequencesAsync(
+                _integerSequenceParameters.Lengths,
+                _integerSequenceParameters.Minimums,
+                _integerSequenceParameters.Maximums,
+                _integerSequenceParameters.Replacements);
         }
 
         [Benchmark(Description = "sig-str")]
-        public async Task GenerateSignedStringsAsync()
+        public async Task<object> GenerateSignedStringsAsync()
         {
-            await new RandomOrgClient(_apiKey, _invokers["sig_str"])
-                .GenerateSignedStringsAsync(2, 16, "01234567abcdefgh", true)
-                .ConfigureAwait(false);
+            return await _client.GenerateSignedStringsAsync(2, 16, "01234567abcdefgh", true);
         }
 
         [Benchmark(Description = "sig-uid")]
-        public async Task GenerateSignedUuidsAsync()
+        public async Task<object> GenerateSignedUuidsAsync()
         {
-            await new RandomOrgClient(_apiKey, _invokers["sig_uid"])
-                .GenerateSignedUuidsAsync(2)
-                .ConfigureAwait(false);
+            return await _client.GenerateSignedUuidsAsync(2);
         }
     }
 }
