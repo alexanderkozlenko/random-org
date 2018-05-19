@@ -3,7 +3,7 @@
     /// <summary>Encapsulates random data generation parameters.</summary>
     public abstract class RandomParameters
     {
-        internal RandomParameters()
+        private protected RandomParameters()
         {
         }
     }

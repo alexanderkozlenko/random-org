@@ -7,7 +7,7 @@ namespace Community.RandomOrg.Data
     /// <typeparam name="T">The type of random object.</typeparam>
     public abstract class RandomObject<T>
     {
-        internal RandomObject()
+        private protected RandomObject()
         {
         }
 

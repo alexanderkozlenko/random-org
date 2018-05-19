@@ -6,7 +6,7 @@
     public abstract class RandomResultObject<TRandom, TValue>
         where TRandom : RandomObject<TValue>
     {
-        internal RandomResultObject(TRandom random, long bitsUsed, long bitsLeft, long requestsLeft)
+        private protected RandomResultObject(TRandom random, long bitsUsed, long bitsLeft, long requestsLeft)
         {
             Random = random;
             BitsUsed = bitsUsed;
