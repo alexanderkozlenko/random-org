@@ -2,6 +2,7 @@
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
+using BenchmarkDotNet.Horology;
 using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Reports;
 using BenchmarkDotNet.Running;
@@ -20,9 +21,9 @@ namespace Community.RandomOrg.Benchmarks
             configuration.Add(MemoryDiagnoser.Default);
             configuration.Add(ConsoleLogger.Default);
             configuration.Add(DefaultConfig.Instance.GetColumnProviders().ToArray());
-            configuration.Set(SummaryStyle.Default.WithSizeUnit(SizeUnit.B));
+            configuration.Set(SummaryStyle.Default.WithTimeUnit(TimeUnit.Nanosecond).WithSizeUnit(SizeUnit.B));
 
-            BenchmarkRunner.Run(typeof(RandomOrgClientBenchmarks), configuration);
+            BenchmarkRunner.Run<RandomOrgClientBenchmarks>(configuration);
         }
     }
 }
