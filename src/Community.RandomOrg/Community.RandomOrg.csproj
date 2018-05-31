@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Version>1.8.0</Version>
+    <Version>1.8.1</Version>
     <Description><![CDATA[RANDOM.ORG service client based on RANDOM.ORG API v2 (Core APIs)]]></Description>
     <Authors><![CDATA[Alexander Kozlenko]]></Authors>
     <Copyright><![CDATA[© Alexander Kozlenko. All rights reserved.]]></Copyright>
@@ -19,6 +19,6 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Data.JsonRpc" Version="1.12.0" />
+    <PackageReference Include="System.Data.JsonRpc" Version="1.13.0" />
   </ItemGroup>
 </Project>
