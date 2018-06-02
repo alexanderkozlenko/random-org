@@ -24,33 +24,55 @@ namespace Community.RandomOrg
         private readonly HttpMessageInvoker _httpInvoker;
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
-        private readonly JsonRpcSerializer _serializer =
-            new JsonRpcSerializer(
-                EmptyDictionary<string, JsonRpcRequestContract>.Instance,
-                _contracts,
-                new Dictionary<JsonRpcId, string>(1),
-                EmptyDictionary<JsonRpcId, JsonRpcResponseContract>.Instance);
+        private readonly JsonRpcSerializer _serializer = new JsonRpcSerializer(
+            EmptyDictionary<string, JsonRpcRequestContract>.Instance,
+            _contracts,
+            new Dictionary<JsonRpcId, string>(1),
+            EmptyDictionary<JsonRpcId, JsonRpcResponseContract>.Instance);
 
         private DateTime? _advisoryTime;
 
         /// <summary>Initializes a new instance of the <see cref="RandomOrgClient" /> class.</summary>
         /// <param name="apiKey">The API key, which is used to track the true random bit usage for the client.</param>
-        /// <param name="httpInvoker">The component for sending HTTP requests.</param>
         /// <exception cref="ArgumentException"><paramref name="apiKey" /> is not of UUID format (32 digits separated by hyphens).</exception>
         /// <exception cref="ArgumentNullException"><paramref name="apiKey" /> is <see langword="null" />.</exception>
-        public RandomOrgClient(string apiKey, HttpMessageInvoker httpInvoker = null)
+        public RandomOrgClient(string apiKey)
         {
             if (apiKey == null)
             {
                 throw new ArgumentNullException(nameof(apiKey));
             }
-            if (!Guid.TryParseExact(apiKey, "D", out var _))
+            if (!VerifyApiKey(apiKey))
             {
                 throw new ArgumentException(Strings.GetString("client.api_key.invalid_format"), nameof(apiKey));
             }
 
             _apiKey = apiKey;
-            _httpInvoker = httpInvoker ?? CreateHttpInvoker();
+            _httpInvoker = CreateHttpInvoker();
+        }
+
+        /// <summary>Initializes a new instance of the <see cref="RandomOrgClient" /> class.</summary>
+        /// <param name="apiKey">The API key, which is used to track the true random bit usage for the client.</param>
+        /// <param name="httpInvoker">The component for sending HTTP requests.</param>
+        /// <exception cref="ArgumentException"><paramref name="apiKey" /> is not of UUID format (32 digits separated by hyphens).</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="apiKey" /> or <paramref name="httpInvoker" /> is <see langword="null" />.</exception>
+        public RandomOrgClient(string apiKey, HttpMessageInvoker httpInvoker)
+        {
+            if (apiKey == null)
+            {
+                throw new ArgumentNullException(nameof(apiKey));
+            }
+            if (!VerifyApiKey(apiKey))
+            {
+                throw new ArgumentException(Strings.GetString("client.api_key.invalid_format"), nameof(apiKey));
+            }
+            if (httpInvoker == null)
+            {
+                throw new ArgumentNullException(nameof(httpInvoker));
+            }
+
+            _apiKey = apiKey;
+            _httpInvoker = httpInvoker;
         }
 
         /// <summary>Releases all resources used by the current instance of the <see cref="RandomOrgClient" />.</summary>
@@ -527,6 +549,11 @@ namespace Community.RandomOrg
                 ["generateSignedBlobs"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcBlobsRandom, byte[]>)),
                 ["verifySignature"] = new JsonRpcResponseContract(typeof(RpcVerifyResult))
             };
+        }
+
+        private static bool VerifyApiKey(string apiKey)
+        {
+            return Guid.TryParseExact(apiKey, "D", out var _);
         }
     }
 }
