@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.RandomOrg", "Comm
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.RandomOrg.Tests", "Community.RandomOrg.Tests\Community.RandomOrg.Tests.csproj", "{C422E691-40D4-47C4-A60E-40DFB6F967D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Community.RandomOrg.Benchmarks", "Community.RandomOrg.Benchmarks\Community.RandomOrg.Benchmarks.csproj", "{3CDCBD14-A513-43B3-B6C6-9DD5C5C778AA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.RandomOrg.Benchmarks", "Community.RandomOrg.Benchmarks\Community.RandomOrg.Benchmarks.csproj", "{3CDCBD14-A513-43B3-B6C6-9DD5C5C778AA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
