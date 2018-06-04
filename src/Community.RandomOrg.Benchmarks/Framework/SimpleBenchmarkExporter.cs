@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Reports;
@@ -38,7 +39,7 @@ namespace Community.RandomOrg.Benchmarks.Framework
 
         protected override string FileNameSuffix
         {
-            get => DateTime.Now.ToString("yyyy.MM.dd-HH.mm.ss");
+            get => DateTime.Now.ToString("yyyy.MM.dd-HH.mm.ss", CultureInfo.InvariantCulture);
         }
     }
 }

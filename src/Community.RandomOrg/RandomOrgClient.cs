@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.JsonRpc;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -418,90 +419,81 @@ namespace Community.RandomOrg
 
         private async Task<JsonRpcResponse> InvokeServiceMethodAsync(JsonRpcRequest request, CancellationToken cancellationToken)
         {
-            var requestString = _serializer.SerializeRequest(request);
-
-            cancellationToken.ThrowIfCancellationRequested();
-
-            using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
+            using (var requestStream = new MemoryStream())
             {
-                var requestContent = new StringContent(requestString);
+                _serializer.SerializeRequest(request, requestStream);
 
-                requestContent.Headers.ContentType = _mediaTypeValue;
-                requestMessage.Content = requestContent;
+                cancellationToken.ThrowIfCancellationRequested();
+                requestStream.Position = 0;
 
-                using (var responseMessage = await _httpInvoker.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
+                using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
                 {
-                    if (responseMessage.StatusCode != HttpStatusCode.OK)
+                    var requestContent = new StreamContent(requestStream);
+
+                    requestContent.Headers.ContentType = _mediaTypeValue;
+                    requestMessage.Content = requestContent;
+
+                    using (var responseMessage = await _httpInvoker.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
                     {
-                        throw new RandomOrgRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.status_code.invalid_value"));
+                        if (responseMessage.StatusCode != HttpStatusCode.OK)
+                        {
+                            throw new RandomOrgRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.status_code.invalid_value"));
+                        }
+
+                        var contentType = responseMessage.Content.Headers.ContentType;
+
+                        if ((contentType == null) || (string.Compare(contentType.MediaType, _mediaTypeValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0))
+                        {
+                            throw new RandomOrgRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_values"));
+                        }
+
+                        var responseData = default(JsonRpcData<JsonRpcResponse>);
+
+                        using (var responseStream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
+
+                            _serializer.StaticResponseBindings[request.Id] = request.Method;
+
+                            try
+                            {
+                                responseData = await _serializer.DeserializeResponseDataAsync(responseStream, cancellationToken).ConfigureAwait(false);
+                            }
+                            catch (JsonRpcException e)
+                            {
+                                throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.rpc.message.invalid_value"), e);
+                            }
+                            finally
+                            {
+                                _serializer.StaticResponseBindings.Remove(request.Id);
+                            }
+                        }
+
+                        if (responseData.IsBatch)
+                        {
+                            throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
+                        }
+
+                        var responseItem = responseData.Item;
+
+                        if (!responseItem.IsValid)
+                        {
+                            throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"), responseItem.Exception);
+                        }
+
+                        var response = responseItem.Message;
+
+                        if (!response.Success)
+                        {
+                            throw new RandomOrgException(request.Method, response.Error.Code, response.Error.Message);
+                        }
+                        if (response.Result == null)
+                        {
+                            throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
+                        }
+
+                        return response;
                     }
-
-                    var contentType = responseMessage.Content.Headers.ContentType;
-
-                    if ((contentType == null) || (string.Compare(contentType.MediaType, _mediaTypeValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0))
-                    {
-                        throw new RandomOrgRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_values"));
-                    }
-
-                    var transferEncodingChunked = responseMessage.Headers.TransferEncodingChunked == true;
-
-                    if (!transferEncodingChunked && (responseMessage.Content.Headers.ContentLength == null))
-                    {
-                        throw new RandomOrgRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_values"));
-                    }
-
-                    var responseString = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
-
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    if (!transferEncodingChunked && (responseString.Length != responseMessage.Content.Headers.ContentLength.Value))
-                    {
-                        throw new RandomOrgRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_values"));
-                    }
-
-                    _serializer.StaticResponseBindings[request.Id] = request.Method;
-
-                    var responseData = default(JsonRpcData<JsonRpcResponse>);
-
-                    try
-                    {
-                        responseData = _serializer.DeserializeResponseData(responseString);
-                    }
-                    catch (JsonRpcException e)
-                    {
-                        throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.rpc.message.invalid_value"), e);
-                    }
-                    finally
-                    {
-                        _serializer.StaticResponseBindings.Remove(request.Id);
-                    }
-
-                    cancellationToken.ThrowIfCancellationRequested();
-
-                    if (responseData.IsBatch)
-                    {
-                        throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
-                    }
-
-                    var responseItem = responseData.Item;
-
-                    if (!responseItem.IsValid)
-                    {
-                        throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"), responseItem.Exception);
-                    }
-
-                    var response = responseItem.Message;
-
-                    if (!response.Success)
-                    {
-                        throw new RandomOrgException(request.Method, response.Error.Code, response.Error.Message);
-                    }
-                    if (response.Result == null)
-                    {
-                        throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
-                    }
-
-                    return response;
                 }
             }
         }

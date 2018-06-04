@@ -64,31 +64,31 @@ namespace Community.RandomOrg.Benchmarks.Suites
             };
         }
 
-        [Benchmark(Description = "bas-blb")]
+        [Benchmark]
         public async Task<object> GenerateBasicBlobsAsync()
         {
             return await _client.GenerateBlobsAsync(2, 128);
         }
 
-        [Benchmark(Description = "bas-dfr")]
+        [Benchmark]
         public async Task<object> GenerateBasicDecimalFractionsAsync()
         {
             return await _client.GenerateDecimalFractionsAsync(2, 8, true);
         }
 
-        [Benchmark(Description = "bas-gss")]
+        [Benchmark]
         public async Task<object> GenerateBasicGaussiansAsync()
         {
             return await _client.GenerateGaussiansAsync(2, 0, 1, 8);
         }
 
-        [Benchmark(Description = "bas-int")]
+        [Benchmark]
         public async Task<object> GenerateBasicIntegersAsync()
         {
             return await _client.GenerateIntegersAsync(8, 1, 256, true);
         }
 
-        [Benchmark(Description = "bas-seq")]
+        [Benchmark]
         public async Task<object> GenerateBasicIntegeGenerateIntegerSequencesAsyncrsAsync()
         {
             return await _client.GenerateIntegerSequencesAsync(
@@ -98,43 +98,43 @@ namespace Community.RandomOrg.Benchmarks.Suites
                 _integerSequenceParameters.Replacements);
         }
 
-        [Benchmark(Description = "bas-str")]
+        [Benchmark]
         public async Task<object> GenerateBasicStringsAsync()
         {
             return await _client.GenerateStringsAsync(2, 16, "01234567abcdefgh", true);
         }
 
-        [Benchmark(Description = "bas-uid")]
+        [Benchmark]
         public async Task<object> GenerateBasicUuidsAsync()
         {
             return await _client.GenerateUuidsAsync(2);
         }
 
-        [Benchmark(Description = "sig-blb")]
+        [Benchmark]
         public async Task<object> GenerateSignedBlobsAsync()
         {
             return await _client.GenerateSignedBlobsAsync(2, 128);
         }
 
-        [Benchmark(Description = "sig-dfr")]
+        [Benchmark]
         public async Task<object> GenerateSignedDecimalFractionsAsync()
         {
             return await _client.GenerateSignedDecimalFractionsAsync(2, 8, true);
         }
 
-        [Benchmark(Description = "sig-gss")]
+        [Benchmark]
         public async Task<object> GenerateSignedGaussiansAsync()
         {
             return await _client.GenerateSignedGaussiansAsync(2, 0, 1, 8);
         }
 
-        [Benchmark(Description = "sig-int")]
+        [Benchmark]
         public async Task<object> GenerateSignedIntegersAsync()
         {
             return await _client.GenerateSignedIntegersAsync(8, 1, 256, true);
         }
 
-        [Benchmark(Description = "sig-seq")]
+        [Benchmark]
         public async Task<object> GenerateSignedIntegeGenerateIntegerSequencesAsyncrsAsync()
         {
             return await _client.GenerateSignedIntegerSequencesAsync(
@@ -144,13 +144,13 @@ namespace Community.RandomOrg.Benchmarks.Suites
                 _integerSequenceParameters.Replacements);
         }
 
-        [Benchmark(Description = "sig-str")]
+        [Benchmark]
         public async Task<object> GenerateSignedStringsAsync()
         {
             return await _client.GenerateSignedStringsAsync(2, 16, "01234567abcdefgh", true);
         }
 
-        [Benchmark(Description = "sig-uid")]
+        [Benchmark]
         public async Task<object> GenerateSignedUuidsAsync()
         {
             return await _client.GenerateSignedUuidsAsync(2);
