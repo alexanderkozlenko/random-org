@@ -322,12 +322,6 @@ namespace Community.RandomOrg
             };
         }
 
-        private static void TransferRandom<TData>(Random<TData> source, RpcRandom<TData> target)
-        {
-            target.Data = source.Data;
-            target.CompletionTime = source.CompletionTime;
-        }
-
         private static void TransferRandom<TData>(RpcRandom<TData> source, Random<TData> target)
         {
             target.Data = source.Data;
@@ -545,7 +539,7 @@ namespace Community.RandomOrg
 
         private static bool VerifyApiKey(string apiKey)
         {
-            return Guid.TryParseExact(apiKey, "D", out var _);
+            return Guid.TryParseExact(apiKey, "D", out _);
         }
     }
 }
