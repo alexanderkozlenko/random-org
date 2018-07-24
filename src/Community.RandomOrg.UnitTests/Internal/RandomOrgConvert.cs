@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Globalization;
 using Community.RandomOrg.Data;
 
-namespace Community.RandomOrg.Tests.Internal
+namespace Community.RandomOrg.UnitTests.Internal
 {
     [DebuggerStepThrough]
     internal static class RandomOrgConvert

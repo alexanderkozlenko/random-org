@@ -4,7 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Text;
 
-namespace Community.RandomOrg.Tests.Resources
+namespace Community.RandomOrg.UnitTests.Resources
 {
     [DebuggerStepThrough]
     internal static class EmbeddedResourceManager

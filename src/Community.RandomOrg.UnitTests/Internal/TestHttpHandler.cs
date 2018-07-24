@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Community.RandomOrg.Tests.Internal
+namespace Community.RandomOrg.UnitTests.Internal
 {
     internal sealed class TestHttpHandler : HttpMessageHandler
     {

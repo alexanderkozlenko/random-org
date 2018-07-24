@@ -2,11 +2,11 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Community.RandomOrg.Tests.Resources;
+using Community.RandomOrg.UnitTests.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
-namespace Community.RandomOrg.Tests
+namespace Community.RandomOrg.UnitTests
 {
     public partial class RandomOrgClientTests
     {

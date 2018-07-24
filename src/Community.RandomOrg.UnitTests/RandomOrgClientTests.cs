@@ -6,12 +6,12 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Community.RandomOrg.Data;
-using Community.RandomOrg.Tests.Internal;
-using Community.RandomOrg.Tests.Resources;
+using Community.RandomOrg.UnitTests.Internal;
+using Community.RandomOrg.UnitTests.Resources;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 
-namespace Community.RandomOrg.Tests
+namespace Community.RandomOrg.UnitTests
 {
     [TestClass]
     public sealed partial class RandomOrgClientTests
