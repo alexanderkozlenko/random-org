@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// © Alexander Kozlenko. Licensed under the MIT License.
+
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Internal

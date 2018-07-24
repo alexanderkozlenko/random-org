@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿// © Alexander Kozlenko. Licensed under the MIT License.
+
+using System.Net;
 using System.Net.Http;
 
 namespace Community.RandomOrg

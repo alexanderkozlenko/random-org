@@ -1,4 +1,6 @@
-﻿namespace Community.RandomOrg.Data
+﻿// © Alexander Kozlenko. Licensed under the MIT License.
+
+namespace Community.RandomOrg.Data
 {
     /// <summary>Encapsulates random UUIDs generation parameters.</summary>
     public sealed class UuidParameters : RandomParameters

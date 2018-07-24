@@ -1,24 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <Version>1.8.3</Version>
-    <Description><![CDATA[RANDOM.ORG service client based on RANDOM.ORG API v2 (Core APIs)]]></Description>
-    <Authors><![CDATA[Alexander Kozlenko]]></Authors>
-    <Copyright><![CDATA[© Alexander Kozlenko. All rights reserved.]]></Copyright>
-    <PackageTags><![CDATA[random.org random randomness]]></PackageTags>
-    <PackageProjectUrl>https://github.com/alexanderkozlenko/random-org</PackageProjectUrl>
-    <PackageLicenseUrl>https://raw.github.com/alexanderkozlenko/random-org/master/LICENSE</PackageLicenseUrl>
-  </PropertyGroup>
+  <Import Project="$(SolutionDirectory)\$(MSBuildProjectName).Package.props" />
   <PropertyGroup>
     <TargetFrameworks>netstandard1.1;netstandard2.0</TargetFrameworks>
-    <OutputPath>$(RepositoryPath)\bin\bin\$(AssemblyName)\$(Configuration)\</OutputPath>
-    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)..\Open.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>$(SolutionDirectory)\Open.snk</AssemblyOriginatorKeyFile>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <DebugType>none</DebugType>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Data.JsonRpc" Version="1.14.1" />
+    <PackageReference Include="System.Data.JsonRpc" Version="1.15.0" />
   </ItemGroup>
+  <Import Project="$(SolutionDirectory)\$(MSBuildProjectName).Package.targets" />
 </Project>

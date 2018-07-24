@@ -1,4 +1,6 @@
-﻿namespace Community.RandomOrg.Data
+﻿// © Alexander Kozlenko. Licensed under the MIT License.
+
+namespace Community.RandomOrg.Data
 {
     /// <summary>The API key's status.</summary>
     public enum ApiKeyStatus

@@ -1,4 +1,6 @@
-﻿using System;
+﻿// © Alexander Kozlenko. Licensed under the MIT License.
+
+using System;
 using System.Globalization;
 using BenchmarkDotNet.Exporters;
 using BenchmarkDotNet.Loggers;

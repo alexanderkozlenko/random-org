@@ -1,23 +1,17 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit.Abstractions;
 
 namespace Community.RandomOrg.Tests.Internal
 {
     internal sealed class TestHttpHandler : HttpMessageHandler
     {
-        private readonly ITestOutputHelper _output;
         private readonly Func<HttpRequestMessage, Task<HttpResponseMessage>> _handler;
 
-        public TestHttpHandler()
+        public TestHttpHandler(Func<HttpRequestMessage, Task<HttpResponseMessage>> handler = null)
         {
-        }
-
-        public TestHttpHandler(ITestOutputHelper output, Func<HttpRequestMessage, Task<HttpResponseMessage>> handler)
-        {
-            _output = output;
             _handler = handler;
         }
 
@@ -28,9 +22,15 @@ namespace Community.RandomOrg.Tests.Internal
                 throw new InvalidOperationException("Request processing is not available");
             }
 
-            _output?.WriteLine(request.ToString());
+            TraceRequest(request);
 
             return _handler.Invoke(request);
+        }
+
+        [Conditional("DEBUG")]
+        private static void TraceRequest(HttpRequestMessage request)
+        {
+            Trace.WriteLine(request.ToString());
         }
     }
 }

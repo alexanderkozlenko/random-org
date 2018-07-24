@@ -1,4 +1,6 @@
-﻿using System;
+﻿// © Alexander Kozlenko. Licensed under the MIT License.
+
+using System;
 using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Internal

@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿// © Alexander Kozlenko. Licensed under the MIT License.
+
+using System.Reflection;
 using System.Resources;
 
 namespace Community.RandomOrg.Resources

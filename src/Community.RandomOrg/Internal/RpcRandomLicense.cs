@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿// © Alexander Kozlenko. Licensed under the MIT License.
+
+using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Internal
 {

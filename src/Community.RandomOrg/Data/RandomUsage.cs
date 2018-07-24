@@ -1,4 +1,6 @@
-﻿namespace Community.RandomOrg.Data
+﻿// © Alexander Kozlenko. Licensed under the MIT License.
+
+namespace Community.RandomOrg.Data
 {
     /// <summary>Encapsulates information related to the usage of the current API key.</summary>
     public sealed class RandomUsage

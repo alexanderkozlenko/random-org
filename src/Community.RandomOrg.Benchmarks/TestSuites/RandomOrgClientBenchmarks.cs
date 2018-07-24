@@ -6,16 +6,16 @@ using BenchmarkDotNet.Attributes;
 using Community.RandomOrg.Benchmarks.Internal;
 using Community.RandomOrg.Benchmarks.Resources;
 
-namespace Community.RandomOrg.Benchmarks.Suites
+namespace Community.RandomOrg.Benchmarks.TestSuites
 {
-    public abstract class RandomOrgClientBenchmarks
+    public sealed class RandomOrgClientBenchmarks
     {
         private static readonly IReadOnlyDictionary<string, string> _resources = CreateResourceDictionary();
         private static readonly (int[] Lengths, int[] Minimums, int[] Maximums, bool[] Replacements) _integerSequenceParameters = CreateIntegerSequenceParameters();
 
         private readonly RandomOrgClient _client;
 
-        protected RandomOrgClientBenchmarks()
+        public RandomOrgClientBenchmarks()
         {
             var contents = new Dictionary<string, string>(StringComparer.Ordinal)
             {
@@ -64,32 +64,32 @@ namespace Community.RandomOrg.Benchmarks.Suites
             };
         }
 
-        [Benchmark]
-        public async Task<object> GenerateBasicBlobsAsync()
+        [Benchmark(Description = "GenerateBlobsAsync")]
+        public async Task<object> GenerateBlobsAsync()
         {
             return await _client.GenerateBlobsAsync(2, 128);
         }
 
-        [Benchmark]
-        public async Task<object> GenerateBasicDecimalFractionsAsync()
+        [Benchmark(Description = "GenerateDecimalFractionsAsync")]
+        public async Task<object> GenerateDecimalFractionsAsync()
         {
             return await _client.GenerateDecimalFractionsAsync(2, 8, true);
         }
 
-        [Benchmark]
-        public async Task<object> GenerateBasicGaussiansAsync()
+        [Benchmark(Description = "GenerateGaussiansAsync")]
+        public async Task<object> GenerateGaussiansAsync()
         {
             return await _client.GenerateGaussiansAsync(2, 0, 1, 8);
         }
 
-        [Benchmark]
-        public async Task<object> GenerateBasicIntegersAsync()
+        [Benchmark(Description = "GenerateIntegersAsync")]
+        public async Task<object> GenerateIntegersAsync()
         {
             return await _client.GenerateIntegersAsync(8, 1, 256, true);
         }
 
-        [Benchmark]
-        public async Task<object> GenerateBasicIntegeGenerateIntegerSequencesAsyncrsAsync()
+        [Benchmark(Description = "GenerateIntegerSequencesAsync")]
+        public async Task<object> GenerateIntegerSequencesAsync()
         {
             return await _client.GenerateIntegerSequencesAsync(
                 _integerSequenceParameters.Lengths,
@@ -98,44 +98,44 @@ namespace Community.RandomOrg.Benchmarks.Suites
                 _integerSequenceParameters.Replacements);
         }
 
-        [Benchmark]
-        public async Task<object> GenerateBasicStringsAsync()
+        [Benchmark(Description = "GenerateStringsAsync")]
+        public async Task<object> GenerateStringsAsync()
         {
             return await _client.GenerateStringsAsync(2, 16, "01234567abcdefgh", true);
         }
 
-        [Benchmark]
-        public async Task<object> GenerateBasicUuidsAsync()
+        [Benchmark(Description = "GenerateUuidsAsync")]
+        public async Task<object> GenerateUuidsAsync()
         {
             return await _client.GenerateUuidsAsync(2);
         }
 
-        [Benchmark]
+        [Benchmark(Description = "GenerateSignedBlobsAsync")]
         public async Task<object> GenerateSignedBlobsAsync()
         {
             return await _client.GenerateSignedBlobsAsync(2, 128);
         }
 
-        [Benchmark]
+        [Benchmark(Description = "GenerateSignedDecimalFractionsAsync")]
         public async Task<object> GenerateSignedDecimalFractionsAsync()
         {
             return await _client.GenerateSignedDecimalFractionsAsync(2, 8, true);
         }
 
-        [Benchmark]
+        [Benchmark(Description = "GenerateSignedGaussiansAsync")]
         public async Task<object> GenerateSignedGaussiansAsync()
         {
             return await _client.GenerateSignedGaussiansAsync(2, 0, 1, 8);
         }
 
-        [Benchmark]
+        [Benchmark(Description = "GenerateSignedIntegersAsync")]
         public async Task<object> GenerateSignedIntegersAsync()
         {
             return await _client.GenerateSignedIntegersAsync(8, 1, 256, true);
         }
 
-        [Benchmark]
-        public async Task<object> GenerateSignedIntegeGenerateIntegerSequencesAsyncrsAsync()
+        [Benchmark(Description = "GenerateSignedIntegerSequencesAsync")]
+        public async Task<object> GenerateSignedIntegerSequencesAsync()
         {
             return await _client.GenerateSignedIntegerSequencesAsync(
                 _integerSequenceParameters.Lengths,
@@ -144,13 +144,13 @@ namespace Community.RandomOrg.Benchmarks.Suites
                 _integerSequenceParameters.Replacements);
         }
 
-        [Benchmark]
+        [Benchmark(Description = "GenerateSignedStringsAsync")]
         public async Task<object> GenerateSignedStringsAsync()
         {
             return await _client.GenerateSignedStringsAsync(2, 16, "01234567abcdefgh", true);
         }
 
-        [Benchmark]
+        [Benchmark(Description = "GenerateSignedUuidsAsync")]
         public async Task<object> GenerateSignedUuidsAsync()
         {
             return await _client.GenerateSignedUuidsAsync(2);

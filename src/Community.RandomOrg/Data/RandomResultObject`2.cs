@@ -1,4 +1,6 @@
-﻿namespace Community.RandomOrg.Data
+﻿// © Alexander Kozlenko. Licensed under the MIT License.
+
+namespace Community.RandomOrg.Data
 {
     /// <summary>Encapsulates random data generation result.</summary>
     /// <typeparam name="TRandom">The type of random data container.</typeparam>

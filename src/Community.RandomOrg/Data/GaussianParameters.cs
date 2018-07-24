@@ -1,4 +1,6 @@
-﻿namespace Community.RandomOrg.Data
+﻿// © Alexander Kozlenko. Licensed under the MIT License.
+
+namespace Community.RandomOrg.Data
 {
     /// <summary>Encapsulates random numbers from a Gaussian distribution generation parameters.</summary>
     public sealed class GaussianParameters : RandomParameters

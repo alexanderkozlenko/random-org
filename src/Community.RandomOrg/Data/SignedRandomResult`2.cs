@@ -1,4 +1,6 @@
-﻿namespace Community.RandomOrg.Data
+﻿// © Alexander Kozlenko. Licensed under the MIT License.
+
+namespace Community.RandomOrg.Data
 {
     /// <summary>Encapsulates signed random data generation result.</summary>
     /// <typeparam name="TValue">The type of random object.</typeparam>

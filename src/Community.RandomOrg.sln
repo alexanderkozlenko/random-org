@@ -5,9 +5,17 @@ VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.RandomOrg", "Community.RandomOrg\Community.RandomOrg.csproj", "{436DD069-130D-4D63-BDDF-4B78B770AB82}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.RandomOrg.Tests", "Community.RandomOrg.Tests\Community.RandomOrg.Tests.csproj", "{C422E691-40D4-47C4-A60E-40DFB6F967D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.RandomOrg.UnitTests", "Community.RandomOrg.UnitTests\Community.RandomOrg.UnitTests.csproj", "{C422E691-40D4-47C4-A60E-40DFB6F967D5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Community.RandomOrg.Benchmarks", "Community.RandomOrg.Benchmarks\Community.RandomOrg.Benchmarks.csproj", "{3CDCBD14-A513-43B3-B6C6-9DD5C5C778AA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution.Build", "Solution.Build", "{FA915CE1-3ACA-4991-B25B-28C0507C1737}"
+	ProjectSection(SolutionItems) = preProject
+		Community.RandomOrg.Package.props = Community.RandomOrg.Package.props
+		Community.RandomOrg.Package.targets = Community.RandomOrg.Package.targets
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
