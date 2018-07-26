@@ -236,8 +236,8 @@ namespace Community.RandomOrg
             var parameters = CreateGenerationParameters(4);
 
             parameters["n"] = count;
-            parameters["mean"] = RandomOrgConvert.DecimalToNumber(mean);
-            parameters["standardDeviation"] = RandomOrgConvert.DecimalToNumber(standardDeviation);
+            parameters["mean"] = RandomOrgConvert.DecimalToObject(mean);
+            parameters["standardDeviation"] = RandomOrgConvert.DecimalToObject(standardDeviation);
             parameters["significantDigits"] = significantDigits;
 
             var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<decimal>, RpcRandom<decimal>, decimal>(
@@ -642,8 +642,8 @@ namespace Community.RandomOrg
             var parameters = CreateGenerationParameters(5);
 
             parameters["n"] = count;
-            parameters["mean"] = RandomOrgConvert.DecimalToNumber(mean);
-            parameters["standardDeviation"] = RandomOrgConvert.DecimalToNumber(standardDeviation);
+            parameters["mean"] = RandomOrgConvert.DecimalToObject(mean);
+            parameters["standardDeviation"] = RandomOrgConvert.DecimalToObject(standardDeviation);
             parameters["significantDigits"] = significantDigits;
             parameters["userData"] = userData;
 

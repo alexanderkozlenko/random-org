@@ -15,7 +15,7 @@ namespace Community.RandomOrg.Converters
 
         public override void WriteJson(JsonWriter writer, decimal value, JsonSerializer serializer)
         {
-            writer.WriteValue(RandomOrgConvert.DecimalToNumber(value));
+            writer.WriteValue(RandomOrgConvert.DecimalToObject(value));
         }
     }
 }

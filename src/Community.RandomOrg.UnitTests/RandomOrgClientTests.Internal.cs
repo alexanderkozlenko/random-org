@@ -63,7 +63,7 @@ namespace Community.RandomOrg.UnitTests
             Assert.AreEqual(joresult["bitsUsed"].ToObject<long>(), result.BitsUsed);
             Assert.AreEqual(joresult["bitsLeft"].ToObject<long>(), result.BitsLeft);
             Assert.AreEqual(joresult["requestsLeft"].ToObject<long>(), result.RequestsLeft);
-            Assert.AreEqual(RandomOrgConvert.ToDateTime(jorandom["completionTime"].ToObject<string>()), result.Random.CompletionTime);
+            Assert.AreEqual(RandomOrgConvert.StringToDateTime(jorandom["completionTime"].ToObject<string>()), result.Random.CompletionTime);
         }
 
         private static void VerifyResult<TValue, TParameters>(SignedRandomResult<TValue, TParameters> result, JObject jores)
@@ -85,7 +85,7 @@ namespace Community.RandomOrg.UnitTests
 
             CollectionAssert.AreEqual(Convert.FromBase64String(joresult["signature"].ToObject<string>()), result.Signature?.ToArray());
 
-            Assert.AreEqual(RandomOrgConvert.ToDateTime(jorandom["completionTime"].ToObject<string>()), result.Random.CompletionTime);
+            Assert.AreEqual(RandomOrgConvert.StringToDateTime(jorandom["completionTime"].ToObject<string>()), result.Random.CompletionTime);
 
             CollectionAssert.AreEqual(Convert.FromBase64String(jorandom["hashedApiKey"].ToObject<string>()), result.Random.ApiKeyHash?.ToArray());
 

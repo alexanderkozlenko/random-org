@@ -8,12 +8,12 @@ namespace Community.RandomOrg.UnitTests.Internal
     [DebuggerStepThrough]
     internal static class RandomOrgConvert
     {
-        public static DateTime ToDateTime(string value)
+        public static DateTime StringToDateTime(string value)
         {
             return DateTime.ParseExact(value, "yyyy'-'MM'-'dd' 'HH':'mm':'ss.FFFFFFFK", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
         }
 
-        public static ApiKeyStatus ToApiKeyStatus(string value)
+        public static ApiKeyStatus StringToApiKeyStatus(string value)
         {
             switch (value)
             {

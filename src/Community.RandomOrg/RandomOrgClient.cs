@@ -26,12 +26,7 @@ namespace Community.RandomOrg
         private readonly string _apiKey;
         private readonly HttpMessageInvoker _httpInvoker;
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
-
-        private readonly JsonRpcSerializer _serializer = new JsonRpcSerializer(
-            EmptyDictionary<string, JsonRpcRequestContract>.Instance,
-            _contracts,
-            new Dictionary<JsonRpcId, string>(1),
-            EmptyDictionary<JsonRpcId, JsonRpcResponseContract>.Instance);
+        private readonly JsonRpcSerializer _serializer = new JsonRpcSerializer(responseContracts: _contracts, staticResponseBindings: new Dictionary<JsonRpcId, string>(1));
 
         private DateTime? _advisoryTime;
 
