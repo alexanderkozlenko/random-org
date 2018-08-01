@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using Community.RandomOrg.Converters;
 using Newtonsoft.Json;
 
-namespace Community.RandomOrg.Internal
+namespace Community.RandomOrg.DataRpc
 {
     internal abstract class RpcRandomObject<T>
     {

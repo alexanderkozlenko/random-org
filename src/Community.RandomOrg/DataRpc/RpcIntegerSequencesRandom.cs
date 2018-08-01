@@ -1,10 +1,11 @@
 ﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
+using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace Community.RandomOrg.Internal
+namespace Community.RandomOrg.DataRpc
 {
-    internal sealed class RpcIntegersRandom : RpcSignedRandom<int>
+    internal sealed class RpcIntegerSequencesRandom : RpcSignedRandom<IReadOnlyList<int>>
     {
         [JsonProperty("n", Required = Required.Always)]
         public int Count
@@ -13,29 +14,36 @@ namespace Community.RandomOrg.Internal
             set;
         }
 
+        [JsonProperty("length", Required = Required.Always)]
+        public IReadOnlyList<int> Lengths
+        {
+            get;
+            set;
+        }
+
         [JsonProperty("min", Required = Required.Always)]
-        public int Minimum
+        public IReadOnlyList<int> Minimums
         {
             get;
             set;
         }
 
         [JsonProperty("max", Required = Required.Always)]
-        public int Maximum
+        public IReadOnlyList<int> Maximums
         {
             get;
             set;
         }
 
         [JsonProperty("replacement", Required = Required.Always)]
-        public bool Replacement
+        public IReadOnlyList<bool> Replacements
         {
             get;
             set;
         }
 
         [JsonProperty("base", Required = Required.Always)]
-        public int Base
+        public IReadOnlyList<int> Bases
         {
             get;
             set;

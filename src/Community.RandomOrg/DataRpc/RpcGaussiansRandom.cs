@@ -3,7 +3,7 @@
 using Community.RandomOrg.Converters;
 using Newtonsoft.Json;
 
-namespace Community.RandomOrg.Internal
+namespace Community.RandomOrg.DataRpc
 {
     internal sealed class RpcGaussiansRandom : RpcSignedRandom<decimal>
     {

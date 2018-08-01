@@ -3,7 +3,7 @@
 using System;
 using Newtonsoft.Json;
 
-namespace Community.RandomOrg.Internal
+namespace Community.RandomOrg.DataRpc
 {
     internal sealed class RpcUuidsRandom : RpcSignedRandom<Guid>
     {

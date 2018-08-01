@@ -2,9 +2,9 @@
 
 using Newtonsoft.Json;
 
-namespace Community.RandomOrg.Internal
+namespace Community.RandomOrg.DataRpc
 {
-    internal sealed class RpcStringsRandom : RpcSignedRandom<string>
+    internal sealed class RpcIntegersRandom : RpcSignedRandom<int>
     {
         [JsonProperty("n", Required = Required.Always)]
         public int Count
@@ -13,15 +13,15 @@ namespace Community.RandomOrg.Internal
             set;
         }
 
-        [JsonProperty("length", Required = Required.Always)]
-        public int Length
+        [JsonProperty("min", Required = Required.Always)]
+        public int Minimum
         {
             get;
             set;
         }
 
-        [JsonProperty("characters", Required = Required.Always)]
-        public string Characters
+        [JsonProperty("max", Required = Required.Always)]
+        public int Maximum
         {
             get;
             set;
@@ -29,6 +29,13 @@ namespace Community.RandomOrg.Internal
 
         [JsonProperty("replacement", Required = Required.Always)]
         public bool Replacement
+        {
+            get;
+            set;
+        }
+
+        [JsonProperty("base", Required = Required.Always)]
+        public int Base
         {
             get;
             set;

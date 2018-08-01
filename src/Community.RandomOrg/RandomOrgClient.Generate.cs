@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Community.RandomOrg.Data;
-using Community.RandomOrg.Internal;
+using Community.RandomOrg.DataRpc;
 using Community.RandomOrg.Resources;
 
 namespace Community.RandomOrg

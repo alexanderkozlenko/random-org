@@ -2,7 +2,7 @@
 
 using Newtonsoft.Json;
 
-namespace Community.RandomOrg.Internal
+namespace Community.RandomOrg.DataRpc
 {
     internal abstract class RpcSignedRandom<T> : RpcRandomObject<T>
     {

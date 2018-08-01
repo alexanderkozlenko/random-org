@@ -4,7 +4,7 @@ using Community.RandomOrg.Converters;
 using Community.RandomOrg.Data;
 using Newtonsoft.Json;
 
-namespace Community.RandomOrg.Internal
+namespace Community.RandomOrg.DataRpc
 {
     internal sealed class RpcRandomUsageResult : RpcMethodResult
     {

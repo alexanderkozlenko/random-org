@@ -1,7 +1,6 @@
 ﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
 using System;
-using Community.RandomOrg.Internal;
 using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Converters
