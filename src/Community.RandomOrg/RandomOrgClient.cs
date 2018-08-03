@@ -90,12 +90,12 @@ namespace Community.RandomOrg
                 ["apiKey"] = _apiKey
             };
 
-            var response = await InvokeAccountServiceMethodAsync<RpcRandomUsageResult>("getUsage", parameters, cancellationToken).ConfigureAwait(false);
+            var response = await InvokeServiceMethodAsync<RpcRandomUsageResult>("getUsage", parameters, cancellationToken).ConfigureAwait(false);
 
             return new RandomUsage(response.Status, response.BitsLeft, response.RequestsLeft);
         }
 
-        /// <summary>Verifies the signature of signed random objects and associated data.</summary>
+        /// <summary>Verifies the signature of signed random objects and associated data as an asynchronous operation.</summary>
         /// <typeparam name="TValue">The type of random object.</typeparam>
         /// <typeparam name="TParameters">The type of random parameters.</typeparam>
         /// <param name="random">The signed random objects and associated data.</param>
@@ -297,7 +297,7 @@ namespace Community.RandomOrg
                 ["signature"] = Convert.ToBase64String(signature)
             };
 
-            var response = await InvokeAccountServiceMethodAsync<RpcVerifyResult>(
+            var response = await InvokeServiceMethodAsync<RpcVerifyResult>(
                 "verifySignature", parameters, cancellationToken).ConfigureAwait(false);
 
             return response.Authenticity;
@@ -351,7 +351,7 @@ namespace Community.RandomOrg
             }
         }
 
-        private async Task<TResult> InvokeGenerationServiceMethodAsync<TResult, TRandom, TValue>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken)
+        private async Task<TResult> InvokeServiceMethodAsync<TResult, TRandom, TValue>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken)
             where TResult : RpcRandomResultObject<TRandom, TValue>
             where TRandom : RpcRandomObject<TValue>
         {
@@ -370,7 +370,7 @@ namespace Community.RandomOrg
                 }
 
                 var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString("D")), parameters);
-                var jsonRpcResponse = await InvokeServiceMethodAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
+                var jsonRpcResponse = await SendJsonRpcRequestAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
 
                 var result = (TResult)jsonRpcResponse.Result;
 
@@ -384,7 +384,7 @@ namespace Community.RandomOrg
             }
         }
 
-        private async Task<TResult> InvokeAccountServiceMethodAsync<TResult>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken)
+        private async Task<TResult> InvokeServiceMethodAsync<TResult>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken)
             where TResult : RpcMethodResult
         {
             await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -392,7 +392,7 @@ namespace Community.RandomOrg
             try
             {
                 var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString("D")), parameters);
-                var jsonRpcResponse = await InvokeServiceMethodAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
+                var jsonRpcResponse = await SendJsonRpcRequestAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
 
                 return (TResult)jsonRpcResponse.Result;
             }
@@ -402,7 +402,7 @@ namespace Community.RandomOrg
             }
         }
 
-        private async Task<JsonRpcResponse> InvokeServiceMethodAsync(JsonRpcRequest request, CancellationToken cancellationToken)
+        private async Task<JsonRpcResponse> SendJsonRpcRequestAsync(JsonRpcRequest request, CancellationToken cancellationToken)
         {
             using (var requestStream = new MemoryStream())
             {
@@ -411,30 +411,30 @@ namespace Community.RandomOrg
                 cancellationToken.ThrowIfCancellationRequested();
                 requestStream.Position = 0;
 
-                using (var requestMessage = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
+                using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
                 {
                     var requestContent = new StreamContent(requestStream);
 
                     requestContent.Headers.ContentType = _mediaTypeValue;
-                    requestMessage.Content = requestContent;
+                    httpRequest.Content = requestContent;
 
-                    using (var responseMessage = await _httpInvoker.SendAsync(requestMessage, cancellationToken).ConfigureAwait(false))
+                    using (var httpResponse = await _httpInvoker.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false))
                     {
-                        if (responseMessage.StatusCode != HttpStatusCode.OK)
+                        if (httpResponse.StatusCode != HttpStatusCode.OK)
                         {
-                            throw new RandomOrgRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.status_code.invalid_value"));
+                            throw new RandomOrgRequestException(httpResponse.StatusCode, Strings.GetString("protocol.http.status_code.invalid_value"));
                         }
 
-                        var contentType = responseMessage.Content.Headers.ContentType;
+                        var contentType = httpResponse.Content.Headers.ContentType;
 
                         if ((contentType == null) || (string.Compare(contentType.MediaType, _mediaTypeValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0))
                         {
-                            throw new RandomOrgRequestException(responseMessage.StatusCode, Strings.GetString("protocol.http.headers.invalid_values"));
+                            throw new RandomOrgRequestException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.invalid_values"));
                         }
 
                         var responseData = default(JsonRpcData<JsonRpcResponse>);
 
-                        using (var responseStream = await responseMessage.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                        using (var responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false))
                         {
                             cancellationToken.ThrowIfCancellationRequested();
 

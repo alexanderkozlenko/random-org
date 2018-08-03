@@ -50,7 +50,7 @@ namespace Community.RandomOrg
             parameters["replacement"] = replacement;
             parameters["base"] = 10;
 
-            var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<int>, RpcRandom<int>, int>(
+            var response = await InvokeServiceMethodAsync<RpcRandomResult<int>, RpcRandom<int>, int>(
                 "generateIntegers", parameters, cancellationToken).ConfigureAwait(false);
 
             var random = new Random<int>();
@@ -146,7 +146,7 @@ namespace Community.RandomOrg
             parameters["replacement"] = replacements;
             parameters["base"] = bases;
 
-            var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<IReadOnlyList<int>>, RpcRandom<IReadOnlyList<int>>, IReadOnlyList<int>>(
+            var response = await InvokeServiceMethodAsync<RpcRandomResult<IReadOnlyList<int>>, RpcRandom<IReadOnlyList<int>>, IReadOnlyList<int>>(
                 "generateIntegerSequences", parameters, cancellationToken).ConfigureAwait(false);
 
             var random = new Random<IReadOnlyList<int>>();
@@ -188,7 +188,7 @@ namespace Community.RandomOrg
             parameters["decimalPlaces"] = decimalPlaces;
             parameters["replacement"] = replacement;
 
-            var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<decimal>, RpcRandom<decimal>, decimal>(
+            var response = await InvokeServiceMethodAsync<RpcRandomResult<decimal>, RpcRandom<decimal>, decimal>(
                 "generateDecimalFractions", parameters, cancellationToken).ConfigureAwait(false);
 
             var random = new Random<decimal>();
@@ -240,7 +240,7 @@ namespace Community.RandomOrg
             parameters["standardDeviation"] = RandomOrgConvert.DecimalToObject(standardDeviation);
             parameters["significantDigits"] = significantDigits;
 
-            var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<decimal>, RpcRandom<decimal>, decimal>(
+            var response = await InvokeServiceMethodAsync<RpcRandomResult<decimal>, RpcRandom<decimal>, decimal>(
                 "generateGaussians", parameters, cancellationToken).ConfigureAwait(false);
 
             var random = new Random<decimal>();
@@ -294,7 +294,7 @@ namespace Community.RandomOrg
             parameters["characters"] = characters;
             parameters["replacement"] = replacement;
 
-            var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<string>, RpcRandom<string>, string>(
+            var response = await InvokeServiceMethodAsync<RpcRandomResult<string>, RpcRandom<string>, string>(
                 "generateStrings", parameters, cancellationToken).ConfigureAwait(false);
 
             var random = new Random<string>();
@@ -328,7 +328,7 @@ namespace Community.RandomOrg
 
             parameters["n"] = count;
 
-            var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<Guid>, RpcRandom<Guid>, Guid>(
+            var response = await InvokeServiceMethodAsync<RpcRandomResult<Guid>, RpcRandom<Guid>, Guid>(
                 "generateUUIDs", parameters, cancellationToken).ConfigureAwait(false);
 
             var random = new Random<Guid>();
@@ -373,7 +373,7 @@ namespace Community.RandomOrg
             parameters["size"] = size * 8;
             parameters["format"] = "base64";
 
-            var response = await InvokeGenerationServiceMethodAsync<RpcRandomResult<byte[]>, RpcRandom<byte[]>, byte[]>(
+            var response = await InvokeServiceMethodAsync<RpcRandomResult<byte[]>, RpcRandom<byte[]>, byte[]>(
                 "generateBlobs", parameters, cancellationToken).ConfigureAwait(false);
 
             var random = new Random<byte[]>();
@@ -428,7 +428,7 @@ namespace Community.RandomOrg
             parameters["base"] = 10;
             parameters["userData"] = userData;
 
-            var response = await InvokeGenerationServiceMethodAsync<RpcSignedRandomResult<RpcIntegersRandom, int>, RpcIntegersRandom, int>(
+            var response = await InvokeServiceMethodAsync<RpcSignedRandomResult<RpcIntegersRandom, int>, RpcIntegersRandom, int>(
                 "generateSignedIntegers", parameters, cancellationToken).ConfigureAwait(false);
 
             var random = new SignedRandom<int, IntegerParameters>();
@@ -534,7 +534,7 @@ namespace Community.RandomOrg
             parameters["base"] = bases;
             parameters["userData"] = userData;
 
-            var response = await InvokeGenerationServiceMethodAsync<RpcSignedRandomResult<RpcIntegerSequencesRandom, IReadOnlyList<int>>, RpcIntegerSequencesRandom, IReadOnlyList<int>>(
+            var response = await InvokeServiceMethodAsync<RpcSignedRandomResult<RpcIntegerSequencesRandom, IReadOnlyList<int>>, RpcIntegerSequencesRandom, IReadOnlyList<int>>(
                 "generateSignedIntegerSequences", parameters, cancellationToken).ConfigureAwait(false);
 
             var random = new SignedRandom<IReadOnlyList<int>, IntegerSequenceParameters>();
@@ -586,7 +586,7 @@ namespace Community.RandomOrg
             parameters["replacement"] = replacement;
             parameters["userData"] = userData;
 
-            var response = await InvokeGenerationServiceMethodAsync<RpcSignedRandomResult<RpcDecimalFractionsRandom, decimal>, RpcDecimalFractionsRandom, decimal>(
+            var response = await InvokeServiceMethodAsync<RpcSignedRandomResult<RpcDecimalFractionsRandom, decimal>, RpcDecimalFractionsRandom, decimal>(
                 "generateSignedDecimalFractions", parameters, cancellationToken).ConfigureAwait(false);
 
             var random = new SignedRandom<decimal, DecimalFractionParameters>();
@@ -647,7 +647,7 @@ namespace Community.RandomOrg
             parameters["significantDigits"] = significantDigits;
             parameters["userData"] = userData;
 
-            var response = await InvokeGenerationServiceMethodAsync<RpcSignedRandomResult<RpcGaussiansRandom, decimal>, RpcGaussiansRandom, decimal>(
+            var response = await InvokeServiceMethodAsync<RpcSignedRandomResult<RpcGaussiansRandom, decimal>, RpcGaussiansRandom, decimal>(
                 "generateSignedGaussians", parameters, cancellationToken).ConfigureAwait(false);
 
             var random = new SignedRandom<decimal, GaussianParameters>();
@@ -711,7 +711,7 @@ namespace Community.RandomOrg
             parameters["replacement"] = replacement;
             parameters["userData"] = userData;
 
-            var response = await InvokeGenerationServiceMethodAsync<RpcSignedRandomResult<RpcStringsRandom, string>, RpcStringsRandom, string>(
+            var response = await InvokeServiceMethodAsync<RpcSignedRandomResult<RpcStringsRandom, string>, RpcStringsRandom, string>(
                 "generateSignedStrings", parameters, cancellationToken).ConfigureAwait(false);
 
             var random = new SignedRandom<string, StringParameters>();
@@ -755,7 +755,7 @@ namespace Community.RandomOrg
             parameters["n"] = count;
             parameters["userData"] = userData;
 
-            var response = await InvokeGenerationServiceMethodAsync<RpcSignedRandomResult<RpcUuidsRandom, Guid>, RpcUuidsRandom, Guid>(
+            var response = await InvokeServiceMethodAsync<RpcSignedRandomResult<RpcUuidsRandom, Guid>, RpcUuidsRandom, Guid>(
                 "generateSignedUUIDs", parameters, cancellationToken).ConfigureAwait(false);
 
             var random = new SignedRandom<Guid, UuidParameters>();
@@ -806,7 +806,7 @@ namespace Community.RandomOrg
             parameters["format"] = "base64";
             parameters["userData"] = userData;
 
-            var response = await InvokeGenerationServiceMethodAsync<RpcSignedRandomResult<RpcBlobsRandom, byte[]>, RpcBlobsRandom, byte[]>(
+            var response = await InvokeServiceMethodAsync<RpcSignedRandomResult<RpcBlobsRandom, byte[]>, RpcBlobsRandom, byte[]>(
                 "generateSignedBlobs", parameters, cancellationToken).ConfigureAwait(false);
 
             var random = new SignedRandom<byte[], BlobParameters>();
