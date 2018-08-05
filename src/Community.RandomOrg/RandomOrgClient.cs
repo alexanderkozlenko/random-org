@@ -22,6 +22,7 @@ namespace Community.RandomOrg
         private static readonly MediaTypeHeaderValue _mediaTypeValue = new MediaTypeHeaderValue("application/json");
         private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityValue = new MediaTypeWithQualityHeaderValue("application/json");
         private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/2/invoke", UriKind.Absolute);
+        private static IReadOnlyDictionary<string, JsonRpcResponseContract> _responseContracts = CreateJsonRpcContracts();
 
         private readonly string _apiKey;
         private readonly HttpMessageInvoker _httpInvoker;
@@ -508,24 +509,35 @@ namespace Community.RandomOrg
         {
             var resolver = new JsonRpcContractResolver();
 
-            resolver.AddResponseContract("getUsage", new JsonRpcResponseContract(typeof(RpcRandomUsageResult)));
-            resolver.AddResponseContract("generateIntegers", new JsonRpcResponseContract(typeof(RpcRandomResult<int>)));
-            resolver.AddResponseContract("generateIntegerSequences", new JsonRpcResponseContract(typeof(RpcRandomResult<IReadOnlyList<int>>)));
-            resolver.AddResponseContract("generateDecimalFractions", new JsonRpcResponseContract(typeof(RpcRandomResult<decimal>)));
-            resolver.AddResponseContract("generateGaussians", new JsonRpcResponseContract(typeof(RpcRandomResult<decimal>)));
-            resolver.AddResponseContract("generateStrings", new JsonRpcResponseContract(typeof(RpcRandomResult<string>)));
-            resolver.AddResponseContract("generateUUIDs", new JsonRpcResponseContract(typeof(RpcRandomResult<Guid>)));
-            resolver.AddResponseContract("generateBlobs", new JsonRpcResponseContract(typeof(RpcRandomResult<byte[]>)));
-            resolver.AddResponseContract("generateSignedIntegers", new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcIntegersRandom, int>)));
-            resolver.AddResponseContract("generateSignedIntegerSequences", new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcIntegerSequencesRandom, IReadOnlyList<int>>)));
-            resolver.AddResponseContract("generateSignedDecimalFractions", new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcDecimalFractionsRandom, decimal>)));
-            resolver.AddResponseContract("generateSignedGaussians", new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcGaussiansRandom, decimal>)));
-            resolver.AddResponseContract("generateSignedStrings", new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcStringsRandom, string>)));
-            resolver.AddResponseContract("generateSignedUUIDs", new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcUuidsRandom, Guid>)));
-            resolver.AddResponseContract("generateSignedBlobs", new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcBlobsRandom, byte[]>)));
-            resolver.AddResponseContract("verifySignature", new JsonRpcResponseContract(typeof(RpcVerifyResult)));
+            foreach (var kvp in _responseContracts)
+            {
+                resolver.AddResponseContract(kvp.Key, kvp.Value);
+            }
 
             return resolver;
+        }
+
+        private static IReadOnlyDictionary<string, JsonRpcResponseContract> CreateJsonRpcContracts()
+        {
+            return new Dictionary<string, JsonRpcResponseContract>(16, StringComparer.Ordinal)
+            {
+                ["getUsage"] = new JsonRpcResponseContract(typeof(RpcRandomUsageResult)),
+                ["generateIntegers"] = new JsonRpcResponseContract(typeof(RpcRandomResult<int>)),
+                ["generateIntegerSequences"] = new JsonRpcResponseContract(typeof(RpcRandomResult<IReadOnlyList<int>>)),
+                ["generateDecimalFractions"] = new JsonRpcResponseContract(typeof(RpcRandomResult<decimal>)),
+                ["generateGaussians"] = new JsonRpcResponseContract(typeof(RpcRandomResult<decimal>)),
+                ["generateStrings"] = new JsonRpcResponseContract(typeof(RpcRandomResult<string>)),
+                ["generateUUIDs"] = new JsonRpcResponseContract(typeof(RpcRandomResult<Guid>)),
+                ["generateBlobs"] = new JsonRpcResponseContract(typeof(RpcRandomResult<byte[]>)),
+                ["generateSignedIntegers"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcIntegersRandom, int>)),
+                ["generateSignedIntegerSequences"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcIntegerSequencesRandom, IReadOnlyList<int>>)),
+                ["generateSignedDecimalFractions"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcDecimalFractionsRandom, decimal>)),
+                ["generateSignedGaussians"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcGaussiansRandom, decimal>)),
+                ["generateSignedStrings"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcStringsRandom, string>)),
+                ["generateSignedUUIDs"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcUuidsRandom, Guid>)),
+                ["generateSignedBlobs"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcBlobsRandom, byte[]>)),
+                ["verifySignature"] = new JsonRpcResponseContract(typeof(RpcVerifyResult))
+            };
         }
     }
 }
