@@ -25,10 +25,10 @@ namespace Community.RandomOrg
         private static IReadOnlyDictionary<string, JsonRpcResponseContract> _responseContracts = CreateJsonRpcContracts();
 
         private readonly string _apiKey;
-        private readonly HttpMessageInvoker _httpInvoker;
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
-        private readonly JsonRpcContractResolver _jsonRpcContractResolver;
+        private readonly JsonRpcContractResolver _jsonRpcContractResolver = CreateJsonRpcContractResolver();
         private readonly JsonRpcSerializer _jsonRpcSerializer;
+        private readonly HttpMessageInvoker _httpInvoker;
 
         private DateTime? _advisoryTime;
 
@@ -54,7 +54,6 @@ namespace Community.RandomOrg
 
             _apiKey = apiKey;
             _httpInvoker = httpInvoker;
-            _jsonRpcContractResolver = CreateJsonRpcContractResolver();
             _jsonRpcSerializer = new JsonRpcSerializer(_jsonRpcContractResolver);
         }
 
