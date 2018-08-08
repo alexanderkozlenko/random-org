@@ -49,7 +49,7 @@ namespace Community.RandomOrg.UnitTests
                 var result = await client.GetUsageAsync();
 
                 Assert.IsNotNull(result);
-                Assert.AreEqual(RandomOrgConvert.StringToApiKeyStatus(joresult["status"].ToObject<string>()), result.Status);
+                Assert.AreEqual(RandomOrgConverter.StringToApiKeyStatus(joresult["status"].ToObject<string>()), result.Status);
                 Assert.AreEqual(joresult["bitsLeft"].ToObject<long>(), result.BitsLeft);
                 Assert.AreEqual(joresult["requestsLeft"].ToObject<long>(), result.RequestsLeft);
             }

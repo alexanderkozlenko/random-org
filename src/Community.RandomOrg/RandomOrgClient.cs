@@ -22,7 +22,8 @@ namespace Community.RandomOrg
         private static readonly MediaTypeHeaderValue _mediaTypeValue = new MediaTypeHeaderValue("application/json");
         private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityValue = new MediaTypeWithQualityHeaderValue("application/json");
         private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/2/invoke", UriKind.Absolute);
-        private static IReadOnlyDictionary<string, JsonRpcResponseContract> _responseContracts = CreateJsonRpcContracts();
+        private static readonly JsonSerializer _jsonSerializer = CreateJsonSerializer();
+        private static readonly IReadOnlyDictionary<string, JsonRpcResponseContract> _responseContracts = CreateJsonRpcContracts();
 
         private readonly string _apiKey;
         private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
@@ -54,7 +55,7 @@ namespace Community.RandomOrg
 
             _apiKey = apiKey;
             _httpInvoker = httpInvoker;
-            _jsonRpcSerializer = new JsonRpcSerializer(_jsonRpcContractResolver);
+            _jsonRpcSerializer = new JsonRpcSerializer(_jsonRpcContractResolver, _jsonSerializer);
         }
 
         /// <summary>Initializes a new instance of the <see cref="RandomOrgClient" /> class.</summary>
@@ -64,6 +65,255 @@ namespace Community.RandomOrg
         public RandomOrgClient(string apiKey)
             : this(apiKey, CreateHttpInvoker())
         {
+        }
+
+        private static JsonSerializer CreateJsonSerializer()
+        {
+            var settings = new JsonSerializerSettings
+            {
+                MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
+                FloatParseHandling = FloatParseHandling.Decimal,
+                DateFormatString = "yyyy-MM-dd HH:mm:ss.FFFFFFFK",
+                DateTimeZoneHandling = DateTimeZoneHandling.Utc
+            };
+
+            return JsonSerializer.CreateDefault(settings);
+        }
+
+        private static HttpMessageInvoker CreateHttpInvoker()
+        {
+            var httpHandler = new HttpClientHandler
+            {
+                AllowAutoRedirect = false,
+                AutomaticDecompression = DecompressionMethods.GZip
+            };
+
+            var httpClient = new HttpClient(httpHandler);
+
+            httpClient.DefaultRequestHeaders.Accept.Add(_mediaTypeWithQualityValue);
+            httpClient.DefaultRequestHeaders.ExpectContinue = false;
+            httpClient.Timeout = TimeSpan.FromMinutes(2);
+
+            return httpClient;
+        }
+
+        private static JsonRpcContractResolver CreateJsonRpcContractResolver()
+        {
+            var resolver = new JsonRpcContractResolver();
+
+            foreach (var kvp in _responseContracts)
+            {
+                resolver.AddResponseContract(kvp.Key, kvp.Value);
+            }
+
+            return resolver;
+        }
+
+        private static IReadOnlyDictionary<string, JsonRpcResponseContract> CreateJsonRpcContracts()
+        {
+            return new Dictionary<string, JsonRpcResponseContract>(16, StringComparer.Ordinal)
+            {
+                ["getUsage"] = new JsonRpcResponseContract(typeof(RpcRandomUsageResult)),
+                ["generateIntegers"] = new JsonRpcResponseContract(typeof(RpcRandomResult<int>)),
+                ["generateIntegerSequences"] = new JsonRpcResponseContract(typeof(RpcRandomResult<IReadOnlyList<int>>)),
+                ["generateDecimalFractions"] = new JsonRpcResponseContract(typeof(RpcRandomResult<decimal>)),
+                ["generateGaussians"] = new JsonRpcResponseContract(typeof(RpcRandomResult<decimal>)),
+                ["generateStrings"] = new JsonRpcResponseContract(typeof(RpcRandomResult<string>)),
+                ["generateUUIDs"] = new JsonRpcResponseContract(typeof(RpcRandomResult<Guid>)),
+                ["generateBlobs"] = new JsonRpcResponseContract(typeof(RpcRandomResult<byte[]>)),
+                ["generateSignedIntegers"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcIntegersRandom, int>)),
+                ["generateSignedIntegerSequences"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcIntegerSequencesRandom, IReadOnlyList<int>>)),
+                ["generateSignedDecimalFractions"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcDecimalFractionsRandom, decimal>)),
+                ["generateSignedGaussians"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcGaussiansRandom, decimal>)),
+                ["generateSignedStrings"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcStringsRandom, string>)),
+                ["generateSignedUUIDs"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcUuidsRandom, Guid>)),
+                ["generateSignedBlobs"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcBlobsRandom, byte[]>)),
+                ["verifySignature"] = new JsonRpcResponseContract(typeof(RpcVerifyResult))
+            };
+        }
+
+        private static void TransferRandom<TData>(RpcRandom<TData> source, Random<TData> target)
+        {
+            target.Data = source.Data;
+            target.CompletionTime = source.CompletionTime;
+        }
+
+        private static void TransferRandom<TData, TParameters>(SignedRandom<TData, TParameters> source, RpcSignedRandom<TData> target)
+            where TParameters : RandomParameters, new()
+        {
+            target.Data = source.Data;
+            target.ApiKeyHash = source.ApiKeyHash;
+            target.CompletionTime = source.CompletionTime;
+            target.SerialNumber = source.SerialNumber;
+            target.UserData = source.UserData;
+            target.License.Type = source.License.Type;
+            target.License.Text = source.License.Text;
+
+            if (source.License.InfoUrl != null)
+            {
+                target.License.InfoUrl = source.License.InfoUrl.OriginalString;
+            }
+        }
+
+        private static void TransferRandom<TData, TParameters>(RpcSignedRandom<TData> source, SignedRandom<TData, TParameters> target)
+            where TParameters : RandomParameters, new()
+        {
+            target.Data = source.Data;
+            target.ApiKeyHash = source.ApiKeyHash;
+            target.CompletionTime = source.CompletionTime;
+            target.SerialNumber = source.SerialNumber;
+            target.UserData = source.UserData;
+            target.License.Type = source.License.Type;
+            target.License.Text = source.License.Text;
+
+            if (source.License.InfoUrl != null)
+            {
+                target.License.InfoUrl = new Uri(source.License.InfoUrl);
+            }
+        }
+
+        private Dictionary<string, object> CreateGenerationParameters(int capacity)
+        {
+            return new Dictionary<string, object>(capacity + 1, StringComparer.Ordinal)
+            {
+                ["apiKey"] = _apiKey
+            };
+        }
+
+        private async Task<TResult> InvokeServiceMethodAsync<TResult, TRandom, TValue>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken)
+            where TResult : RpcRandomResultObject<TRandom, TValue>
+            where TRandom : RpcRandomObject<TValue>
+        {
+            await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+            try
+            {
+                if (_advisoryTime != null)
+                {
+                    var advisoryDelay = (_advisoryTime.Value - DateTime.UtcNow).Ticks;
+
+                    if (advisoryDelay > 0)
+                    {
+                        await Task.Delay(TimeSpan.FromTicks(Math.Min(advisoryDelay, TimeSpan.TicksPerDay)), cancellationToken).ConfigureAwait(false);
+                    }
+                }
+
+                var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString("D")), parameters);
+                var jsonRpcResponse = await SendJsonRpcRequestAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
+
+                var result = (TResult)jsonRpcResponse.Result;
+
+                _advisoryTime = result.Random.CompletionTime + TimeSpan.FromMilliseconds(result.AdvisoryDelay);
+
+                return result;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        private async Task<TResult> InvokeServiceMethodAsync<TResult>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken)
+            where TResult : RpcMethodResult
+        {
+            await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+
+            try
+            {
+                var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString("D")), parameters);
+                var jsonRpcResponse = await SendJsonRpcRequestAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
+
+                return (TResult)jsonRpcResponse.Result;
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
+        }
+
+        private async Task<JsonRpcResponse> SendJsonRpcRequestAsync(JsonRpcRequest request, CancellationToken cancellationToken)
+        {
+            using (var requestStream = new MemoryStream())
+            {
+                _jsonRpcSerializer.SerializeRequest(request, requestStream);
+
+                cancellationToken.ThrowIfCancellationRequested();
+                requestStream.Position = 0;
+
+                using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
+                {
+                    var requestContent = new StreamContent(requestStream);
+
+                    requestContent.Headers.ContentType = _mediaTypeValue;
+                    httpRequest.Content = requestContent;
+
+                    using (var httpResponse = await _httpInvoker.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false))
+                    {
+                        if (httpResponse.StatusCode != HttpStatusCode.OK)
+                        {
+                            throw new RandomOrgRequestException(httpResponse.StatusCode, Strings.GetString("protocol.http.status_code.invalid_value"));
+                        }
+
+                        var contentType = httpResponse.Content.Headers.ContentType;
+
+                        if ((contentType == null) || (string.Compare(contentType.MediaType, _mediaTypeValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0))
+                        {
+                            throw new RandomOrgRequestException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.invalid_values"));
+                        }
+
+                        var responseData = default(JsonRpcData<JsonRpcResponse>);
+
+                        using (var responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                        {
+                            cancellationToken.ThrowIfCancellationRequested();
+
+                            _jsonRpcContractResolver.AddResponseBinding(request.Id, request.Method);
+
+                            try
+                            {
+                                responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, cancellationToken).ConfigureAwait(false);
+                            }
+                            catch (JsonException e)
+                            {
+                                throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.rpc.message.invalid_value"), e);
+                            }
+                            catch (JsonRpcException e)
+                            {
+                                throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.rpc.message.invalid_value"), e);
+                            }
+                            finally
+                            {
+                                _jsonRpcContractResolver.RemoveResponseBinding(request.Id);
+                            }
+                        }
+
+                        if (responseData.IsBatch)
+                        {
+                            throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
+                        }
+
+                        var responseItem = responseData.Item;
+
+                        if (!responseItem.IsValid)
+                        {
+                            throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"), responseItem.Exception);
+                        }
+
+                        var response = responseItem.Message;
+
+                        if (!response.Success)
+                        {
+                            throw new RandomOrgException(request.Method, response.Error.Code, response.Error.Message);
+                        }
+                        if (response.Result == null)
+                        {
+                            throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
+                        }
+
+                        return response;
+                    }
+                }
+            }
         }
 
         /// <summary>Releases all resources used by the current instance of the <see cref="RandomOrgClient" />.</summary>
@@ -301,242 +551,6 @@ namespace Community.RandomOrg
                 "verifySignature", parameters, cancellationToken).ConfigureAwait(false);
 
             return response.Authenticity;
-        }
-
-        private Dictionary<string, object> CreateGenerationParameters(int capacity)
-        {
-            return new Dictionary<string, object>(capacity + 1, StringComparer.Ordinal)
-            {
-                ["apiKey"] = _apiKey
-            };
-        }
-
-        private static void TransferRandom<TData>(RpcRandom<TData> source, Random<TData> target)
-        {
-            target.Data = source.Data;
-            target.CompletionTime = source.CompletionTime;
-        }
-
-        private static void TransferRandom<TData, TParameters>(SignedRandom<TData, TParameters> source, RpcSignedRandom<TData> target)
-            where TParameters : RandomParameters, new()
-        {
-            target.Data = source.Data;
-            target.ApiKeyHash = source.ApiKeyHash;
-            target.CompletionTime = source.CompletionTime;
-            target.SerialNumber = source.SerialNumber;
-            target.UserData = source.UserData;
-            target.License.Type = source.License.Type;
-            target.License.Text = source.License.Text;
-
-            if (source.License.InfoUrl != null)
-            {
-                target.License.InfoUrl = source.License.InfoUrl.OriginalString;
-            }
-        }
-
-        private static void TransferRandom<TData, TParameters>(RpcSignedRandom<TData> source, SignedRandom<TData, TParameters> target)
-            where TParameters : RandomParameters, new()
-        {
-            target.Data = source.Data;
-            target.ApiKeyHash = source.ApiKeyHash;
-            target.CompletionTime = source.CompletionTime;
-            target.SerialNumber = source.SerialNumber;
-            target.UserData = source.UserData;
-            target.License.Type = source.License.Type;
-            target.License.Text = source.License.Text;
-
-            if (source.License.InfoUrl != null)
-            {
-                target.License.InfoUrl = new Uri(source.License.InfoUrl);
-            }
-        }
-
-        private async Task<TResult> InvokeServiceMethodAsync<TResult, TRandom, TValue>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken)
-            where TResult : RpcRandomResultObject<TRandom, TValue>
-            where TRandom : RpcRandomObject<TValue>
-        {
-            await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
-
-            try
-            {
-                if (_advisoryTime != null)
-                {
-                    var advisoryDelay = (_advisoryTime.Value - DateTime.UtcNow).Ticks;
-
-                    if (advisoryDelay > 0)
-                    {
-                        await Task.Delay(TimeSpan.FromTicks(Math.Min(advisoryDelay, TimeSpan.TicksPerDay)), cancellationToken).ConfigureAwait(false);
-                    }
-                }
-
-                var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString("D")), parameters);
-                var jsonRpcResponse = await SendJsonRpcRequestAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
-
-                var result = (TResult)jsonRpcResponse.Result;
-
-                _advisoryTime = result.Random.CompletionTime + TimeSpan.FromMilliseconds(result.AdvisoryDelay);
-
-                return result;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
-        }
-
-        private async Task<TResult> InvokeServiceMethodAsync<TResult>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken)
-            where TResult : RpcMethodResult
-        {
-            await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
-
-            try
-            {
-                var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString("D")), parameters);
-                var jsonRpcResponse = await SendJsonRpcRequestAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
-
-                return (TResult)jsonRpcResponse.Result;
-            }
-            finally
-            {
-                _semaphore.Release();
-            }
-        }
-
-        private async Task<JsonRpcResponse> SendJsonRpcRequestAsync(JsonRpcRequest request, CancellationToken cancellationToken)
-        {
-            using (var requestStream = new MemoryStream())
-            {
-                _jsonRpcSerializer.SerializeRequest(request, requestStream);
-
-                cancellationToken.ThrowIfCancellationRequested();
-                requestStream.Position = 0;
-
-                using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
-                {
-                    var requestContent = new StreamContent(requestStream);
-
-                    requestContent.Headers.ContentType = _mediaTypeValue;
-                    httpRequest.Content = requestContent;
-
-                    using (var httpResponse = await _httpInvoker.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false))
-                    {
-                        if (httpResponse.StatusCode != HttpStatusCode.OK)
-                        {
-                            throw new RandomOrgRequestException(httpResponse.StatusCode, Strings.GetString("protocol.http.status_code.invalid_value"));
-                        }
-
-                        var contentType = httpResponse.Content.Headers.ContentType;
-
-                        if ((contentType == null) || (string.Compare(contentType.MediaType, _mediaTypeValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0))
-                        {
-                            throw new RandomOrgRequestException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.invalid_values"));
-                        }
-
-                        var responseData = default(JsonRpcData<JsonRpcResponse>);
-
-                        using (var responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                        {
-                            cancellationToken.ThrowIfCancellationRequested();
-
-                            _jsonRpcContractResolver.AddResponseBinding(request.Id, request.Method);
-
-                            try
-                            {
-                                responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, cancellationToken).ConfigureAwait(false);
-                            }
-                            catch (JsonException e)
-                            {
-                                throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.rpc.message.invalid_value"), e);
-                            }
-                            catch (JsonRpcException e)
-                            {
-                                throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.rpc.message.invalid_value"), e);
-                            }
-                            finally
-                            {
-                                _jsonRpcContractResolver.RemoveResponseBinding(request.Id);
-                            }
-                        }
-
-                        if (responseData.IsBatch)
-                        {
-                            throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
-                        }
-
-                        var responseItem = responseData.Item;
-
-                        if (!responseItem.IsValid)
-                        {
-                            throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"), responseItem.Exception);
-                        }
-
-                        var response = responseItem.Message;
-
-                        if (!response.Success)
-                        {
-                            throw new RandomOrgException(request.Method, response.Error.Code, response.Error.Message);
-                        }
-                        if (response.Result == null)
-                        {
-                            throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
-                        }
-
-                        return response;
-                    }
-                }
-            }
-        }
-
-        private static HttpMessageInvoker CreateHttpInvoker()
-        {
-            var httpHandler = new HttpClientHandler
-            {
-                AllowAutoRedirect = false,
-                AutomaticDecompression = DecompressionMethods.GZip
-            };
-
-            var httpClient = new HttpClient(httpHandler);
-
-            httpClient.DefaultRequestHeaders.Accept.Add(_mediaTypeWithQualityValue);
-            httpClient.DefaultRequestHeaders.ExpectContinue = false;
-            httpClient.Timeout = TimeSpan.FromMinutes(2);
-
-            return httpClient;
-        }
-
-        private static JsonRpcContractResolver CreateJsonRpcContractResolver()
-        {
-            var resolver = new JsonRpcContractResolver();
-
-            foreach (var kvp in _responseContracts)
-            {
-                resolver.AddResponseContract(kvp.Key, kvp.Value);
-            }
-
-            return resolver;
-        }
-
-        private static IReadOnlyDictionary<string, JsonRpcResponseContract> CreateJsonRpcContracts()
-        {
-            return new Dictionary<string, JsonRpcResponseContract>(16, StringComparer.Ordinal)
-            {
-                ["getUsage"] = new JsonRpcResponseContract(typeof(RpcRandomUsageResult)),
-                ["generateIntegers"] = new JsonRpcResponseContract(typeof(RpcRandomResult<int>)),
-                ["generateIntegerSequences"] = new JsonRpcResponseContract(typeof(RpcRandomResult<IReadOnlyList<int>>)),
-                ["generateDecimalFractions"] = new JsonRpcResponseContract(typeof(RpcRandomResult<decimal>)),
-                ["generateGaussians"] = new JsonRpcResponseContract(typeof(RpcRandomResult<decimal>)),
-                ["generateStrings"] = new JsonRpcResponseContract(typeof(RpcRandomResult<string>)),
-                ["generateUUIDs"] = new JsonRpcResponseContract(typeof(RpcRandomResult<Guid>)),
-                ["generateBlobs"] = new JsonRpcResponseContract(typeof(RpcRandomResult<byte[]>)),
-                ["generateSignedIntegers"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcIntegersRandom, int>)),
-                ["generateSignedIntegerSequences"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcIntegerSequencesRandom, IReadOnlyList<int>>)),
-                ["generateSignedDecimalFractions"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcDecimalFractionsRandom, decimal>)),
-                ["generateSignedGaussians"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcGaussiansRandom, decimal>)),
-                ["generateSignedStrings"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcStringsRandom, string>)),
-                ["generateSignedUUIDs"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcUuidsRandom, Guid>)),
-                ["generateSignedBlobs"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcBlobsRandom, byte[]>)),
-                ["verifySignature"] = new JsonRpcResponseContract(typeof(RpcVerifyResult))
-            };
         }
     }
 }

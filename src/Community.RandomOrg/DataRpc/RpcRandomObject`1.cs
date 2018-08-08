@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using Community.RandomOrg.Converters;
 using Newtonsoft.Json;
 
 namespace Community.RandomOrg.DataRpc
@@ -10,7 +9,6 @@ namespace Community.RandomOrg.DataRpc
     internal abstract class RpcRandomObject<T>
     {
         [JsonProperty("completionTime", Required = Required.Always)]
-        [JsonConverter(typeof(RandomDateTimeConverter))]
         public DateTime CompletionTime
         {
             get;

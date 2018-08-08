@@ -27,13 +27,14 @@ namespace Community.RandomOrg.Converters
                     }
                 default:
                     {
-                        throw new JsonException(Strings.GetString("protocol.random.api_key_status.invalid_value"));
+                        throw new JsonSerializationException(string.Format(Strings.GetString("json.invalid_json_string"), objectType));
                     }
             }
         }
 
         public override void WriteJson(JsonWriter writer, ApiKeyStatus value, JsonSerializer serializer)
         {
+            throw new NotSupportedException();
         }
     }
 }

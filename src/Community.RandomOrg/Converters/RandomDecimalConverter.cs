@@ -1,6 +1,7 @@
 ﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
 using System;
+using Community.RandomOrg.Resources;
 using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Converters
@@ -9,12 +10,33 @@ namespace Community.RandomOrg.Converters
     {
         public override decimal ReadJson(JsonReader reader, Type objectType, decimal existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            return serializer.Deserialize<decimal>(reader);
+            switch (reader.TokenType)
+            {
+                case JsonToken.Integer:
+                    {
+                        return new decimal((long)reader.Value);
+                    }
+                case JsonToken.Float:
+                    {
+                        return (decimal)reader.Value;
+                    }
+                default:
+                    {
+                        throw new JsonSerializationException(string.Format(Strings.GetString("json.invalid_json_string"), objectType));
+                    }
+            }
         }
 
         public override void WriteJson(JsonWriter writer, decimal value, JsonSerializer serializer)
         {
-            writer.WriteValue(RandomOrgConvert.DecimalToObject(value));
+            if (value % 1 == 0)
+            {
+                writer.WriteValue((long)value);
+            }
+            else
+            {
+                writer.WriteValue(value);
+            }
         }
     }
 }

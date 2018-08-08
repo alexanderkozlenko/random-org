@@ -6,7 +6,7 @@ using Community.RandomOrg.Data;
 namespace Community.RandomOrg.UnitTests.Internal
 {
     [DebuggerStepThrough]
-    internal static class RandomOrgConvert
+    internal static class RandomOrgConverter
     {
         public static DateTime StringToDateTime(string value)
         {

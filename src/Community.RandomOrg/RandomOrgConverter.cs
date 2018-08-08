@@ -2,9 +2,9 @@
 
 namespace Community.RandomOrg
 {
-    internal static class RandomOrgConvert
+    internal static class RandomOrgConverter
     {
-        public static object DecimalToObject(in decimal value)
+        public static object ToObject(in decimal value)
         {
             return value % 1 != 0 ? (object)value : (object)(long)value;
         }
