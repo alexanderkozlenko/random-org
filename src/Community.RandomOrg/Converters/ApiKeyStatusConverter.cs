@@ -11,25 +11,30 @@ namespace Community.RandomOrg.Converters
     {
         public override ApiKeyStatus ReadJson(JsonReader reader, Type objectType, ApiKeyStatus existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            switch ((string)reader.Value)
+            switch (reader.TokenType)
             {
-                case "stopped":
+                case JsonToken.String:
                     {
-                        return ApiKeyStatus.Stopped;
+                        switch ((string)reader.Value)
+                        {
+                            case "stopped":
+                                {
+                                    return ApiKeyStatus.Stopped;
+                                }
+                            case "paused":
+                                {
+                                    return ApiKeyStatus.Paused;
+                                }
+                            case "running":
+                                {
+                                    return ApiKeyStatus.Running;
+                                }
+                        }
                     }
-                case "paused":
-                    {
-                        return ApiKeyStatus.Paused;
-                    }
-                case "running":
-                    {
-                        return ApiKeyStatus.Running;
-                    }
-                default:
-                    {
-                        throw new JsonSerializationException(string.Format(Strings.GetString("json.invalid_json_string"), objectType));
-                    }
+                    break;
             }
+
+            throw new JsonSerializationException(string.Format(Strings.GetString("json.invalid_json_string"), objectType));
         }
 
         public override void WriteJson(JsonWriter writer, ApiKeyStatus value, JsonSerializer serializer)

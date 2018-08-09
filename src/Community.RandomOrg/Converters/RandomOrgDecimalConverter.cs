@@ -20,11 +20,9 @@ namespace Community.RandomOrg.Converters
                     {
                         return (decimal)reader.Value;
                     }
-                default:
-                    {
-                        throw new JsonSerializationException(string.Format(Strings.GetString("json.invalid_json_string"), objectType));
-                    }
             }
+
+            throw new JsonSerializationException(string.Format(Strings.GetString("json.invalid_json_string"), objectType));
         }
 
         public override void WriteJson(JsonWriter writer, decimal value, JsonSerializer serializer)
