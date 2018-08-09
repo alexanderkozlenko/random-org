@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using Community.RandomOrg.Converters;
 using Community.RandomOrg.Data;
 using Community.RandomOrg.DataRpc;
 using Community.RandomOrg.Resources;
@@ -77,7 +78,10 @@ namespace Community.RandomOrg
                 DateTimeZoneHandling = DateTimeZoneHandling.Utc
             };
 
-            return JsonSerializer.CreateDefault(settings);
+            settings.Converters.Add(new RandomOrgDecimalConverter());
+            settings.Converters.Add(new ApiKeyStatusConverter());
+
+            return JsonSerializer.Create(settings);
         }
 
         private static HttpMessageInvoker CreateHttpInvoker()

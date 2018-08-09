@@ -1,6 +1,5 @@
 ﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
-using Community.RandomOrg.Converters;
 using Community.RandomOrg.Data;
 using Newtonsoft.Json;
 
@@ -9,7 +8,6 @@ namespace Community.RandomOrg.DataRpc
     internal sealed class RpcRandomUsageResult : RpcMethodResult
     {
         [JsonProperty("status", Required = Required.Always)]
-        [JsonConverter(typeof(ApiKeyStatusConverter))]
         public ApiKeyStatus Status
         {
             get;

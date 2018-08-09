@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Converters
 {
-    internal sealed class RandomDecimalConverter : JsonConverter<decimal>
+    internal sealed class RandomOrgDecimalConverter : JsonConverter<decimal>
     {
         public override decimal ReadJson(JsonReader reader, Type objectType, decimal existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
@@ -31,7 +31,7 @@ namespace Community.RandomOrg.Converters
         {
             if (value % 1 == 0)
             {
-                writer.WriteValue((long)value);
+                writer.WriteValue(decimal.ToInt64(value));
             }
             else
             {

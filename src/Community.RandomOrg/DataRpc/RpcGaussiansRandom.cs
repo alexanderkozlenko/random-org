@@ -1,6 +1,5 @@
 ﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
-using Community.RandomOrg.Converters;
 using Newtonsoft.Json;
 
 namespace Community.RandomOrg.DataRpc
@@ -15,7 +14,6 @@ namespace Community.RandomOrg.DataRpc
         }
 
         [JsonProperty("mean", Required = Required.Always)]
-        [JsonConverter(typeof(RandomDecimalConverter))]
         public decimal Mean
         {
             get;
@@ -23,7 +21,6 @@ namespace Community.RandomOrg.DataRpc
         }
 
         [JsonProperty("standardDeviation", Required = Required.Always)]
-        [JsonConverter(typeof(RandomDecimalConverter))]
         public decimal StandardDeviation
         {
             get;
