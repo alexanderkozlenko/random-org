@@ -2,16 +2,16 @@
 
 namespace Community.RandomOrg.Data
 {
-    /// <summary>The API key's status.</summary>
+    /// <summary>The status of an API key.</summary>
     public enum ApiKeyStatus
     {
-        /// <summary>The key is stopped.</summary>
+        /// <summary>The key is in stopped state.</summary>
         Stopped,
 
-        /// <summary>The key is paused.</summary>
+        /// <summary>The key is in paused state.</summary>
         Paused,
 
-        /// <summary>The key is running.</summary>
+        /// <summary>The key is active.</summary>
         Running
     }
 }
