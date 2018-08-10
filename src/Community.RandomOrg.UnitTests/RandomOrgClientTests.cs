@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Community.RandomOrg.Data;
 using Community.RandomOrg.UnitTests.Internal;
 using Community.RandomOrg.UnitTests.Resources;
+using Community.RandomOrg.UnitTests.TestStubs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 

@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Community.RandomOrg.Data;
 using Community.RandomOrg.UnitTests.Internal;
+using Community.RandomOrg.UnitTests.TestStubs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
