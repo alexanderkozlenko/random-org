@@ -78,7 +78,7 @@ namespace Community.RandomOrg
                 DateTimeZoneHandling = DateTimeZoneHandling.Utc
             };
 
-            settings.Converters.Add(new RandomOrgDecimalConverter());
+            settings.Converters.Add(new RandomOrgFloatConverter());
             settings.Converters.Add(new ApiKeyStatusConverter());
 
             return JsonSerializer.Create(settings);
@@ -548,7 +548,7 @@ namespace Community.RandomOrg
             var parameters = new Dictionary<string, object>(2, StringComparer.Ordinal)
             {
                 ["random"] = rpcRandomParam,
-                ["signature"] = Convert.ToBase64String(signature)
+                ["signature"] = signature
             };
 
             var response = await InvokeServiceMethodAsync<RpcVerifyResult>(

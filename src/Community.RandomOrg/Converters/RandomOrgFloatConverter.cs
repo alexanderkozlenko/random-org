@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace Community.RandomOrg.Converters
 {
-    internal sealed class RandomOrgDecimalConverter : JsonConverter<decimal>
+    internal sealed class RandomOrgFloatConverter : JsonConverter<decimal>
     {
         public override decimal ReadJson(JsonReader reader, Type objectType, decimal existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
