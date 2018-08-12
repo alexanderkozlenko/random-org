@@ -346,9 +346,9 @@ namespace Community.RandomOrg
                 ["apiKey"] = _apiKey
             };
 
-            var response = await InvokeServiceMethodAsync<RpcRandomUsageResult>("getUsage", parameters, cancellationToken).ConfigureAwait(false);
+            var result = await InvokeServiceMethodAsync<RpcRandomUsageResult>("getUsage", parameters, cancellationToken).ConfigureAwait(false);
 
-            return new RandomUsage(response.Status, response.BitsLeft, response.RequestsLeft);
+            return new RandomUsage(result.Status, result.BitsLeft, result.RequestsLeft);
         }
 
         /// <summary>Verifies the signature of signed random objects and associated data as an asynchronous operation.</summary>
@@ -553,10 +553,10 @@ namespace Community.RandomOrg
                 ["signature"] = signature
             };
 
-            var response = await InvokeServiceMethodAsync<RpcVerifyResult>(
+            var result = await InvokeServiceMethodAsync<RpcVerifyResult>(
                 "verifySignature", parameters, cancellationToken).ConfigureAwait(false);
 
-            return response.Authenticity;
+            return result.Authenticity;
         }
     }
 }
