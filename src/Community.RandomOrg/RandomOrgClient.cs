@@ -237,6 +237,8 @@ namespace Community.RandomOrg
 
         private async Task<JsonRpcResponse> SendJsonRpcRequestAsync(JsonRpcRequest request, CancellationToken cancellationToken)
         {
+            var requestId = request.Id;
+
             using (var requestStream = new MemoryStream())
             {
                 _jsonRpcSerializer.SerializeRequest(request, requestStream);
@@ -271,7 +273,7 @@ namespace Community.RandomOrg
                         {
                             cancellationToken.ThrowIfCancellationRequested();
 
-                            _jsonRpcContractResolver.AddResponseBinding(request.Id, request.Method);
+                            _jsonRpcContractResolver.AddResponseBinding(requestId, request.Method);
 
                             try
                             {
@@ -279,28 +281,28 @@ namespace Community.RandomOrg
                             }
                             catch (JsonException e)
                             {
-                                throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.rpc.message.invalid_value"), e);
+                                throw new RandomOrgContractException(requestId.ToString(), Strings.GetString("protocol.rpc.message.invalid_value"), e);
                             }
                             catch (JsonRpcException e)
                             {
-                                throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.rpc.message.invalid_value"), e);
+                                throw new RandomOrgContractException(requestId.ToString(), Strings.GetString("protocol.rpc.message.invalid_value"), e);
                             }
                             finally
                             {
-                                _jsonRpcContractResolver.RemoveResponseBinding(request.Id);
+                                _jsonRpcContractResolver.RemoveResponseBinding(requestId);
                             }
                         }
 
                         if (responseData.IsBatch)
                         {
-                            throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
+                            throw new RandomOrgContractException(requestId.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
                         }
 
                         var responseItem = responseData.Item;
 
                         if (!responseItem.IsValid)
                         {
-                            throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"), responseItem.Exception);
+                            throw new RandomOrgContractException(requestId.ToString(), Strings.GetString("protocol.random.message.invalid_value"), responseItem.Exception);
                         }
 
                         var response = responseItem.Message;
@@ -311,7 +313,7 @@ namespace Community.RandomOrg
                         }
                         if (response.Result == null)
                         {
-                            throw new RandomOrgContractException(request.Id.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
+                            throw new RandomOrgContractException(requestId.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
                         }
 
                         return response;
