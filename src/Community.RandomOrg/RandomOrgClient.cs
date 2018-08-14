@@ -27,12 +27,13 @@ namespace Community.RandomOrg
         private static readonly IReadOnlyDictionary<string, JsonRpcResponseContract> _responseContracts = CreateJsonRpcContracts();
 
         private readonly string _apiKey;
-        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim _invocationSemaphore = new SemaphoreSlim(1, 1);
+        private readonly SpinLock _advisoryTimeLock = new SpinLock(false);
         private readonly JsonRpcContractResolver _jsonRpcContractResolver = CreateJsonRpcContractResolver();
         private readonly JsonRpcSerializer _jsonRpcSerializer;
         private readonly HttpMessageInvoker _httpInvoker;
 
-        private DateTime? _advisoryTime;
+        private DateTime _advisoryTime = new DateTime(0L, DateTimeKind.Utc);
 
         /// <summary>Initializes a new instance of the <see cref="RandomOrgClient" /> class.</summary>
         /// <param name="apiKey">The API key, which is used to track the true random bit usage for the client.</param>
@@ -188,39 +189,52 @@ namespace Community.RandomOrg
             where TResult : RpcRandomResultObject<TRandom, TValue>
             where TRandom : RpcRandomObject<TValue>
         {
-            await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+            await _invocationSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             try
             {
-                if (_advisoryTime != null)
-                {
-                    var advisoryDelay = (_advisoryTime.Value - DateTime.UtcNow).Ticks;
+                var advisoryDelay = 0L;
+                var advisoryTimeLockTaken = false;
 
-                    if (advisoryDelay > 0)
-                    {
-                        await Task.Delay(TimeSpan.FromTicks(Math.Min(advisoryDelay, TimeSpan.TicksPerDay)), cancellationToken).ConfigureAwait(false);
-                    }
+                _advisoryTimeLock.Enter(ref advisoryTimeLockTaken);
+
+                advisoryDelay = (_advisoryTime - DateTime.UtcNow).Ticks;
+
+                if (advisoryTimeLockTaken)
+                {
+                    _advisoryTimeLock.Exit();
+                }
+                if (advisoryDelay > 0L)
+                {
+                    await Task.Delay(TimeSpan.FromTicks(Math.Min(advisoryDelay, TimeSpan.TicksPerDay)), cancellationToken).ConfigureAwait(false);
                 }
 
                 var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString()), parameters);
                 var jsonRpcResponse = await SendJsonRpcRequestAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
+                var jsonRpcResponseResult = (TResult)jsonRpcResponse.Result;
 
-                var result = (TResult)jsonRpcResponse.Result;
+                advisoryTimeLockTaken = false;
 
-                _advisoryTime = result.Random.CompletionTime + TimeSpan.FromMilliseconds(result.AdvisoryDelay);
+                _advisoryTimeLock.Enter(ref advisoryTimeLockTaken);
+                _advisoryTime = jsonRpcResponseResult.Random.CompletionTime.AddMilliseconds(jsonRpcResponseResult.AdvisoryDelay);
 
-                return result;
+                if (advisoryTimeLockTaken)
+                {
+                    _advisoryTimeLock.Exit();
+                }
+
+                return jsonRpcResponseResult;
             }
             finally
             {
-                _semaphore.Release();
+                _invocationSemaphore.Release();
             }
         }
 
         private async Task<TResult> InvokeServiceMethodAsync<TResult>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken)
             where TResult : RpcMethodResult
         {
-            await _semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+            await _invocationSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
 
             try
             {
@@ -231,7 +245,7 @@ namespace Community.RandomOrg
             }
             finally
             {
-                _semaphore.Release();
+                _invocationSemaphore.Release();
             }
         }
 
@@ -325,9 +339,9 @@ namespace Community.RandomOrg
         /// <summary>Releases all resources used by the current instance of the <see cref="RandomOrgClient" />.</summary>
         public void Dispose()
         {
+            _advisoryTime = new DateTime(0L, DateTimeKind.Utc);
+            _invocationSemaphore.Dispose();
             _httpInvoker.Dispose();
-            _semaphore.Dispose();
-            _advisoryTime = null;
         }
 
         /// <summary>Returns usage information of the current API key as an asynchronous operation.</summary>
@@ -559,10 +573,25 @@ namespace Community.RandomOrg
             return result.Authenticity;
         }
 
-        /// <summary>Gets the time of the next allowed random generation request.</summary>
-        public DateTime? AdvisoryTime
+        /// <summary>Gets the nearest allowed time in UTC for random values generation.</summary>
+        public DateTime GenerateAdvisoryTime
         {
-            get => _advisoryTime;
+            get
+            {
+                var advisoryTime = default(DateTime);
+                var advisoryTimeLockTaken = false;
+
+                _advisoryTimeLock.Enter(ref advisoryTimeLockTaken);
+
+                advisoryTime = _advisoryTime;
+
+                if (advisoryTimeLockTaken)
+                {
+                    _advisoryTimeLock.Exit();
+                }
+
+                return advisoryTime;
+            }
         }
     }
 }
