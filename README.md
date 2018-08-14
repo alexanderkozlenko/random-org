@@ -31,7 +31,7 @@ Signed | `verifySignature` | Yes
 
 ### Characteristics
 
-- Signed data verification can be invoked with the default key (the empty UUID).
+- Signed data verification can be invoked with the anonymous key (the empty UUID).
 - The client respects service advisory delay between generation requests not longer than `24` hours.
 - A custom message invoker must have at least `2`-minute timeout for a request due to service requirements.
 

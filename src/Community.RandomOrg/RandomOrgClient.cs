@@ -202,7 +202,7 @@ namespace Community.RandomOrg
                     }
                 }
 
-                var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString("D")), parameters);
+                var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString()), parameters);
                 var jsonRpcResponse = await SendJsonRpcRequestAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
 
                 var result = (TResult)jsonRpcResponse.Result;
@@ -224,7 +224,7 @@ namespace Community.RandomOrg
 
             try
             {
-                var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString("D")), parameters);
+                var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString()), parameters);
                 var jsonRpcResponse = await SendJsonRpcRequestAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
 
                 return (TResult)jsonRpcResponse.Result;
@@ -557,6 +557,12 @@ namespace Community.RandomOrg
                 "verifySignature", parameters, cancellationToken).ConfigureAwait(false);
 
             return result.Authenticity;
+        }
+
+        /// <summary>Gets the time of the next allowed random generation request.</summary>
+        public DateTime? AdvisoryTime
+        {
+            get => _advisoryTime;
         }
     }
 }
