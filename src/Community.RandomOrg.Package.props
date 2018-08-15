@@ -1,8 +1,11 @@
 ﻿<Project>
   <PropertyGroup>
-    <Version>1.8.7</Version>
+    <Version>1.9.0</Version>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/alexanderkozlenko/random-org.git</RepositoryUrl>
+    <RepositoryBranch>master</RepositoryBranch>
     <PackageProjectUrl>https://github.com/alexanderkozlenko/random-org</PackageProjectUrl>
-    <PackageLicenseUrl>https://raw.github.com/alexanderkozlenko/random-org/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseUrl>https://raw.github.com/alexanderkozlenko/random-org/$(RepositoryBranch)/LICENSE</PackageLicenseUrl>
     <Authors><![CDATA[Alexander Kozlenko]]></Authors>
     <Copyright><![CDATA[© Alexander Kozlenko. All rights reserved.]]></Copyright>
     <Description><![CDATA[RANDOM.ORG service client based on RANDOM.ORG API v2 (Core API)]]></Description>

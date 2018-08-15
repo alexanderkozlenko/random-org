@@ -281,7 +281,7 @@ namespace Community.RandomOrg
                             throw new RandomOrgRequestException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.invalid_values"));
                         }
 
-                        var responseData = default(JsonRpcData<JsonRpcResponse>);
+                        var responseDataInfo = default(JsonRpcInfo<JsonRpcResponse>);
 
                         using (var responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false))
                         {
@@ -291,7 +291,7 @@ namespace Community.RandomOrg
 
                             try
                             {
-                                responseData = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, cancellationToken).ConfigureAwait(false);
+                                responseDataInfo = await _jsonRpcSerializer.DeserializeResponseDataAsync(responseStream, cancellationToken).ConfigureAwait(false);
                             }
                             catch (JsonException e)
                             {
@@ -307,19 +307,19 @@ namespace Community.RandomOrg
                             }
                         }
 
-                        if (responseData.IsBatch)
+                        if (responseDataInfo.IsBatch)
                         {
                             throw new RandomOrgContractException(requestId.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
                         }
 
-                        var responseItem = responseData.Item;
+                        var responseInfo = responseDataInfo.Message;
 
-                        if (!responseItem.IsValid)
+                        if (!responseInfo.IsValid)
                         {
-                            throw new RandomOrgContractException(requestId.ToString(), Strings.GetString("protocol.random.message.invalid_value"), responseItem.Exception);
+                            throw new RandomOrgContractException(requestId.ToString(), Strings.GetString("protocol.random.message.invalid_value"), responseInfo.Exception);
                         }
 
-                        var response = responseItem.Message;
+                        var response = responseInfo.Message;
 
                         if (!response.Success)
                         {

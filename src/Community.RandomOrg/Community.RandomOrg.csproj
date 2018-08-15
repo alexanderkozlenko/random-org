@@ -11,7 +11,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.Data.JsonRpc" Version="1.16.2" />
+    <PackageReference Include="System.Data.JsonRpc" Version="1.17.1" />
   </ItemGroup>
   <Import Project="$(SolutionDirectory)\$(MSBuildProjectName).Package.targets" />
 </Project>
