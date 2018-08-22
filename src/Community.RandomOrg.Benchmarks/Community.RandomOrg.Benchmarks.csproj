@@ -10,6 +10,6 @@
     <ProjectReference Include="..\Community.RandomOrg\Community.RandomOrg.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.11.0" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.11.1" />
   </ItemGroup>
 </Project>
