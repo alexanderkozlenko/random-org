@@ -21,9 +21,9 @@ namespace Community.RandomOrg
         /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="RandomResult{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="minimum" />, or <paramref name="maximum" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="RandomOrgClientException">An error occurred during processing RANDOM.ORG service method result.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during invocation of the RANDOM.ORG service method.</exception>
+        /// <exception cref="RandomOrgProtocolException">An error occurred during communication with the RANDOM.ORG service.</exception>
         public async Task<RandomResult<int>> GenerateIntegersAsync(
             int count, int minimum, int maximum, bool replacement, CancellationToken cancellationToken = default)
         {
@@ -72,9 +72,9 @@ namespace Community.RandomOrg
         /// <exception cref="ArgumentNullException"><paramref name="lengths" />, <paramref name="minimums" />, <paramref name="maximums" />, or <paramref name="replacements" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentOutOfRangeException">One of the values from the arguments <paramref name="lengths" />, <paramref name="minimums" />, or <paramref name="maximums" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="RandomOrgClientException">An error occurred during processing RANDOM.ORG service method result.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during invocation of the RANDOM.ORG service method.</exception>
+        /// <exception cref="RandomOrgProtocolException">An error occurred during communication with the RANDOM.ORG service.</exception>
         public async Task<RandomResult<IReadOnlyList<int>>> GenerateIntegerSequencesAsync(
             IReadOnlyList<int> lengths, IReadOnlyList<int> minimums, IReadOnlyList<int> maximums, IReadOnlyList<bool> replacements, CancellationToken cancellationToken = default)
         {
@@ -165,9 +165,9 @@ namespace Community.RandomOrg
         /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="RandomResult{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="decimalPlaces" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="RandomOrgClientException">An error occurred during processing RANDOM.ORG service method result.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during invocation of the RANDOM.ORG service method.</exception>
+        /// <exception cref="RandomOrgProtocolException">An error occurred during communication with the RANDOM.ORG service.</exception>
         public async Task<RandomResult<decimal>> GenerateDecimalFractionsAsync(
             int count, int decimalPlaces, bool replacement, CancellationToken cancellationToken = default)
         {
@@ -208,9 +208,9 @@ namespace Community.RandomOrg
         /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="RandomResult{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="mean" />, <paramref name="standardDeviation" />, or <paramref name="significantDigits" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="RandomOrgClientException">An error occurred during processing RANDOM.ORG service method result.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during invocation of the RANDOM.ORG service method.</exception>
+        /// <exception cref="RandomOrgProtocolException">An error occurred during communication with the RANDOM.ORG service.</exception>
         public async Task<RandomResult<decimal>> GenerateGaussiansAsync(
             int count, decimal mean, decimal standardDeviation, int significantDigits, CancellationToken cancellationToken = default)
         {
@@ -262,9 +262,9 @@ namespace Community.RandomOrg
         /// <exception cref="ArgumentNullException"><paramref name="characters" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException"><paramref name="characters" /> contains invalid number of characters .</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="RandomOrgClientException">An error occurred during processing RANDOM.ORG service method result.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during invocation of the RANDOM.ORG service method.</exception>
+        /// <exception cref="RandomOrgProtocolException">An error occurred during communication with the RANDOM.ORG service.</exception>
         public async Task<RandomResult<string>> GenerateStringsAsync(
             int count, int length, string characters, bool replacement, CancellationToken cancellationToken = default)
         {
@@ -311,9 +311,9 @@ namespace Community.RandomOrg
         /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="RandomResult{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="RandomOrgClientException">An error occurred during processing RANDOM.ORG service method result.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during invocation of the RANDOM.ORG service method.</exception>
+        /// <exception cref="RandomOrgProtocolException">An error occurred during communication with the RANDOM.ORG service.</exception>
         public async Task<RandomResult<Guid>> GenerateUuidsAsync(
             int count, CancellationToken cancellationToken = default)
         {
@@ -346,9 +346,9 @@ namespace Community.RandomOrg
         /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="RandomResult{T}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="size" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="RandomOrgClientException">An error occurred during processing RANDOM.ORG service method result.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during invocation of the RANDOM.ORG service method.</exception>
+        /// <exception cref="RandomOrgProtocolException">An error occurred during communication with the RANDOM.ORG service.</exception>
         public async Task<RandomResult<byte[]>> GenerateBlobsAsync(
             int count, int size, CancellationToken cancellationToken = default)
         {
@@ -394,9 +394,9 @@ namespace Community.RandomOrg
         /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="SignedRandomResult{TValue, TParameters}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="minimum" />, or <paramref name="maximum" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="RandomOrgClientException">An error occurred during processing RANDOM.ORG service method result.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during invocation of the RANDOM.ORG service method.</exception>
+        /// <exception cref="RandomOrgProtocolException">An error occurred during communication with the RANDOM.ORG service.</exception>
         public async Task<SignedRandomResult<int, IntegerParameters>> GenerateSignedIntegersAsync(
             int count, int minimum, int maximum, bool replacement, string userData = null, CancellationToken cancellationToken = default)
         {
@@ -455,9 +455,9 @@ namespace Community.RandomOrg
         /// <exception cref="ArgumentNullException"><paramref name="lengths" />, <paramref name="minimums" />, <paramref name="maximums" />, or <paramref name="replacements" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentOutOfRangeException">One of the values from the arguments <paramref name="lengths" />, <paramref name="minimums" />, or <paramref name="maximums" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="RandomOrgClientException">An error occurred during processing RANDOM.ORG service method result.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during invocation of the RANDOM.ORG service method.</exception>
+        /// <exception cref="RandomOrgProtocolException">An error occurred during communication with the RANDOM.ORG service.</exception>
         public async Task<SignedRandomResult<IReadOnlyList<int>, IntegerSequenceParameters>> GenerateSignedIntegerSequencesAsync(
              IReadOnlyList<int> lengths, IReadOnlyList<int> minimums, IReadOnlyList<int> maximums, IReadOnlyList<bool> replacements, string userData = null, CancellationToken cancellationToken = default)
         {
@@ -558,9 +558,9 @@ namespace Community.RandomOrg
         /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="SignedRandomResult{TValue, TParameters}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="decimalPlaces" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="RandomOrgClientException">An error occurred during processing RANDOM.ORG service method result.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during invocation of the RANDOM.ORG service method.</exception>
+        /// <exception cref="RandomOrgProtocolException">An error occurred during communication with the RANDOM.ORG service.</exception>
         public async Task<SignedRandomResult<decimal, DecimalFractionParameters>> GenerateSignedDecimalFractionsAsync(
             int count, int decimalPlaces, bool replacement, string userData = null, CancellationToken cancellationToken = default)
         {
@@ -610,9 +610,9 @@ namespace Community.RandomOrg
         /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="SignedRandomResult{TValue, TParameters}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" />, <paramref name="mean" />, <paramref name="standardDeviation" />, or <paramref name="significantDigits" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="RandomOrgClientException">An error occurred during processing RANDOM.ORG service method result.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during invocation of the RANDOM.ORG service method.</exception>
+        /// <exception cref="RandomOrgProtocolException">An error occurred during communication with the RANDOM.ORG service.</exception>
         public async Task<SignedRandomResult<decimal, GaussianParameters>> GenerateSignedGaussiansAsync(
             int count, decimal mean, decimal standardDeviation, int significantDigits, string userData = null, CancellationToken cancellationToken = default)
         {
@@ -674,9 +674,9 @@ namespace Community.RandomOrg
         /// <exception cref="ArgumentNullException"><paramref name="characters" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentException"><paramref name="characters" /> contains invalid number of characters .</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="RandomOrgClientException">An error occurred during processing RANDOM.ORG service method result.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during invocation of the RANDOM.ORG service method.</exception>
+        /// <exception cref="RandomOrgProtocolException">An error occurred during communication with the RANDOM.ORG service.</exception>
         public async Task<SignedRandomResult<string, StringParameters>> GenerateSignedStringsAsync(
             int count, int length, string characters, bool replacement, string userData = null, CancellationToken cancellationToken = default)
         {
@@ -733,9 +733,9 @@ namespace Community.RandomOrg
         /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="SignedRandomResult{TValue, TParameters}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="RandomOrgClientException">An error occurred during processing RANDOM.ORG service method result.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during invocation of the RANDOM.ORG service method.</exception>
+        /// <exception cref="RandomOrgProtocolException">An error occurred during communication with the RANDOM.ORG service.</exception>
         public async Task<SignedRandomResult<Guid, UuidParameters>> GenerateSignedUuidsAsync(
             int count, string userData = null, CancellationToken cancellationToken = default)
         {
@@ -774,9 +774,9 @@ namespace Community.RandomOrg
         /// <returns>A task that represents the asynchronous operation. The task result is a <see cref="SignedRandomResult{TValue, TParameters}" /> instance.</returns>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="count" /> or <paramref name="size" /> is outside the allowable range of values.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="RandomOrgClientException">An error occurred during processing RANDOM.ORG service method result.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during invocation of the RANDOM.ORG service method.</exception>
+        /// <exception cref="RandomOrgProtocolException">An error occurred during communication with the RANDOM.ORG service.</exception>
         public async Task<SignedRandomResult<byte[], BlobParameters>> GenerateSignedBlobsAsync(
             int count, int size, string userData = null, CancellationToken cancellationToken = default)
         {

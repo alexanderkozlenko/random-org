@@ -4,7 +4,7 @@ using System;
 
 namespace Community.RandomOrg
 {
-    /// <summary>Represents an error that occur during RANDOM.ORG method invocation.</summary>
+    /// <summary>Represents an error that occurs during invocation of a RANDOM.ORG service method.</summary>
     public sealed class RandomOrgException : Exception
     {
         internal RandomOrgException(string method, long code, string message)

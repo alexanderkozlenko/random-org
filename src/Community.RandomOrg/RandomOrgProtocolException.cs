@@ -1,14 +1,14 @@
 ﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
+using System.Data.JsonRpc;
 using System.Net;
-using System.Net.Http;
 
 namespace Community.RandomOrg
 {
-    /// <summary>Represents an error for an unsuccessful HTTP request to RANDOM.ORG service.</summary>
-    public sealed class RandomOrgRequestException : HttpRequestException
+    /// <summary>Represents an error that occurs during communication with the RANDOM.ORG service.</summary>
+    public sealed class RandomOrgProtocolException : JsonRpcException
     {
-        internal RandomOrgRequestException(HttpStatusCode statusCode, string message)
+        internal RandomOrgProtocolException(HttpStatusCode statusCode, string message)
             : base(message)
         {
             StatusCode = statusCode;

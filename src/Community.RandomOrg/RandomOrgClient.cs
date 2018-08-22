@@ -271,14 +271,14 @@ namespace Community.RandomOrg
                     {
                         if (httpResponse.StatusCode != HttpStatusCode.OK)
                         {
-                            throw new RandomOrgRequestException(httpResponse.StatusCode, Strings.GetString("protocol.http.status_code.invalid_value"));
+                            throw new RandomOrgProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.status_code.invalid_value"));
                         }
 
                         var contentType = httpResponse.Content.Headers.ContentType;
 
                         if ((contentType == null) || (string.Compare(contentType.MediaType, _mediaTypeValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0))
                         {
-                            throw new RandomOrgRequestException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.invalid_values"));
+                            throw new RandomOrgProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.invalid_values"));
                         }
 
                         var responseData = default(JsonRpcData<JsonRpcResponse>);
@@ -295,11 +295,11 @@ namespace Community.RandomOrg
                             }
                             catch (JsonException e)
                             {
-                                throw new RandomOrgContractException(requestId.ToString(), Strings.GetString("protocol.rpc.message.invalid_value"), e);
+                                throw new RandomOrgClientException(Strings.GetString("protocol.rpc.message.invalid_value"), e);
                             }
                             catch (JsonRpcException e)
                             {
-                                throw new RandomOrgContractException(requestId.ToString(), Strings.GetString("protocol.rpc.message.invalid_value"), e);
+                                throw new RandomOrgClientException(Strings.GetString("protocol.rpc.message.invalid_value"), e);
                             }
                             finally
                             {
@@ -309,14 +309,14 @@ namespace Community.RandomOrg
 
                         if (responseData.IsBatch)
                         {
-                            throw new RandomOrgContractException(requestId.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
+                            throw new RandomOrgProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.random.message.invalid_value"));
                         }
 
                         var responseItem = responseData.Item;
 
                         if (!responseItem.IsValid)
                         {
-                            throw new RandomOrgContractException(requestId.ToString(), Strings.GetString("protocol.random.message.invalid_value"), responseItem.Exception);
+                            throw new RandomOrgClientException(Strings.GetString("protocol.random.message.invalid_value"), responseItem.Exception);
                         }
 
                         var response = responseItem.Message;
@@ -327,7 +327,7 @@ namespace Community.RandomOrg
                         }
                         if (response.Result == null)
                         {
-                            throw new RandomOrgContractException(requestId.ToString(), Strings.GetString("protocol.random.message.invalid_value"));
+                            throw new RandomOrgClientException(Strings.GetString("protocol.random.message.invalid_value"));
                         }
 
                         return response;
@@ -348,9 +348,9 @@ namespace Community.RandomOrg
         /// <param name="cancellationToken">The cancellation token for canceling the operation.</param>
         /// <returns>A task that represents the asynchronous operation. The task result is API key usage information.</returns>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="RandomOrgClientException">An error occurred during processing RANDOM.ORG service method result.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during invocation of the RANDOM.ORG service method.</exception>
+        /// <exception cref="RandomOrgProtocolException">An error occurred during communication with the RANDOM.ORG service.</exception>
         public async Task<RandomUsage> GetUsageAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -375,9 +375,9 @@ namespace Community.RandomOrg
         /// <exception cref="ArgumentException">Random data, or license type, or a random parameter is <see langword="null" />.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="random" /> or <paramref name="signature" /> is <see langword="null" />.</exception>
         /// <exception cref="OperationCanceledException">The operation was canceled.</exception>
-        /// <exception cref="RandomOrgContractException">An error occurred during service result handling.</exception>
-        /// <exception cref="RandomOrgException">An error occurred during service method invocation.</exception>
-        /// <exception cref="RandomOrgRequestException">An error occurred during HTTP request execution.</exception>
+        /// <exception cref="RandomOrgClientException">An error occurred during processing RANDOM.ORG service method result.</exception>
+        /// <exception cref="RandomOrgException">An error occurred during invocation of the RANDOM.ORG service method.</exception>
+        /// <exception cref="RandomOrgProtocolException">An error occurred during communication with the RANDOM.ORG service.</exception>
         public async Task<bool> VerifySignatureAsync<TValue, TParameters>(SignedRandom<TValue, TParameters> random, byte[] signature, CancellationToken cancellationToken = default)
             where TParameters : RandomParameters, new()
         {

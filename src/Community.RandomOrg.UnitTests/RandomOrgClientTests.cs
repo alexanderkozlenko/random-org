@@ -105,7 +105,7 @@ namespace Community.RandomOrg.UnitTests
 
             using (var client = new RandomOrgClient(key, new HttpClient(new TestHttpHandler(Handler))))
             {
-                var exception = await Assert.ThrowsExceptionAsync<RandomOrgRequestException>(() =>
+                var exception = await Assert.ThrowsExceptionAsync<RandomOrgProtocolException>(() =>
                     client.GetUsageAsync());
 
                 Assert.AreEqual(HttpStatusCode.BadRequest, exception.StatusCode);
@@ -133,7 +133,6 @@ namespace Community.RandomOrg.UnitTests
                 Assert.AreEqual(joerror["message"].ToObject<string>(), exception.Message);
             }
         }
-
 
         [TestMethod]
         public async Task VerifySignatureWhenRandomIsNull()
