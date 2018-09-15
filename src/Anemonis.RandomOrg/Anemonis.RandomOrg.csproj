@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="$(SolutionDirectory)\$(MSBuildProjectName).props" />
+  <PropertyGroup>
+    <IsPackable>true</IsPackable>
+    <TargetFrameworks>netstandard1.1;netstandard2.0</TargetFrameworks>
+    <SignAssembly>true</SignAssembly>
+    <GenerateDependencyFile>false</GenerateDependencyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Anemonis.JsonRpc" Version="1.18.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta-63127-02" PrivateAssets="All"/>
+  </ItemGroup>
+</Project>

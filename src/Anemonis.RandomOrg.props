@@ -1,0 +1,13 @@
+﻿<!-- © Alexander Kozlenko. Licensed under the MIT License. -->
+<Project>
+  <PropertyGroup>
+    <VersionPrefix>1.10.0</VersionPrefix>
+    <VersionSuffix>beta</VersionSuffix>
+  </PropertyGroup>
+  <PropertyGroup>
+    <Authors><![CDATA[Alexander Kozlenko]]></Authors>
+    <Copyright><![CDATA[© $(Authors). All rights reserved.]]></Copyright>
+    <Description><![CDATA[RANDOM.ORG service client based on RANDOM.ORG Core API v2]]></Description>
+    <PackageTags><![CDATA[random.org random randomness]]></PackageTags>
+  </PropertyGroup>
+</Project>

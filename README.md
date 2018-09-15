@@ -1,8 +1,8 @@
-## Community.RandomOrg
+## Anemonis.RandomOrg
 
 [RANDOM.ORG](https://www.random.org) service client based on [RANDOM.ORG API v2](https://api.random.org/json-rpc/2) (Core API).
 
-[![NuGet package](https://img.shields.io/nuget/v/Community.RandomOrg.svg?style=flat-square)](https://www.nuget.org/packages/Community.RandomOrg)
+[![NuGet package](https://img.shields.io/nuget/v/Anemonis.RandomOrg.svg?style=flat-square)](https://www.nuget.org/packages/Anemonis.RandomOrg)
 
 Category | Method | Support
 :---: | --- | :---:
