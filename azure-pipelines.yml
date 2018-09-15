@@ -1,0 +1,25 @@
+steps:
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'build'
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    nobuild: true
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'pack'
+    nobuild: true
+    packagesToPack: '.dotnetproj'
+    verbosityPack: 'normal'
+- task: PublishTestResults@2
+  inputs:
+    testRunner: VSTest
+    testResultsFiles: '**/*.trx'
+    searchFolder: '$(Agent.TempDirectory)'
+- task: PublishBuildArtifacts@1
+
+trigger:
+  paths:
+    exclude:
+    - README.md
