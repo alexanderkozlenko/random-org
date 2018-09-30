@@ -24,7 +24,7 @@ namespace Anemonis.RandomOrg
         private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityValue = new MediaTypeWithQualityHeaderValue("application/json");
         private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/2/invoke", UriKind.Absolute);
         private static readonly JsonSerializer _jsonSerializer = CreateJsonSerializer();
-        private static readonly IReadOnlyDictionary<string, JsonRpcResponseContract> _responseContracts = CreateJsonRpcContracts();
+        private static readonly Dictionary<string, JsonRpcResponseContract> _responseContracts = CreateJsonRpcContracts();
 
         private readonly string _apiKey;
         private readonly SemaphoreSlim _invocationSemaphore = new SemaphoreSlim(1, 1);
@@ -105,16 +105,17 @@ namespace Anemonis.RandomOrg
         private static JsonRpcContractResolver CreateJsonRpcContractResolver()
         {
             var resolver = new JsonRpcContractResolver();
+            var enumerator = _responseContracts.GetEnumerator();
 
-            foreach (var kvp in _responseContracts)
+            while (enumerator.MoveNext())
             {
-                resolver.AddResponseContract(kvp.Key, kvp.Value);
+                resolver.AddResponseContract(enumerator.Current.Key, enumerator.Current.Value);
             }
 
             return resolver;
         }
 
-        private static IReadOnlyDictionary<string, JsonRpcResponseContract> CreateJsonRpcContracts()
+        private static Dictionary<string, JsonRpcResponseContract> CreateJsonRpcContracts()
         {
             return new Dictionary<string, JsonRpcResponseContract>(16, StringComparer.Ordinal)
             {
