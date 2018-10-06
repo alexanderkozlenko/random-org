@@ -4,25 +4,25 @@
 
 [![NuGet package](https://img.shields.io/nuget/v/Anemonis.RandomOrg.svg?style=flat-square)](https://www.nuget.org/packages/Anemonis.RandomOrg)
 
-Category | Method | Support
-:---: | --- | :---:
-Basic | `getUsage` | Yes
-Basic | `generateIntegers` | Yes
-Basic | `generateIntegerSequences` | Yes
-Basic | `generateDecimalFractions` | Yes
-Basic | `generateGaussians` | Yes
-Basic | `generateStrings` | Yes
-Basic | `generateUUIDs` | Yes
-Basic | `generateBlobs` | Yes
-Signed | `generateSignedIntegers` | Yes
-Signed | `generateSignedIntegerSequences` | Yes
-Signed | `generateSignedDecimalFractions` | Yes
-Signed | `generateSignedGaussians` | Yes
-Signed | `generateSignedStrings` | Yes
-Signed | `generateSignedUUIDs` | Yes
-Signed | `generateSignedBlobs` | Yes
-Signed | `getResult` | No
-Signed | `verifySignature` | Yes
+| Category | Method | Support |
+| :---: | --- | :---: |
+| Basic | `getUsage` | Yes |
+| Basic | `generateIntegers` | Yes |
+| Basic | `generateIntegerSequences` | Yes |
+| Basic | `generateDecimalFractions` | Yes |
+| Basic | `generateGaussians` | Yes |
+| Basic | `generateStrings` | Yes |
+| Basic | `generateUUIDs` | Yes |
+| Basic | `generateBlobs` | Yes |
+| Signed | `generateSignedIntegers` | Yes |
+| Signed | `generateSignedIntegerSequences` | Yes |
+| Signed | `generateSignedDecimalFractions` | Yes |
+| Signed | `generateSignedGaussians` | Yes |
+| Signed | `generateSignedStrings` | Yes |
+| Signed | `generateSignedUUIDs` | Yes |
+| Signed | `generateSignedBlobs` | Yes |
+| Signed | `getResult` | No |
+| Signed | `verifySignature` | Yes |
 
 ### Important Features
 
