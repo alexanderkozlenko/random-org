@@ -1,8 +1,10 @@
-## Anemonis.RandomOrg
+# Anemonis.RandomOrg
 
 [RANDOM.ORG](https://www.random.org) service client based on [RANDOM.ORG API v2](https://api.random.org/json-rpc/2) (Core API).
 
 [![NuGet package](https://img.shields.io/nuget/v/Anemonis.RandomOrg.svg?style=flat-square)](https://www.nuget.org/packages/Anemonis.RandomOrg)
+
+## Project Details
 
 | Category | Method | Support |
 | :---: | --- | :---: |
@@ -24,26 +26,14 @@
 | Signed | `getResult` | No |
 | Signed | `verifySignature` | Yes |
 
-### Important Features
-
 - The client supports operation cancellation via cancellation token.
 - The client supports usage of a custom HTTP message invoker.
-
-### Characteristics
-
-- Signed data verification can be invoked with the anonymous key (the empty UUID).
 - The client respects service advisory delay between generation requests not longer than `24` hours.
-- A custom message invoker must have at least `2`-minute timeout for a request due to service requirements.
-
-### Limitations
-
-- API key usage information does not contain information about key creation time and total count of used bits / requests.
-- Generation and verification of integer sequences support only vector parameters.
 - The `string` is the only supported type for the optional user data parameter.
 - The `base64` is the only supported format for BLOBs in JSON.
 - The `10` is the only supported base for integers in JSON.
 
-### Usage Examples
+## Code Examples
 
 ```cs
 var client = new RandomOrgClient("YOUR_API_KEY_HERE");
@@ -77,3 +67,8 @@ Console.WriteLine("Random BLOB: " + Convert.ToBase64String(bbl.Random.Data[0]));
 Console.WriteLine("Signed data is authentic: " + ain);
 Console.WriteLine("Daily quota requests left: " + usg.RequestsLeft);
 ```
+
+## Quicklinks
+
+- [Contributing Guidelines](./CONTRIBUTING.md)
+- [Code of Conduct](./CODE_OF_CONDUCT.md)
