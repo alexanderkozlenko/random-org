@@ -72,6 +72,8 @@ namespace Anemonis.RandomOrg.UnitTests
 
                 await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
                     client.GetUsageAsync(cancellationTokenSource.Token));
+
+                cancellationTokenSource.Dispose();
             }
         }
 
