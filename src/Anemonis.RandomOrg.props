@@ -6,6 +6,7 @@
     <VersionSuffix>beta</VersionSuffix>
   </PropertyGroup>
   <PropertyGroup>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Authors><![CDATA[Alexander Kozlenko]]></Authors>
     <Copyright><![CDATA[© $(Authors). All rights reserved.]]></Copyright>
     <Description><![CDATA[RANDOM.ORG service client based on RANDOM.ORG Core API v2]]></Description>

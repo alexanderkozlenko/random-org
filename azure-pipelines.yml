@@ -4,6 +4,10 @@ variables:
   Project.FilePath: "$(Build.SourcesDirectory)/global.proj"
   Project.Configuration: "Release"
 steps:
+- task: DotNetCoreInstaller@0
+  inputs:
+    packageType: 'sdk'
+    version: '2.1.500'
 - task: DotNetCoreCLI@2
   inputs:
     command: "custom"
@@ -18,7 +22,7 @@ steps:
   inputs:
     command: "custom"
     custom: "pack"
-    arguments: "$(Project.FilePath) --configuration $(Project.Configuration) --no-build --output $(Build.ArtifactStagingDirectory)"
+    arguments: "$(Project.FilePath) --configuration $(Project.Configuration) --no-build --include-symbols --output $(Build.ArtifactStagingDirectory)"
 - task: PublishTestResults@2
   inputs:
     testRunner: VSTest
