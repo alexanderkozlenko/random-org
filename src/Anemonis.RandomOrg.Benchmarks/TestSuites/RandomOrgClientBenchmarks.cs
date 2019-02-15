@@ -8,7 +8,7 @@ using BenchmarkDotNet.Attributes;
 
 namespace Anemonis.RandomOrg.Benchmarks.TestSuites
 {
-    public sealed class RandomOrgClientBenchmarks
+    public class RandomOrgClientBenchmarks
     {
         private static readonly IReadOnlyDictionary<string, string> _resources = CreateResourceDictionary();
         private static readonly (int[] Lengths, int[] Minimums, int[] Maximums, bool[] Replacements) _integerSequenceParameters = CreateIntegerSequenceParameters();
