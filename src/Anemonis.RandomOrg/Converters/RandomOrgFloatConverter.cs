@@ -18,7 +18,7 @@ namespace Anemonis.RandomOrg.Converters
                     }
                 case JsonToken.Float:
                     {
-                        return (decimal)reader.Value;
+                        return new decimal((double)reader.Value);
                     }
             }
 
