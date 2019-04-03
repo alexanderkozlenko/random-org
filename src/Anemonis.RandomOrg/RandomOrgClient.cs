@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Anemonis.JsonRpc;
@@ -20,8 +21,8 @@ namespace Anemonis.RandomOrg
     /// <summary>Represents RANDOM.ORG service client.</summary>
     public sealed partial class RandomOrgClient : IDisposable
     {
-        private static readonly MediaTypeHeaderValue _mediaTypeValue = new MediaTypeHeaderValue("application/json");
-        private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityValue = new MediaTypeWithQualityHeaderValue("application/json");
+        private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+        private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityHeaderValue = MediaTypeWithQualityHeaderValue.Parse("application/json; charset=utf-8");
         private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/2/invoke", UriKind.Absolute);
         private static readonly JsonSerializer _jsonSerializer = CreateJsonSerializer();
         private static readonly Dictionary<string, JsonRpcResponseContract> _responseContracts = CreateJsonRpcContracts();
@@ -74,7 +75,6 @@ namespace Anemonis.RandomOrg
             var settings = new JsonSerializerSettings
             {
                 MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
-                FloatParseHandling = FloatParseHandling.Decimal,
                 DateFormatString = "yyyy-MM-dd HH:mm:ss.FFFFFFFK",
                 DateTimeZoneHandling = DateTimeZoneHandling.Utc
             };
@@ -95,7 +95,7 @@ namespace Anemonis.RandomOrg
 
             var httpClient = new HttpClient(httpHandler);
 
-            httpClient.DefaultRequestHeaders.Accept.Add(_mediaTypeWithQualityValue);
+            httpClient.DefaultRequestHeaders.Accept.Add(_mediaTypeWithQualityHeaderValue);
             httpClient.DefaultRequestHeaders.ExpectContinue = false;
             httpClient.Timeout = TimeSpan.FromMinutes(2);
 
@@ -178,6 +178,22 @@ namespace Anemonis.RandomOrg
             }
         }
 
+        private static bool TryGetEncoding(string name, out Encoding encoding)
+        {
+            try
+            {
+                encoding = Encoding.GetEncoding(name);
+
+                return true;
+            }
+            catch (ArgumentException)
+            {
+                encoding = null;
+
+                return false;
+            }
+        }
+
         private Dictionary<string, object> CreateGenerationParameters(int capacity)
         {
             return new Dictionary<string, object>(capacity + 1, StringComparer.Ordinal)
@@ -210,7 +226,7 @@ namespace Anemonis.RandomOrg
                     await Task.Delay(TimeSpan.FromTicks(Math.Min(advisoryDelay, TimeSpan.TicksPerDay)), cancellationToken).ConfigureAwait(false);
                 }
 
-                var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString()), parameters);
+                var jsonRpcRequest = new JsonRpcRequest(new JsonRpcId(Guid.NewGuid().ToString()), method, parameters);
                 var jsonRpcResponse = await SendJsonRpcRequestAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
                 var jsonRpcResponseResult = (TResult)jsonRpcResponse.Result;
 
@@ -239,7 +255,7 @@ namespace Anemonis.RandomOrg
 
             try
             {
-                var jsonRpcRequest = new JsonRpcRequest(method, new JsonRpcId(Guid.NewGuid().ToString()), parameters);
+                var jsonRpcRequest = new JsonRpcRequest(new JsonRpcId(Guid.NewGuid().ToString()), method, parameters);
                 var jsonRpcResponse = await SendJsonRpcRequestAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
 
                 return (TResult)jsonRpcResponse.Result;
@@ -265,7 +281,7 @@ namespace Anemonis.RandomOrg
                 {
                     var requestContent = new StreamContent(requestStream);
 
-                    requestContent.Headers.ContentType = _mediaTypeValue;
+                    requestContent.Headers.ContentType = _mediaTypeHeaderValue;
                     httpRequest.Content = requestContent;
 
                     using (var httpResponse = await _httpInvoker.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false))
@@ -275,11 +291,19 @@ namespace Anemonis.RandomOrg
                             throw new RandomOrgProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.status_code.invalid_value"));
                         }
 
-                        var contentType = httpResponse.Content.Headers.ContentType;
+                        var contentTypeHeaderValue = httpResponse.Content.Headers.ContentType;
 
-                        if ((contentType == null) || (string.Compare(contentType.MediaType, _mediaTypeValue.MediaType, StringComparison.OrdinalIgnoreCase) != 0))
+                        if (contentTypeHeaderValue == null)
                         {
-                            throw new RandomOrgProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.invalid_values"));
+                            throw new RandomOrgProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
+                        }
+                        if (!contentTypeHeaderValue.MediaType.Equals(_mediaTypeHeaderValue.MediaType, StringComparison.OrdinalIgnoreCase))
+                        {
+                            throw new RandomOrgProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
+                        }
+                        if (!TryGetEncoding(contentTypeHeaderValue.CharSet ?? "utf-8", out var streamEncoding))
+                        {
+                            throw new RandomOrgProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                         }
 
                         var responseData = default(JsonRpcData<JsonRpcResponse>);

@@ -129,8 +129,8 @@
   <data name="json.invalid_json_string" xml:space="preserve">
     <value>The JSON string for a value of the type {0} is invalid</value>
   </data>
-  <data name="protocol.http.headers.invalid_values" xml:space="preserve">
-    <value>The HTTP response has invalid JSON-RPC transport headers</value>
+  <data name="protocol.http.headers.content_type.invalid_value" xml:space="preserve">
+    <value>The HTTP response has invalid Content-Type header value</value>
   </data>
   <data name="protocol.http.status_code.invalid_value" xml:space="preserve">
     <value>The HTTP response status code does not indicate a successful service response</value>
