@@ -96,7 +96,7 @@ namespace Anemonis.RandomOrg.UnitTests
 
                 var content = new StringContent(jores.ToString());
 
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+                content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
                 return new HttpResponseMessage
                 {

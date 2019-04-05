@@ -11,7 +11,7 @@ namespace Anemonis.RandomOrg.Benchmarks.Internal
 {
     internal sealed class RandomOrgBenchmarkHandler : HttpMessageHandler
     {
-        private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = new MediaTypeHeaderValue("application/json");
+        private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
         private readonly IReadOnlyDictionary<string, string> _contents;
 

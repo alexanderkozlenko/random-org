@@ -178,22 +178,6 @@ namespace Anemonis.RandomOrg
             }
         }
 
-        private static bool TryGetEncoding(string name, out Encoding encoding)
-        {
-            try
-            {
-                encoding = Encoding.GetEncoding(name);
-
-                return true;
-            }
-            catch (ArgumentException)
-            {
-                encoding = null;
-
-                return false;
-            }
-        }
-
         private Dictionary<string, object> CreateGenerationParameters(int capacity)
         {
             return new Dictionary<string, object>(capacity + 1, StringComparer.Ordinal)
@@ -301,7 +285,7 @@ namespace Anemonis.RandomOrg
                         {
                             throw new RandomOrgProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                         }
-                        if (!TryGetEncoding(contentTypeHeaderValue.CharSet ?? "utf-8", out var streamEncoding))
+                        if ((contentTypeHeaderValue.CharSet != null) && (string.Compare(contentTypeHeaderValue.CharSet, Encoding.UTF8.WebName, StringComparison.OrdinalIgnoreCase) != 0))
                         {
                             throw new RandomOrgProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                         }
