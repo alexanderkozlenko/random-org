@@ -8,9 +8,6 @@ namespace Anemonis.RandomOrg.Data
         /// <summary>The key is in stopped state.</summary>
         Stopped,
 
-        /// <summary>The key is in paused state.</summary>
-        Paused,
-
         /// <summary>The key is active.</summary>
         Running
     }

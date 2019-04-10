@@ -14,7 +14,7 @@ namespace Anemonis.RandomOrg.Data
             Signature = signature;
         }
 
-        /// <summary>Gets the signature of the random object, signed with RANDOM.ORG's private key.</summary>
+        /// <summary>Gets a SHA-512 digest of the JSON representation of a <see cref="SignedRandom{TValue, TParameters}"/> object, which has been signed with RANDOM.ORG's private key.</summary>
         public byte[] Signature
         {
             get;

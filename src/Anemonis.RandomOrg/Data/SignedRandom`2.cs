@@ -28,7 +28,7 @@ namespace Anemonis.RandomOrg.Data
             set;
         }
 
-        /// <summary>Gets or sets an integer containing the serial number associated with this random information.</summary>
+        /// <summary>Gets or sets an integer containing the serial number associated with the random information.</summary>
         public long SerialNumber
         {
             get;

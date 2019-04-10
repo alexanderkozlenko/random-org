@@ -21,17 +21,13 @@ namespace Anemonis.RandomOrg.UnitTests.Internal
                     {
                         return ApiKeyStatus.Stopped;
                     }
-                case "paused":
-                    {
-                        return ApiKeyStatus.Paused;
-                    }
                 case "running":
                     {
                         return ApiKeyStatus.Running;
                     }
                 default:
                     {
-                        throw new ArgumentException($"The specified value is not supported: \"{value}\"", nameof(value));
+                        throw new NotSupportedException();
                     }
             }
         }

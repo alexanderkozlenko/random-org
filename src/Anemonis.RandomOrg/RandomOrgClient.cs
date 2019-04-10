@@ -207,7 +207,7 @@ namespace Anemonis.RandomOrg
                 }
                 if (advisoryDelay > 0L)
                 {
-                    await Task.Delay(TimeSpan.FromTicks(Math.Min(advisoryDelay, TimeSpan.TicksPerDay)), cancellationToken).ConfigureAwait(false);
+                    await Task.Delay(TimeSpan.FromTicks(advisoryDelay), cancellationToken).ConfigureAwait(false);
                 }
 
                 var jsonRpcRequest = new JsonRpcRequest(new JsonRpcId(Guid.NewGuid().ToString()), method, parameters);

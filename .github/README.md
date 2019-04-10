@@ -1,6 +1,6 @@
-# Anemonis.RandomOrg
+0# Anemonis.RandomOrg
 
-[RANDOM.ORG](https://www.random.org) service client based on [RANDOM.ORG API v2](https://api.random.org/json-rpc/2) (Core API).
+[RANDOM.ORG](https://www.random.org) service client based on [Core API (Release 2)](https://api.random.org/json-rpc/2).
 
 [![NuGet package](https://img.shields.io/nuget/v/Anemonis.RandomOrg.svg?style=flat-square)](https://www.nuget.org/packages/Anemonis.RandomOrg)
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/anemonis/random-org)
@@ -29,10 +29,9 @@
 
 - The client supports operation cancellation via cancellation token.
 - The client supports usage of a custom HTTP message invoker.
-- The client respects service advisory delay between generation requests not longer than `24` hours.
-- The `string` is the only supported type for the optional user data parameter.
-- The `base64` is the only supported format for BLOBs in JSON.
-- The `10` is the only supported base for integers in JSON.
+- The client supports only `string` as the type for an optional user data parameter.
+- The client uses only `base64` as a BLOB format in JSON.
+- The client uses only `10` as a base for integers in JSON.
 
 ## Code Examples
 

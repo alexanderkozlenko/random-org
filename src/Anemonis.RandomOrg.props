@@ -2,14 +2,14 @@
 <Project>
   <PropertyGroup>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <VersionPrefix>1.10.4</VersionPrefix>
+    <VersionPrefix>1.11.0</VersionPrefix>
     <VersionSuffix></VersionSuffix>
   </PropertyGroup>
   <PropertyGroup>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Authors><![CDATA[Alexander Kozlenko]]></Authors>
     <Copyright><![CDATA[© $(Authors). All rights reserved.]]></Copyright>
-    <Description><![CDATA[RANDOM.ORG service client based on RANDOM.ORG Core API v2]]></Description>
+    <Description><![CDATA[RANDOM.ORG service client based on Core API (Release 2)]]></Description>
     <PackageTags><![CDATA[random.org random randomness]]></PackageTags>
   </PropertyGroup>
 </Project>

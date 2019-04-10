@@ -21,10 +21,6 @@ namespace Anemonis.RandomOrg.Converters
                                 {
                                     return ApiKeyStatus.Stopped;
                                 }
-                            case "paused":
-                                {
-                                    return ApiKeyStatus.Paused;
-                                }
                             case "running":
                                 {
                                     return ApiKeyStatus.Running;

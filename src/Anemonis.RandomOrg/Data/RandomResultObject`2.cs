@@ -34,7 +34,7 @@ namespace Anemonis.RandomOrg.Data
             get;
         }
 
-        /// <summary>Gets an integer containing the number of true random bits used to complete this operation.</summary>
+        /// <summary>Gets an integer containing the number of true random bits used to complete the operation.</summary>
         public long BitsUsed
         {
             get;
