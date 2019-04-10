@@ -1,4 +1,4 @@
-0# Anemonis.RandomOrg
+# Anemonis.RandomOrg
 
 [RANDOM.ORG](https://www.random.org) service client based on [Core API (Release 2)](https://api.random.org/json-rpc/2).
 
