@@ -5,11 +5,14 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Anemonis.RandomOrg.Data;
 using Anemonis.RandomOrg.UnitTests.Internal;
 using Anemonis.RandomOrg.UnitTests.Resources;
 using Anemonis.RandomOrg.UnitTests.TestStubs;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using Newtonsoft.Json.Linq;
 
 namespace Anemonis.RandomOrg.UnitTests
@@ -148,7 +151,7 @@ namespace Anemonis.RandomOrg.UnitTests
                 var signature = Convert.FromBase64String(joparams["signature"].ToObject<string>());
 
                 await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                    client.VerifySignatureAsync((SignedRandom<int, IntegerParameters>)null, signature));
+                    client.VerifySignatureAsync((SignedRandom<int, IntegerParameters>)null, signature, default));
             }
         }
 
@@ -160,7 +163,7 @@ namespace Anemonis.RandomOrg.UnitTests
                 var random = new SignedRandom<int, IntegerParameters>();
 
                 await Assert.ThrowsExceptionAsync<ArgumentNullException>(() =>
-                    client.VerifySignatureAsync(random, (byte[])null));
+                    client.VerifySignatureAsync(random, null, default));
             }
         }
 

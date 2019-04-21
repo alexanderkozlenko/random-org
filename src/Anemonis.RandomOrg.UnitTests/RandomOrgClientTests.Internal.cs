@@ -5,10 +5,13 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+
 using Anemonis.RandomOrg.Data;
 using Anemonis.RandomOrg.UnitTests.Internal;
 using Anemonis.RandomOrg.UnitTests.TestStubs;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

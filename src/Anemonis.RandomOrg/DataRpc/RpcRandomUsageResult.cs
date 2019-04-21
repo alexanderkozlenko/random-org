@@ -1,6 +1,7 @@
 ﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
 using Anemonis.RandomOrg.Data;
+
 using Newtonsoft.Json;
 
 namespace Anemonis.RandomOrg.DataRpc

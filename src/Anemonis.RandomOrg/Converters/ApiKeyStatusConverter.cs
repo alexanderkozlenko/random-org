@@ -1,8 +1,10 @@
 ﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
 using System;
+
 using Anemonis.RandomOrg.Data;
 using Anemonis.RandomOrg.Resources;
+
 using Newtonsoft.Json;
 
 namespace Anemonis.RandomOrg.Converters

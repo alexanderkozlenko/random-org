@@ -1,6 +1,7 @@
 ﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
 using System.Net;
+
 using Anemonis.JsonRpc;
 
 namespace Anemonis.RandomOrg

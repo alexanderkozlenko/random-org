@@ -9,11 +9,13 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Anemonis.JsonRpc;
 using Anemonis.RandomOrg.Converters;
 using Anemonis.RandomOrg.Data;
 using Anemonis.RandomOrg.DataRpc;
 using Anemonis.RandomOrg.Resources;
+
 using Newtonsoft.Json;
 
 namespace Anemonis.RandomOrg

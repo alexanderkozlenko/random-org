@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
+
 using Anemonis.RandomOrg.Data;
 
 namespace Anemonis.RandomOrg.UnitTests.Internal

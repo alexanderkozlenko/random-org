@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+
 using Anemonis.RandomOrg.Benchmarks.Internal;
 using Anemonis.RandomOrg.Benchmarks.Resources;
+
 using BenchmarkDotNet.Attributes;
 
 namespace Anemonis.RandomOrg.Benchmarks.TestSuites

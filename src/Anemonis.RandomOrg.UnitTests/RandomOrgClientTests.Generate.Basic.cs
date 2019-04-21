@@ -2,8 +2,11 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+
 using Anemonis.RandomOrg.UnitTests.Resources;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using Newtonsoft.Json.Linq;
 
 namespace Anemonis.RandomOrg.UnitTests

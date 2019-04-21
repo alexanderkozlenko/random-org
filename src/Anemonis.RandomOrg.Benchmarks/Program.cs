@@ -1,6 +1,8 @@
 ﻿using System.Linq;
+
 using Anemonis.RandomOrg.Benchmarks.Framework;
 using Anemonis.RandomOrg.Benchmarks.TestSuites;
+
 using BenchmarkDotNet.Columns;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
