@@ -1,5 +1,7 @@
 ﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
+#pragma warning disable CA1819
+
 namespace Anemonis.RandomOrg.Data
 {
     /// <summary>Encapsulates signed random objects and associated data.</summary>
@@ -49,3 +51,5 @@ namespace Anemonis.RandomOrg.Data
         }
     }
 }
+
+#pragma warning restore CA1819

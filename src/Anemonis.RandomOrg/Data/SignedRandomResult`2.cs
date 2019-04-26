@@ -8,16 +8,19 @@ namespace Anemonis.RandomOrg.Data
     public sealed class SignedRandomResult<TValue, TParameters> : RandomResultObject<SignedRandom<TValue, TParameters>, TValue>
         where TParameters : RandomParameters, new()
     {
+        private readonly byte[] _signature;
+
         internal SignedRandomResult(SignedRandom<TValue, TParameters> random, long bitsUsed, long bitsLeft, long requestsLeft, byte[] signature)
             : base(random, bitsUsed, bitsLeft, requestsLeft)
         {
-            Signature = signature;
+            _signature = signature;
         }
 
-        /// <summary>Gets a SHA-512 digest of the JSON representation of a <see cref="SignedRandom{TValue, TParameters}"/> object, which has been signed with RANDOM.ORG's private key.</summary>
-        public byte[] Signature
+        /// <summary>Gets a SHA-512 digest of the JSON representation of a <see cref="SignedRandom{TValue, TParameters}" /> object, which has been signed with RANDOM.ORG's private key.</summary>
+        /// <returns>A copy of <see cref="byte" /> array representing the SHA-512 digest.</returns>
+        public byte[] GetSignature()
         {
-            get;
+            return (byte[])_signature.Clone();
         }
     }
 }
