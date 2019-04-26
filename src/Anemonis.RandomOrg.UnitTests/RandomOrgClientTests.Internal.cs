@@ -87,7 +87,7 @@ namespace Anemonis.RandomOrg.UnitTests
             Assert.AreEqual(joresult["bitsLeft"].ToObject<long>(), result.BitsLeft);
             Assert.AreEqual(joresult["requestsLeft"].ToObject<long>(), result.RequestsLeft);
 
-            CollectionAssert.AreEqual(Convert.FromBase64String(joresult["signature"].ToObject<string>()), result.Signature?.ToArray());
+            CollectionAssert.AreEqual(Convert.FromBase64String(joresult["signature"].ToObject<string>()), result.GetSignature());
 
             Assert.AreEqual(RandomOrgConverter.StringToDateTime(jorandom["completionTime"].ToObject<string>()), result.Random.CompletionTime);
 

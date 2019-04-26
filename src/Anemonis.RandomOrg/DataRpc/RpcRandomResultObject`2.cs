@@ -2,6 +2,8 @@
 
 using Newtonsoft.Json;
 
+#pragma warning disable CA1812
+
 namespace Anemonis.RandomOrg.DataRpc
 {
     internal abstract class RpcRandomResultObject<TRandom, TValue> : RpcMethodResult
@@ -43,3 +45,5 @@ namespace Anemonis.RandomOrg.DataRpc
         }
     }
 }
+
+#pragma warning restore CA1812

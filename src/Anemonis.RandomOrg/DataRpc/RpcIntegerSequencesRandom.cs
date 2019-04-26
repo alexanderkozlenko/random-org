@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 using Newtonsoft.Json;
 
+#pragma warning disable CA1812
+
 namespace Anemonis.RandomOrg.DataRpc
 {
     internal sealed class RpcIntegerSequencesRandom : RpcSignedRandom<IReadOnlyList<int>>
@@ -51,3 +53,5 @@ namespace Anemonis.RandomOrg.DataRpc
         }
     }
 }
+
+#pragma warning restore CA1812

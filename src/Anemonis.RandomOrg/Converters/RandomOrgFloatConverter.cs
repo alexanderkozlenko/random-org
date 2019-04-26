@@ -1,6 +1,7 @@
 ﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
 using System;
+using System.Globalization;
 
 using Anemonis.RandomOrg.Resources;
 
@@ -24,7 +25,7 @@ namespace Anemonis.RandomOrg.Converters
                     }
             }
 
-            throw new JsonSerializationException(string.Format(Strings.GetString("json.invalid_json_string"), objectType));
+            throw new JsonSerializationException(string.Format(CultureInfo.CurrentCulture, Strings.GetString("json.invalid_json_string"), objectType));
         }
 
         public override void WriteJson(JsonWriter writer, decimal value, JsonSerializer serializer)

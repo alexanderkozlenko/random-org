@@ -2,6 +2,8 @@
 
 using Newtonsoft.Json;
 
+#pragma warning disable CA1812
+
 namespace Anemonis.RandomOrg.DataRpc
 {
     internal sealed class RpcBlobsRandom : RpcSignedRandom<byte[]>
@@ -28,3 +30,5 @@ namespace Anemonis.RandomOrg.DataRpc
         }
     }
 }
+
+#pragma warning restore CA1812
