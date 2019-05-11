@@ -1,14 +1,17 @@
 ﻿<!-- © Alexander Kozlenko. Licensed under the MIT License. -->
 <Project>
   <PropertyGroup>
-    <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <VersionPrefix>1.12.0</VersionPrefix>
-  </PropertyGroup>
-  <PropertyGroup>
+    <VersionSuffix>beta</VersionSuffix>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Authors><![CDATA[Alexander Kozlenko]]></Authors>
     <Copyright><![CDATA[© $(Authors). All rights reserved.]]></Copyright>
     <Description><![CDATA[RANDOM.ORG service client based on Core API (Release 2)]]></Description>
     <PackageTags><![CDATA[random.org random randomness]]></PackageTags>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(BuildNumber)' != ''">
+    <VersionSuffix Condition="'$(VersionSuffix)' == ''">$(BuildNumber)</VersionSuffix>
+    <VersionSuffix Condition="'$(VersionSuffix)' != ''">$(VersionSuffix)-$(BuildNumber)</VersionSuffix>
   </PropertyGroup>
 </Project>
