@@ -18,6 +18,8 @@ using Anemonis.RandomOrg.Resources;
 
 using Newtonsoft.Json;
 
+#pragma warning disable CA2000
+
 namespace Anemonis.RandomOrg
 {
     /// <summary>Represents RANDOM.ORG service client.</summary>
@@ -606,3 +608,5 @@ namespace Anemonis.RandomOrg
         }
     }
 }
+
+#pragma warning restore CA2000
