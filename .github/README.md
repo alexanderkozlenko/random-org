@@ -4,6 +4,7 @@
 
 [![NuGet](https://img.shields.io/nuget/vpre/Anemonis.RandomOrg.svg?style=flat-square)](https://www.nuget.org/packages/Anemonis.RandomOrg)
 [![MyGet](https://img.shields.io/myget/alexanderkozlenko/vpre/Anemonis.RandomOrg.svg?label=myget&style=flat-square)](https://www.myget.org/feed/alexanderkozlenko/package/nuget/Anemonis.RandomOrg)
+[![LGTM](https://img.shields.io/lgtm/alerts/github/alexanderkozlenko/random-org.svg?style=flat-square)](https://lgtm.com/projects/g/alexanderkozlenko/random-org)
 [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/anemonis/random-org)
 
 ## Project Details
