@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 using Anemonis.RandomOrg.Data;
 using Anemonis.RandomOrg.UnitTests.Internal;
-using Anemonis.RandomOrg.UnitTests.Resources;
 using Anemonis.RandomOrg.UnitTests.TestStubs;
+using Anemonis.Resources;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

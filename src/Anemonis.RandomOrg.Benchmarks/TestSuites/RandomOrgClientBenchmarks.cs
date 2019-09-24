@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 
 using Anemonis.RandomOrg.Benchmarks.Internal;
-using Anemonis.RandomOrg.Benchmarks.Resources;
+using Anemonis.Resources;
 
 using BenchmarkDotNet.Attributes;
 

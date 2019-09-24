@@ -26,5 +26,3 @@ namespace Anemonis.RandomOrg.DataRpc
         }
     }
 }
-
-#pragma warning restore CA1812

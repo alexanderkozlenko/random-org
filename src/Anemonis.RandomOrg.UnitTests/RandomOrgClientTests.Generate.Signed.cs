@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
-using Anemonis.RandomOrg.UnitTests.Resources;
+using Anemonis.Resources;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
