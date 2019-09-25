@@ -51,5 +51,3 @@ namespace Anemonis.RandomOrg.Data
         }
     }
 }
-
-#pragma warning restore CA1819

@@ -608,5 +608,3 @@ namespace Anemonis.RandomOrg
         }
     }
 }
-
-#pragma warning restore CA2000

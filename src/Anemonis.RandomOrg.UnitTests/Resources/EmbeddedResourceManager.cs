@@ -1,10 +1,12 @@
-﻿using System;
+﻿// © Alexander Kozlenko. Licensed under the MIT License.
+
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
 
-namespace Anemonis.RandomOrg.UnitTests.Resources
+namespace Anemonis.Resources
 {
     [DebuggerStepThrough]
     internal static class EmbeddedResourceManager
@@ -19,20 +21,18 @@ namespace Anemonis.RandomOrg.UnitTests.Resources
                 throw new ArgumentNullException(nameof(name));
             }
 
-            using (var resourceStream = _assembly.GetManifestResourceStream(_assemblyName + "." + name))
+            using var resourceStream = _assembly.GetManifestResourceStream(_assemblyName + "." + name);
+
+            if (resourceStream == null)
             {
-                if (resourceStream == null)
-                {
-                    throw new InvalidOperationException(FormattableString.Invariant($"The specified resource \"{name}\" is not found"));
-                }
-
-                using (var bufferStream = new MemoryStream((int)resourceStream.Length))
-                {
-                    resourceStream.CopyTo(bufferStream);
-
-                    return Encoding.UTF8.GetString(bufferStream.ToArray());
-                }
+                throw new InvalidOperationException($"The resource \"{name}\" was not found");
             }
+
+            using var bufferStream = new MemoryStream((int)resourceStream.Length);
+
+            resourceStream.CopyTo(bufferStream);
+
+            return Encoding.UTF8.GetString(bufferStream.ToArray());
         }
     }
 }
