@@ -30,7 +30,6 @@
 | Signed | `getResult` | No |
 | Signed | `verifySignature` | Yes |
 
-- The client supports operation cancellation via cancellation token.
 - The client supports usage of a custom HTTP message invoker.
 - The client supports only `string` as the type for an optional user data parameter.
 - The client uses only `base64` as a BLOB format in JSON.
