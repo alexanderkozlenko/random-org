@@ -12,7 +12,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution.Build", "Solution.Build", "{FA915CE1-3ACA-4991-B25B-28C0507C1737}"
 	ProjectSection(SolutionItems) = preProject
 		.runsettings = .runsettings
-		Anemonis.RandomOrg.props = Anemonis.RandomOrg.props
 		Directory.Build.props = Directory.Build.props
 		Directory.Build.targets = Directory.Build.targets
 	EndProjectSection
