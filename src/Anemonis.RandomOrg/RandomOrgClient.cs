@@ -25,8 +25,13 @@ namespace Anemonis.RandomOrg
     /// <summary>Represents RANDOM.ORG service client.</summary>
     public sealed partial class RandomOrgClient : IDisposable
     {
-        private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
-        private static readonly MediaTypeWithQualityHeaderValue _mediaTypeWithQualityHeaderValue = MediaTypeWithQualityHeaderValue.Parse("application/json; charset=utf-8");
+        private static readonly MediaTypeHeaderValue _contentTypeHeaderValue =
+            MediaTypeHeaderValue.Parse($"{JsonRpcTransport.MediaType}; charset={JsonRpcTransport.Charset}");
+        private static readonly MediaTypeWithQualityHeaderValue _acceptHeaderValue =
+            MediaTypeWithQualityHeaderValue.Parse(JsonRpcTransport.MediaType);
+        private static readonly StringWithQualityHeaderValue _acceptCharsetHeaderValue =
+            StringWithQualityHeaderValue.Parse(JsonRpcTransport.Charset);
+
         private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/2/invoke", UriKind.Absolute);
         private static readonly JsonSerializer _jsonSerializer = CreateJsonSerializer();
         private static readonly Dictionary<string, JsonRpcResponseContract> _responseContracts = CreateJsonRpcContracts();
@@ -94,12 +99,13 @@ namespace Anemonis.RandomOrg
             var httpHandler = new HttpClientHandler
             {
                 AllowAutoRedirect = false,
-                AutomaticDecompression = DecompressionMethods.GZip
+                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
             };
 
             var httpClient = new HttpClient(httpHandler);
 
-            httpClient.DefaultRequestHeaders.Accept.Add(_mediaTypeWithQualityHeaderValue);
+            httpClient.DefaultRequestHeaders.Accept.Add(_acceptHeaderValue);
+            httpClient.DefaultRequestHeaders.AcceptCharset.Add(_acceptCharsetHeaderValue);
             httpClient.DefaultRequestHeaders.ExpectContinue = false;
             httpClient.Timeout = TimeSpan.FromMinutes(2);
 
@@ -269,8 +275,9 @@ namespace Anemonis.RandomOrg
                 {
                     var requestContent = new StreamContent(requestStream);
 
-                    requestContent.Headers.ContentType = _mediaTypeHeaderValue;
+                    requestContent.Headers.ContentType = _contentTypeHeaderValue;
                     httpRequest.Content = requestContent;
+                    httpRequest.Headers.Date = DateTime.UtcNow;
 
                     using (var httpResponse = await _httpInvoker.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false))
                     {
@@ -285,7 +292,7 @@ namespace Anemonis.RandomOrg
                         {
                             throw new RandomOrgProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                         }
-                        if (!contentTypeHeaderValue.MediaType.Equals(_mediaTypeHeaderValue.MediaType, StringComparison.OrdinalIgnoreCase))
+                        if (!contentTypeHeaderValue.MediaType.Equals(_contentTypeHeaderValue.MediaType, StringComparison.OrdinalIgnoreCase))
                         {
                             throw new RandomOrgProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                         }

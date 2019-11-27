@@ -12,7 +12,7 @@ namespace Anemonis.RandomOrg.Benchmarks.Internal
 {
     internal sealed class RandomOrgBenchmarkHandler : HttpMessageHandler
     {
-        private static readonly MediaTypeHeaderValue _mediaTypeHeaderValue = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
+        private static readonly MediaTypeHeaderValue _contentTypeHeaderValue = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
         private readonly IReadOnlyDictionary<string, string> _contents;
 
@@ -31,7 +31,7 @@ namespace Anemonis.RandomOrg.Benchmarks.Internal
             var requestToken = JObject.Parse(await request.Content.ReadAsStringAsync());
             var responseContent = new StringContent(_contents[(string)requestToken["method"]].Replace("{id}", (string)requestToken["id"]));
 
-            responseContent.Headers.ContentType = _mediaTypeHeaderValue;
+            responseContent.Headers.ContentType = _contentTypeHeaderValue;
 
             return new HttpResponseMessage
             {
