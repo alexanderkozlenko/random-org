@@ -1,6 +1,6 @@
 {
-    "jsonrpc": "2.0",
-    "result": {
-        "authenticity": true
-    }
+  "jsonrpc": "2.0",
+  "result": {
+    "authenticity": true
+  }
 }

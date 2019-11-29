@@ -1,9 +1,9 @@
 {
-    "jsonrpc": "2.0",
-    "method": "generateSignedUUIDs",
-    "params": {
-        "apiKey": "55ea5fe3-ab48-47f1-a0ed-952648e1a8c2",
-        "n": 2,
-        "userData": "2a7c3042-a6fc-4449-b8da-1aac0c20b1df"
-    }
+  "jsonrpc": "2.0",
+  "method": "generateSignedUUIDs",
+  "params": {
+    "apiKey": "55ea5fe3-ab48-47f1-a0ed-952648e1a8c2",
+    "n": 2,
+    "userData": "2a7c3042-a6fc-4449-b8da-1aac0c20b1df"
+  }
 }

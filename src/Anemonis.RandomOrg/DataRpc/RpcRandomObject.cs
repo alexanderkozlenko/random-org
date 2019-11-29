@@ -1,6 +1,6 @@
 ﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
-using System.Collections.Generic;
+using System;
 
 using Newtonsoft.Json;
 
@@ -8,10 +8,10 @@ using Newtonsoft.Json;
 
 namespace Anemonis.RandomOrg.DataRpc
 {
-    internal abstract class RpcRandomObject<T> : RpcRandomObject
+    internal abstract class RpcRandomObject
     {
-        [JsonProperty("data", Required = Required.Always)]
-        public IReadOnlyList<T> Data
+        [JsonProperty("completionTime", Required = Required.Always)]
+        public DateTime CompletionTime
         {
             get;
             set;

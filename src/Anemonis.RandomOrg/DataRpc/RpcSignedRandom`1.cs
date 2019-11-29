@@ -46,5 +46,12 @@ namespace Anemonis.RandomOrg.DataRpc
         {
             get;
         }
+
+        [JsonProperty("ticketData", Required = Required.AllowNull)]
+        public RpcTicketData TicketData
+        {
+            get;
+            set;
+        }
     }
 }

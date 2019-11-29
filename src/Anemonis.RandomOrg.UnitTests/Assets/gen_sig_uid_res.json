@@ -1,27 +1,28 @@
 {
-    "jsonrpc": "2.0",
-    "result": {
-        "random": {
-            "method": "generateSignedUUIDs",
-            "hashedApiKey": "FG+7TLaIoH+9IUeE8vc0ln2AL2EoPmGfd63M/40XPWSd8uJ/3cnpVBQnNhppoKiYeFCwy5PaS1A/jmdUPfRWzQ==",
-            "n": 2,
-            "data": [
-                "8a5e74a0-8db5-4fa8-871d-79646ba0a8c0",
-                "daf218f5-e6cf-452d-8581-ca24a826f12c"
-            ],
-            "license": {
-                "type": "beta",
-                "text": "These values are licensed for non-profit, commercial (non-gambling), and for gambling purposes with no prize value limitations.",
-                "infoUrl": "https://api.random.org/licenses/beta"
-            },
-            "userData": "2a7c3042-a6fc-4449-b8da-1aac0c20b1df",
-            "completionTime": "2015-01-02 03:04:05Z",
-            "serialNumber": 1
-        },
-        "signature": "cG54OCqbxmOUN0Qk2ajplZDj/9A3ms4sobt6qGHSS1/Yy4XZ0O/1Axkd/WwkxFpE+z/qaY7WBsrdbOkN3sceKNwvd63AR8rbjkGx7zxTRAyP3jaCHQUyL1qOM8E3tx//OOi/o4Y7qSQXD4QH5jPDCR+PpjBFU6lD+KUI/6RX9v7p2cV5LAtGYV35rR83Zlid6KBxJhoT189y3kbD2b63S/RuS3siHZZPa5ASm6JTpiNPkOvTGBXf/k++d8Sx6xieFId2ydGpSkG0EKFR/2rzKEw8JrjmweXWJ4kPgdemei4g0tNNTaca90Vt+Tr8XkMNtTdM4lXXP/P4VZnlacy/sNLo2FsMLN+2YW29sKaWAp1lPpJgLYd72R1NleZ++sN2HNALCBj3vxAeFplfydyReuVv3rWkpRdxbCDZ0jl6VG6eyzAtgZ+AYStq/Hhn9t/0Q9qvfdhyfQGh4nAUCCVdzJp6BA7AJS3NDyCyGyAC6ZCCr3DGGvJDdNhIkTcVJY2ikbhtlXv6TfjQh3qhElqKRgJVJUzvFqSvoIHc1I1iY+YsvuXhD4VzmmRjR3nELt9wXi8fSKLlH8VkITmirJUM6vhfLrxBAgrgNC7QQT62v6Ov5Jzn+EYQ6ncoIsU3JIC1UFX/uwfU+3iEouY3O8OnjDWABwOOdWZecB5e+KkMirc=",
-        "bitsUsed": 256,
-        "bitsLeft": 249744,
-        "requestsLeft": 999,
-        "advisoryDelay": 0
-    }
+  "jsonrpc": "2.0",
+  "result": {
+    "random": {
+      "method": "generateSignedUUIDs",
+      "hashedApiKey": "FG+7TLaIoH+9IUeE8vc0ln2AL2EoPmGfd63M/40XPWSd8uJ/3cnpVBQnNhppoKiYeFCwy5PaS1A/jmdUPfRWzQ==",
+      "n": 2,
+      "data": [
+        "8a5e74a0-8db5-4fa8-871d-79646ba0a8c0",
+        "daf218f5-e6cf-452d-8581-ca24a826f12c"
+      ],
+      "license": {
+        "type": "beta",
+        "text": "These values are licensed for non-profit, commercial (non-gambling), and for gambling purposes with no prize value limitations.",
+        "infoUrl": "https://api.random.org/licenses/beta"
+      },
+      "userData": "2a7c3042-a6fc-4449-b8da-1aac0c20b1df",
+      "ticketData": null,
+      "completionTime": "2015-01-02 03:04:05Z",
+      "serialNumber": 1
+    },
+    "signature": "cG54OCqbxmOUN0Qk2ajplZDj/9A3ms4sobt6qGHSS1/Yy4XZ0O/1Axkd/WwkxFpE+z/qaY7WBsrdbOkN3sceKNwvd63AR8rbjkGx7zxTRAyP3jaCHQUyL1qOM8E3tx//OOi/o4Y7qSQXD4QH5jPDCR+PpjBFU6lD+KUI/6RX9v7p2cV5LAtGYV35rR83Zlid6KBxJhoT189y3kbD2b63S/RuS3siHZZPa5ASm6JTpiNPkOvTGBXf/k++d8Sx6xieFId2ydGpSkG0EKFR/2rzKEw8JrjmweXWJ4kPgdemei4g0tNNTaca90Vt+Tr8XkMNtTdM4lXXP/P4VZnlacy/sNLo2FsMLN+2YW29sKaWAp1lPpJgLYd72R1NleZ++sN2HNALCBj3vxAeFplfydyReuVv3rWkpRdxbCDZ0jl6VG6eyzAtgZ+AYStq/Hhn9t/0Q9qvfdhyfQGh4nAUCCVdzJp6BA7AJS3NDyCyGyAC6ZCCr3DGGvJDdNhIkTcVJY2ikbhtlXv6TfjQh3qhElqKRgJVJUzvFqSvoIHc1I1iY+YsvuXhD4VzmmRjR3nELt9wXi8fSKLlH8VkITmirJUM6vhfLrxBAgrgNC7QQT62v6Ov5Jzn+EYQ6ncoIsU3JIC1UFX/uwfU+3iEouY3O8OnjDWABwOOdWZecB5e+KkMirc=",
+    "bitsUsed": 256,
+    "bitsLeft": 249744,
+    "requestsLeft": 999,
+    "advisoryDelay": 0
+  }
 }

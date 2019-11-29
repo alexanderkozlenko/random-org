@@ -1,8 +1,8 @@
 {
-    "jsonrpc": "2.0",
-    "error": {
-        "code": 101,
-        "message": "Service offline; please try again later",
-        "data": null
-    }
+  "jsonrpc": "2.0",
+  "error": {
+    "code": 101,
+    "message": "Service offline; please try again later",
+    "data": null
+  }
 }
