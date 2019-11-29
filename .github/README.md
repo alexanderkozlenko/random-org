@@ -33,7 +33,6 @@
 | Signed | `listTickets` | No |
 | Signed | `getTicket` | No |
 
-- The client supports usage of a custom HTTP message invoker.
 - The client supports only `string` as the type for an optional user data parameter.
 - The client uses only `base64` as a BLOB format in JSON.
 - The client uses only `10` as a base for integers in JSON.
