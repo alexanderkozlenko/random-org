@@ -1,26 +1,26 @@
 {
-    "jsonrpc": "2.0",
-    "result": {
-        "random": {
-            "data": [
-                [
-                    128,
-                    0,
-                    25
-                ],
-                [
-                    33,
-                    152,
-                    148,
-                    256,
-                    117
-                ]
-            ],
-            "completionTime": "2015-01-02 03:04:05Z"
-        },
-        "bitsUsed": 256,
-        "bitsLeft": 249744,
-        "requestsLeft": 999,
-        "advisoryDelay": 0
-    }
+  "jsonrpc": "2.0",
+  "result": {
+    "random": {
+      "data": [
+        [
+          128,
+          0,
+          25
+        ],
+        [
+          33,
+          152,
+          148,
+          256,
+          117
+        ]
+      ],
+      "completionTime": "2015-01-02 03:04:05Z"
+    },
+    "bitsUsed": 256,
+    "bitsLeft": 249744,
+    "requestsLeft": 999,
+    "advisoryDelay": 0
+  }
 }

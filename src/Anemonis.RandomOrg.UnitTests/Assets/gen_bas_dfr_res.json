@@ -1,16 +1,16 @@
 {
-    "jsonrpc": "2.0",
-    "result": {
-        "random": {
-            "data": [
-                0.0753205,
-                0.59823072
-            ],
-            "completionTime": "2015-01-02 03:04:05Z"
-        },
-        "bitsUsed": 256,
-        "bitsLeft": 249744,
-        "requestsLeft": 999,
-        "advisoryDelay": 0
-    }
+  "jsonrpc": "2.0",
+  "result": {
+    "random": {
+      "data": [
+        0.0753205,
+        0.59823072
+      ],
+      "completionTime": "2015-01-02 03:04:05Z"
+    },
+    "bitsUsed": 256,
+    "bitsLeft": 249744,
+    "requestsLeft": 999,
+    "advisoryDelay": 0
+  }
 }

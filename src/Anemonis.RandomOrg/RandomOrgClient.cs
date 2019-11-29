@@ -6,7 +6,6 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,7 +31,7 @@ namespace Anemonis.RandomOrg
         private static readonly StringWithQualityHeaderValue _acceptCharsetHeaderValue =
             StringWithQualityHeaderValue.Parse(JsonRpcTransport.Charset);
 
-        private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/2/invoke", UriKind.Absolute);
+        private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/3/invoke", UriKind.Absolute);
         private static readonly JsonSerializer _jsonSerializer = CreateJsonSerializer();
         private static readonly Dictionary<string, JsonRpcResponseContract> _responseContracts = CreateJsonRpcContracts();
 
@@ -296,7 +295,7 @@ namespace Anemonis.RandomOrg
                         {
                             throw new RandomOrgProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                         }
-                        if ((contentTypeHeaderValue.CharSet != null) && (string.Compare(contentTypeHeaderValue.CharSet, Encoding.UTF8.WebName, StringComparison.OrdinalIgnoreCase) != 0))
+                        if ((contentTypeHeaderValue.CharSet != null) && (string.Compare(contentTypeHeaderValue.CharSet, JsonRpcTransport.Charset, StringComparison.OrdinalIgnoreCase) != 0))
                         {
                             throw new RandomOrgProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                         }
@@ -420,7 +419,7 @@ namespace Anemonis.RandomOrg
 
             cancellationToken.ThrowIfCancellationRequested();
 
-            var rpcRandomParam = default(object);
+            var rpcRandomParam = default(RpcRandomObject);
 
             switch (random)
             {

@@ -1,6 +1,6 @@
 # Anemonis.RandomOrg
 
-[RANDOM.ORG](https://www.random.org) service client based on [Core API (Release 2)](https://api.random.org/json-rpc/2).
+[RANDOM.ORG](https://www.random.org) service client based on [Core API (Release 3)](https://api.random.org/json-rpc/3).
 
 | [![](https://img.shields.io/gitter/room/nwjs/nw.js.svg?style=flat-square)](https://gitter.im/anemonis/random-org) | Release | Current |
 |---|---|---|
@@ -12,7 +12,7 @@
 
 | Category | Method | Support |
 | :---: | --- | :---: |
-| Basic | `getUsage` | Yes |
+| Core | `getUsage` | Yes |
 | Basic | `generateIntegers` | Yes |
 | Basic | `generateIntegerSequences` | Yes |
 | Basic | `generateDecimalFractions` | Yes |
@@ -29,11 +29,15 @@
 | Signed | `generateSignedBlobs` | Yes |
 | Signed | `getResult` | No |
 | Signed | `verifySignature` | Yes |
+| Signed | `createTickets` | No |
+| Signed | `listTickets` | No |
+| Signed | `getTicket` | No |
 
 - The client supports usage of a custom HTTP message invoker.
 - The client supports only `string` as the type for an optional user data parameter.
 - The client uses only `base64` as a BLOB format in JSON.
 - The client uses only `10` as a base for integers in JSON.
+- The client doesn't support working with tickets in Signed API.
 
 ## Code Examples
 
@@ -56,7 +60,7 @@ var bbl = await client.GenerateBlobsAsync(1, 8);
 // Generate an integer from the [0,10] range w/o replacement with signature
 var sin = await client.GenerateSignedIntegersAsync(1, 0, 10, false);
 // Verify the signature of the previously generated random integer
-var ain = await client.VerifySignatureAsync(sin.Random, sin.Signature);
+var ain = await client.VerifySignatureAsync(sin.Random, sin.GetSignature());
 // Get usage information of the current API key
 var usg = await client.GetUsageAsync();
 
