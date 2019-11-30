@@ -74,6 +74,9 @@ namespace Anemonis.RandomOrg.UnitTests
             Assert.IsNotNull(result.Random.Data);
 
             var joresult = jores["result"];
+
+            Assert.AreEqual(RandomOrgConverter.LongToTimeSpan(joresult["advisoryDelay"].ToObject<long>()), result.AdvisoryDelay);
+
             var jorandom = jores["result"]["random"];
 
             Assert.AreEqual(joresult["bitsUsed"].ToObject<long>(), result.BitsUsed);
@@ -92,6 +95,9 @@ namespace Anemonis.RandomOrg.UnitTests
             Assert.IsNotNull(result.Random.License);
 
             var joresult = jores["result"];
+
+            Assert.AreEqual(RandomOrgConverter.LongToTimeSpan(joresult["advisoryDelay"].ToObject<long>()), result.AdvisoryDelay);
+
             var jorandom = jores["result"]["random"];
             var jolicense = jores["result"]["random"]["license"];
 

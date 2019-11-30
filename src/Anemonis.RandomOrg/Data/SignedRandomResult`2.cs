@@ -1,5 +1,7 @@
 ﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
+using System;
+
 namespace Anemonis.RandomOrg.Data
 {
     /// <summary>Encapsulates signed random data generation result.</summary>
@@ -10,8 +12,8 @@ namespace Anemonis.RandomOrg.Data
     {
         private readonly byte[] _signature;
 
-        internal SignedRandomResult(SignedRandom<TValue, TParameters> random, long bitsUsed, long bitsLeft, long requestsLeft, byte[] signature)
-            : base(random, bitsUsed, bitsLeft, requestsLeft)
+        internal SignedRandomResult(SignedRandom<TValue, TParameters> random, long bitsUsed, long bitsLeft, long requestsLeft, byte[] signature, TimeSpan advisoryDelay)
+            : base(random, bitsUsed, bitsLeft, requestsLeft, advisoryDelay)
         {
             _signature = signature;
         }

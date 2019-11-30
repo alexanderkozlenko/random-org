@@ -1,5 +1,7 @@
 ﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
+using System;
+
 using Newtonsoft.Json;
 
 #pragma warning disable CA1812
@@ -38,7 +40,7 @@ namespace Anemonis.RandomOrg.DataRpc
         }
 
         [JsonProperty("advisoryDelay", Required = Required.Always)]
-        public long AdvisoryDelay
+        public TimeSpan AdvisoryDelay
         {
             get;
             set;
