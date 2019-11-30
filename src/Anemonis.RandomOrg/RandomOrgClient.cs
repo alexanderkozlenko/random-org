@@ -6,6 +6,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -88,9 +89,12 @@ namespace Anemonis.RandomOrg
 
         private static string CreateUserAgentHeaderValue()
         {
-            var assemblyName = Assembly.GetExecutingAssembly().GetName();
+            var packageAssembly = Assembly.GetExecutingAssembly();
+            var packageName = packageAssembly.GetName().Name;
+            var productVersionAttribute = packageAssembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            var productVersion = Regex.Match(productVersionAttribute.InformationalVersion, @"^\d+\.\d+", RegexOptions.Singleline).Value;
 
-            return $"{nameof(Anemonis)}/{assemblyName.Version.ToString(2)} (nuget:{assemblyName.Name})";
+            return $"{nameof(Anemonis)}/{productVersion} (nuget:{packageName})";
         }
 
         private static HttpMessageInvoker CreateHttpInvoker()
