@@ -19,6 +19,12 @@ namespace Anemonis.RandomOrg.UnitTests
 {
     public partial class RandomOrgClientTests
     {
+        [Conditional("DEBUG")]
+        private static void TraceJsonObject(JObject @object)
+        {
+            Trace.WriteLine(@object.ToString(Formatting.Indented));
+        }
+
         private static string CreateTestString(int length)
         {
             return length >= 0 ? new string('*', length) : null;
@@ -26,12 +32,18 @@ namespace Anemonis.RandomOrg.UnitTests
 
         private async Task<HttpResponseMessage> HandleRequest(HttpRequestMessage request, JObject joreq, JObject jores)
         {
+            Assert.IsTrue(request.Headers.Contains("Accept"));
+            Assert.IsTrue(request.Headers.Contains("Accept-Charset"));
+            Assert.IsTrue(request.Headers.Contains("Date"));
+            Assert.IsTrue(request.Headers.Contains("User-Agent"));
+
             var joreqa = JObject.Parse(await request.Content.ReadAsStringAsync());
+
+            TraceJsonObject(joreqa);
 
             joreq["id"] = joreqa["id"];
             jores["id"] = joreqa["id"];
 
-            Trace.WriteLine(joreqa.ToString(Formatting.Indented));
             Assert.IsTrue(JToken.DeepEquals(joreqa, joreq), "Actual JSON string differs from expected");
 
             var content = new StringContent(jores.ToString());
