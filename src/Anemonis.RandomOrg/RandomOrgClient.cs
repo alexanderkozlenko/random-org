@@ -32,13 +32,9 @@ namespace Anemonis.RandomOrg
         private static readonly Dictionary<string, JsonRpcResponseContract> _responseContracts = CreateJsonRpcContracts();
 
         private readonly string _apiKey;
-        private readonly SemaphoreSlim _invocationSemaphore = new SemaphoreSlim(1, 1);
-        private readonly SpinLock _advisoryTimeLock = new SpinLock(false);
         private readonly JsonRpcContractResolver _jsonRpcContractResolver = CreateJsonRpcContractResolver();
         private readonly JsonRpcSerializer _jsonRpcSerializer;
         private readonly HttpMessageInvoker _httpInvoker;
-
-        private DateTime _advisoryTime = new DateTime(0L, DateTimeKind.Utc);
 
         /// <summary>Initializes a new instance of the <see cref="RandomOrgClient" /> class.</summary>
         /// <param name="apiKey">The API key, which is used to track the true random bit usage for the client.</param>
@@ -85,6 +81,7 @@ namespace Anemonis.RandomOrg
 
             settings.Converters.Add(new RandomOrgFloatConverter());
             settings.Converters.Add(new ApiKeyStatusConverter());
+            settings.Converters.Add(new TimeSpanConverter());
 
             return JsonSerializer.Create(settings);
         }
@@ -195,64 +192,20 @@ namespace Anemonis.RandomOrg
             where TResult : RpcRandomResultObject<TRandom, TValue>
             where TRandom : RpcRandomObject<TValue>
         {
-            await _invocationSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+            var jsonRpcRequest = new JsonRpcRequest(new JsonRpcId(Guid.NewGuid().ToString()), method, parameters);
+            var jsonRpcResponse = await SendJsonRpcRequestAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
+            var jsonRpcResponseResult = (TResult)jsonRpcResponse.Result;
 
-            try
-            {
-                var advisoryDelay = 0L;
-                var advisoryTimeLockTaken = false;
-
-                _advisoryTimeLock.Enter(ref advisoryTimeLockTaken);
-
-                advisoryDelay = (_advisoryTime - DateTime.UtcNow).Ticks;
-
-                if (advisoryTimeLockTaken)
-                {
-                    _advisoryTimeLock.Exit();
-                }
-                if (advisoryDelay > 0L)
-                {
-                    await Task.Delay(TimeSpan.FromTicks(advisoryDelay), cancellationToken).ConfigureAwait(false);
-                }
-
-                var jsonRpcRequest = new JsonRpcRequest(new JsonRpcId(Guid.NewGuid().ToString()), method, parameters);
-                var jsonRpcResponse = await SendJsonRpcRequestAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
-                var jsonRpcResponseResult = (TResult)jsonRpcResponse.Result;
-
-                advisoryTimeLockTaken = false;
-
-                _advisoryTimeLock.Enter(ref advisoryTimeLockTaken);
-                _advisoryTime = jsonRpcResponseResult.Random.CompletionTime.AddMilliseconds(jsonRpcResponseResult.AdvisoryDelay);
-
-                if (advisoryTimeLockTaken)
-                {
-                    _advisoryTimeLock.Exit();
-                }
-
-                return jsonRpcResponseResult;
-            }
-            finally
-            {
-                _invocationSemaphore.Release();
-            }
+            return jsonRpcResponseResult;
         }
 
         private async Task<TResult> InvokeServiceMethodAsync<TResult>(string method, IReadOnlyDictionary<string, object> parameters, CancellationToken cancellationToken)
             where TResult : RpcMethodResult
         {
-            await _invocationSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+            var jsonRpcRequest = new JsonRpcRequest(new JsonRpcId(Guid.NewGuid().ToString()), method, parameters);
+            var jsonRpcResponse = await SendJsonRpcRequestAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
 
-            try
-            {
-                var jsonRpcRequest = new JsonRpcRequest(new JsonRpcId(Guid.NewGuid().ToString()), method, parameters);
-                var jsonRpcResponse = await SendJsonRpcRequestAsync(jsonRpcRequest, cancellationToken).ConfigureAwait(false);
-
-                return (TResult)jsonRpcResponse.Result;
-            }
-            finally
-            {
-                _invocationSemaphore.Release();
-            }
+            return (TResult)jsonRpcResponse.Result;
         }
 
         private async Task<JsonRpcResponse> SendJsonRpcRequestAsync(JsonRpcRequest request, CancellationToken cancellationToken)
@@ -359,8 +312,6 @@ namespace Anemonis.RandomOrg
         /// <summary>Releases all resources used by the current instance of the <see cref="RandomOrgClient" />.</summary>
         public void Dispose()
         {
-            _advisoryTime = new DateTime(0L, DateTimeKind.Utc);
-            _invocationSemaphore.Dispose();
             _httpInvoker.Dispose();
         }
 
@@ -591,27 +542,6 @@ namespace Anemonis.RandomOrg
                 "verifySignature", parameters, cancellationToken).ConfigureAwait(false);
 
             return result.Authenticity;
-        }
-
-        /// <summary>Gets the nearest allowed time in UTC for random values generation.</summary>
-        public DateTime GenerateAdvisoryTime
-        {
-            get
-            {
-                var advisoryTime = default(DateTime);
-                var advisoryTimeLockTaken = false;
-
-                _advisoryTimeLock.Enter(ref advisoryTimeLockTaken);
-
-                advisoryTime = _advisoryTime;
-
-                if (advisoryTimeLockTaken)
-                {
-                    _advisoryTimeLock.Exit();
-                }
-
-                return advisoryTime;
-            }
         }
     }
 }

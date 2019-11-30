@@ -59,7 +59,7 @@ namespace Anemonis.RandomOrg
             TransferRandom(result.Random, random);
 
             return new RandomResult<int>(
-                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft);
+                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.AdvisoryDelay);
         }
 
         /// <summary>Generates true random integer sequences within a user-defined ranges as an asynchronous operation.</summary>
@@ -155,7 +155,7 @@ namespace Anemonis.RandomOrg
             TransferRandom(result.Random, random);
 
             return new RandomResult<IReadOnlyList<int>>(
-                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft);
+                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.AdvisoryDelay);
         }
 
         /// <summary>Generates true random decimal fractions from a uniform distribution across the [0,1] interval with a user-defined number of decimal places as an asynchronous operation.</summary>
@@ -197,7 +197,7 @@ namespace Anemonis.RandomOrg
             TransferRandom(result.Random, random);
 
             return new RandomResult<decimal>(
-                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft);
+                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.AdvisoryDelay);
         }
 
         /// <summary>Generates true random numbers from a Gaussian distribution as an asynchronous operation.</summary>
@@ -249,7 +249,7 @@ namespace Anemonis.RandomOrg
             TransferRandom(result.Random, random);
 
             return new RandomResult<decimal>(
-                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft);
+                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.AdvisoryDelay);
         }
 
         /// <summary>Generates true random strings as an asynchronous operation.</summary>
@@ -303,7 +303,7 @@ namespace Anemonis.RandomOrg
             TransferRandom(result.Random, random);
 
             return new RandomResult<string>(
-                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft);
+                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.AdvisoryDelay);
         }
 
         /// <summary>Generates version 4 true random UUIDs in accordance with section 4.4 of RFC 4122 as an asynchronous operation.</summary>
@@ -337,7 +337,7 @@ namespace Anemonis.RandomOrg
             TransferRandom(result.Random, random);
 
             return new RandomResult<Guid>(
-                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft);
+                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.AdvisoryDelay);
         }
 
         /// <summary>Generates BLOBs containing true random data as an asynchronous operation.</summary>
@@ -382,7 +382,7 @@ namespace Anemonis.RandomOrg
             TransferRandom(result.Random, random);
 
             return new RandomResult<byte[]>(
-                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft);
+                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.AdvisoryDelay);
         }
 
         /// <summary>Generates true random integers within a user-defined range with signature as an asynchronous operation.</summary>
@@ -441,7 +441,7 @@ namespace Anemonis.RandomOrg
             random.Parameters.Replacement = result.Random.Replacement;
 
             return new SignedRandomResult<int, IntegerParameters>(
-                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature);
+                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature, result.AdvisoryDelay);
         }
 
         /// <summary>Generates true random integer sequences within a user-defined ranges with signature as an asynchronous operation.</summary>
@@ -547,7 +547,7 @@ namespace Anemonis.RandomOrg
             random.Parameters.Replacements = result.Random.Replacements;
 
             return new SignedRandomResult<IReadOnlyList<int>, IntegerSequenceParameters>(
-                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature);
+                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature, result.AdvisoryDelay);
         }
 
         /// <summary>Generates true random decimal fractions from a uniform distribution across the [0,1] interval with a user-defined number of decimal places with signature as an asynchronous operation.</summary>
@@ -598,7 +598,7 @@ namespace Anemonis.RandomOrg
             random.Parameters.Replacement = result.Random.Replacement;
 
             return new SignedRandomResult<decimal, DecimalFractionParameters>(
-                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature);
+                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature, result.AdvisoryDelay);
         }
 
         /// <summary>Generates true random numbers from a Gaussian distribution with signature as an asynchronous operation.</summary>
@@ -660,7 +660,7 @@ namespace Anemonis.RandomOrg
             random.Parameters.SignificantDigits = result.Random.SignificantDigits;
 
             return new SignedRandomResult<decimal, GaussianParameters>(
-                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature);
+                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature, result.AdvisoryDelay);
         }
 
         /// <summary>Generates true random strings with signature as an asynchronous operation.</summary>
@@ -724,7 +724,7 @@ namespace Anemonis.RandomOrg
             random.Parameters.Replacement = result.Random.Replacement;
 
             return new SignedRandomResult<string, StringParameters>(
-                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature);
+                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature, result.AdvisoryDelay);
         }
 
         /// <summary>Generates version 4 true random UUIDs in accordance with section 4.4 of RFC 4122 with signature as an asynchronous operation.</summary>
@@ -764,7 +764,7 @@ namespace Anemonis.RandomOrg
             TransferRandom(result.Random, random);
 
             return new SignedRandomResult<Guid, UuidParameters>(
-                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature);
+                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature, result.AdvisoryDelay);
         }
 
         /// <summary>Generates BLOBs containing true random data with signature as an asynchronous operation.</summary>
@@ -817,7 +817,7 @@ namespace Anemonis.RandomOrg
             random.Parameters.Size = result.Random.Size / 8;
 
             return new SignedRandomResult<byte[], BlobParameters>(
-                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature);
+                random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature, result.AdvisoryDelay);
         }
     }
 }

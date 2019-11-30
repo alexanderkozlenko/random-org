@@ -14,6 +14,11 @@ namespace Anemonis.RandomOrg.UnitTests.Internal
             return DateTime.ParseExact(value, "yyyy'-'MM'-'dd' 'HH':'mm':'ss.FFFFFFFK", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
         }
 
+        public static TimeSpan LongToTimeSpan(long value)
+        {
+            return TimeSpan.FromMilliseconds(value);
+        }
+
         public static ApiKeyStatus StringToApiKeyStatus(string value)
         {
             switch (value)

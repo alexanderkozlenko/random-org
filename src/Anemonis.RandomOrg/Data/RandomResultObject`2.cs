@@ -1,5 +1,7 @@
 ﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
+using System;
+
 namespace Anemonis.RandomOrg.Data
 {
     /// <summary>Encapsulates random data generation result.</summary>
@@ -8,12 +10,13 @@ namespace Anemonis.RandomOrg.Data
     public abstract class RandomResultObject<TRandom, TValue>
         where TRandom : RandomObject<TValue>
     {
-        private protected RandomResultObject(TRandom random, long bitsUsed, long bitsLeft, long requestsLeft)
+        private protected RandomResultObject(TRandom random, long bitsUsed, long bitsLeft, long requestsLeft, TimeSpan advisoryDelay)
         {
             Random = random;
             BitsUsed = bitsUsed;
             BitsLeft = bitsLeft;
             RequestsLeft = requestsLeft;
+            AdvisoryDelay = advisoryDelay;
         }
 
         /// <summary>Gets the random objects and associated data.</summary>
@@ -38,6 +41,13 @@ namespace Anemonis.RandomOrg.Data
         public long BitsUsed
         {
             get;
+        }
+
+        /// <summary>Gets the recommended time for delay before issuing another generation request.</summary>
+        public TimeSpan AdvisoryDelay
+        {
+            get;
+            set;
         }
     }
 }
