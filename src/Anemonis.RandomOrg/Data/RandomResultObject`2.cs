@@ -47,7 +47,6 @@ namespace Anemonis.RandomOrg.Data
         public TimeSpan AdvisoryDelay
         {
             get;
-            set;
         }
     }
 }
