@@ -12,26 +12,26 @@
 
 | Category | Method | Support |
 | :---: | --- | :---: |
-| Core | `getUsage` | Yes |
-| Basic | `generateIntegers` | Yes |
-| Basic | `generateIntegerSequences` | Yes |
-| Basic | `generateDecimalFractions` | Yes |
-| Basic | `generateGaussians` | Yes |
-| Basic | `generateStrings` | Yes |
-| Basic | `generateUUIDs` | Yes |
-| Basic | `generateBlobs` | Yes |
-| Signed | `generateSignedIntegers` | Yes |
-| Signed | `generateSignedIntegerSequences` | Yes |
-| Signed | `generateSignedDecimalFractions` | Yes |
-| Signed | `generateSignedGaussians` | Yes |
-| Signed | `generateSignedStrings` | Yes |
-| Signed | `generateSignedUUIDs` | Yes |
-| Signed | `generateSignedBlobs` | Yes |
-| Signed | `getResult` | No |
-| Signed | `verifySignature` | Yes |
-| Signed | `createTickets` | No |
-| Signed | `listTickets` | No |
-| Signed | `getTicket` | No |
+| Core | `getUsage` | :heavy_check_mark: |
+| Basic | `generateIntegers` | :heavy_check_mark: |
+| Basic | `generateIntegerSequences` | :heavy_check_mark: |
+| Basic | `generateDecimalFractions` | :heavy_check_mark: |
+| Basic | `generateGaussians` | :heavy_check_mark: |
+| Basic | `generateStrings` | :heavy_check_mark: |
+| Basic | `generateUUIDs` | :heavy_check_mark: |
+| Basic | `generateBlobs` | :heavy_check_mark: |
+| Signed | `generateSignedIntegers` | :heavy_check_mark: |
+| Signed | `generateSignedIntegerSequences` | :heavy_check_mark: |
+| Signed | `generateSignedDecimalFractions` | :heavy_check_mark: |
+| Signed | `generateSignedGaussians` | :heavy_check_mark: |
+| Signed | `generateSignedStrings` | :heavy_check_mark: |
+| Signed | `generateSignedUUIDs` | :heavy_check_mark: |
+| Signed | `generateSignedBlobs` | :heavy_check_mark: |
+| Signed | `getResult` | :heavy_multiplication_x: |
+| Signed | `verifySignature` | :heavy_check_mark: |
+| Signed | `createTickets` | :heavy_multiplication_x: |
+| Signed | `listTickets` | :heavy_multiplication_x: |
+| Signed | `getTicket` | :heavy_multiplication_x: |
 
 - The client supports only `string` as the type for an optional user data parameter.
 - The client uses only `base64` as a BLOB format in JSON.
