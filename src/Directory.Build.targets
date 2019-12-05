@@ -7,4 +7,14 @@
       <PackageProjectUrl>$(RepositoryUrl.Replace('.git', ''))</PackageProjectUrl>
     </PropertyGroup>
   </Target>
+  <Target Name="PublishTestProjectConfigurationFiles"
+          AfterTargets="Build"
+          Condition="'$(IsTestProject)' == 'true'">
+    <ItemGroup>
+      <AssemblyConfigurationFile Include="Properties\*config.json" />
+    </ItemGroup>
+    <Copy SourceFiles="@(AssemblyConfigurationFile)"
+          DestinationFiles="$(OutputPath)$(AssemblyName).%(AssemblyConfigurationFile.Filename)%(AssemblyConfigurationFile.Extension)"
+          Condition="!Exists('$(OutputPath)$(AssemblyName).%(AssemblyConfigurationFile.Filename)%(AssemblyConfigurationFile.Extension)')" />
+  </Target>
 </Project>
