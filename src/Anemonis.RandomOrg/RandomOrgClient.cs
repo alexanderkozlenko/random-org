@@ -313,7 +313,7 @@ namespace Anemonis.RandomOrg
             }
         }
 
-        /// <summary>Releases all resources used by the current instance of the <see cref="RandomOrgClient" />.</summary>
+        /// <inheritdoc />
         public void Dispose()
         {
             _httpInvoker.Dispose();
