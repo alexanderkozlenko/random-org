@@ -6,7 +6,7 @@
   <ItemGroup>
     <PackageReference Include="Anemonis.JsonRpc" Version="1.24.1" />
     <PackageReference Include="Microsoft.CodeQuality.Analyzers" Version="2.9.8" />
-    <PackageReference Include="Microsoft.NetCore.Analyzers" Version="2.9.8" />
+    <PackageReference Include="Microsoft.NetCore.Analyzers" Version="3.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" />
   </ItemGroup>
   <Import Project="..\Solution.Build.Library.targets" />
