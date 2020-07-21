@@ -6,7 +6,7 @@
 |---|---|---|
 | Artifacts | [![](https://img.shields.io/nuget/vpre/Anemonis.RandomOrg.svg?style=flat-square)](https://www.nuget.org/packages/Anemonis.RandomOrg) | [![](https://img.shields.io/myget/alexanderkozlenko/vpre/Anemonis.RandomOrg.svg?label=myget&style=flat-square)](https://www.myget.org/feed/alexanderkozlenko/package/nuget/Anemonis.RandomOrg) |
 | Code Health | | [![](https://img.shields.io/sonar/coverage/random-org?format=long&server=https%3A%2F%2Fsonarcloud.io&style=flat-square)](https://sonarcloud.io/component_measures?id=random-org&metric=coverage&view=list) [![](https://img.shields.io/sonar/violations/random-org?format=long&server=https%3A%2F%2Fsonarcloud.io&style=flat-square)](https://sonarcloud.io/project/issues?id=random-org&resolved=false) |
-| Build Status | | [![](https://img.shields.io/azure-devops/build/alexanderkozlenko/github-pipelines/3?label=master&style=flat-square)](https://dev.azure.com/alexanderkozlenko/github-pipelines/_build?definitionId=3&_a=summary) |
+| Build Status | | [![](https://img.shields.io/azure-devops/build/alexanderkozlenko/github-pipelines/3?label=main&style=flat-square)](https://dev.azure.com/alexanderkozlenko/github-pipelines/_build?definitionId=3&_a=summary) |
 
 ## Project Details
 
