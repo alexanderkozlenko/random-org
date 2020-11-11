@@ -15,14 +15,14 @@ namespace Anemonis.Resources
 
         public static string GetString(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
 
             using var resourceStream = _assembly.GetManifestResourceStream(_assemblyName + "." + name);
 
-            if (resourceStream == null)
+            if (resourceStream is null)
             {
                 throw new InvalidOperationException($"The resource \"{name}\" was not found");
             }

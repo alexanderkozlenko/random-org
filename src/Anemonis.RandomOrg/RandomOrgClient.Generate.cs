@@ -58,7 +58,7 @@ namespace Anemonis.RandomOrg
 
             TransferRandom(result.Random, random);
 
-            return new RandomResult<int>(
+            return new(
                 random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.AdvisoryDelay);
         }
 
@@ -79,19 +79,19 @@ namespace Anemonis.RandomOrg
         public async Task<RandomResult<IReadOnlyList<int>>> GenerateIntegerSequencesAsync(
             IReadOnlyList<int> lengths, IReadOnlyList<int> minimums, IReadOnlyList<int> maximums, IReadOnlyList<bool> replacements, CancellationToken cancellationToken = default)
         {
-            if (lengths == null)
+            if (lengths is null)
             {
                 throw new ArgumentNullException(nameof(lengths));
             }
-            if (minimums == null)
+            if (minimums is null)
             {
                 throw new ArgumentNullException(nameof(minimums));
             }
-            if (maximums == null)
+            if (maximums is null)
             {
                 throw new ArgumentNullException(nameof(maximums));
             }
-            if (replacements == null)
+            if (replacements is null)
             {
                 throw new ArgumentNullException(nameof(replacements));
             }
@@ -154,7 +154,7 @@ namespace Anemonis.RandomOrg
 
             TransferRandom(result.Random, random);
 
-            return new RandomResult<IReadOnlyList<int>>(
+            return new(
                 random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.AdvisoryDelay);
         }
 
@@ -196,7 +196,7 @@ namespace Anemonis.RandomOrg
 
             TransferRandom(result.Random, random);
 
-            return new RandomResult<decimal>(
+            return new(
                 random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.AdvisoryDelay);
         }
 
@@ -248,7 +248,7 @@ namespace Anemonis.RandomOrg
 
             TransferRandom(result.Random, random);
 
-            return new RandomResult<decimal>(
+            return new(
                 random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.AdvisoryDelay);
         }
 
@@ -277,7 +277,7 @@ namespace Anemonis.RandomOrg
             {
                 throw new ArgumentOutOfRangeException(nameof(length), length, Strings.GetString("random.string.length.invalid_range"));
             }
-            if (characters == null)
+            if (characters is null)
             {
                 throw new ArgumentNullException(nameof(characters));
             }
@@ -302,7 +302,7 @@ namespace Anemonis.RandomOrg
 
             TransferRandom(result.Random, random);
 
-            return new RandomResult<string>(
+            return new(
                 random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.AdvisoryDelay);
         }
 
@@ -336,7 +336,7 @@ namespace Anemonis.RandomOrg
 
             TransferRandom(result.Random, random);
 
-            return new RandomResult<Guid>(
+            return new(
                 random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.AdvisoryDelay);
         }
 
@@ -381,7 +381,7 @@ namespace Anemonis.RandomOrg
 
             TransferRandom(result.Random, random);
 
-            return new RandomResult<byte[]>(
+            return new(
                 random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.AdvisoryDelay);
         }
 
@@ -413,7 +413,7 @@ namespace Anemonis.RandomOrg
             {
                 throw new ArgumentOutOfRangeException(nameof(maximum), maximum, Strings.GetString("random.integer.upper_boundary.invalid_range"));
             }
-            if ((userData != null) && (userData.Length > 1000))
+            if ((userData is not null) && (userData.Length > 1000))
             {
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
@@ -440,7 +440,7 @@ namespace Anemonis.RandomOrg
             random.Parameters.Maximum = result.Random.Maximum;
             random.Parameters.Replacement = result.Random.Replacement;
 
-            return new SignedRandomResult<int, IntegerParameters>(
+            return new(
                 random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature, result.AdvisoryDelay);
         }
 
@@ -462,19 +462,19 @@ namespace Anemonis.RandomOrg
         public async Task<SignedRandomResult<IReadOnlyList<int>, IntegerSequenceParameters>> GenerateSignedIntegerSequencesAsync(
              IReadOnlyList<int> lengths, IReadOnlyList<int> minimums, IReadOnlyList<int> maximums, IReadOnlyList<bool> replacements, string userData = null, CancellationToken cancellationToken = default)
         {
-            if (lengths == null)
+            if (lengths is null)
             {
                 throw new ArgumentNullException(nameof(lengths));
             }
-            if (minimums == null)
+            if (minimums is null)
             {
                 throw new ArgumentNullException(nameof(minimums));
             }
-            if (maximums == null)
+            if (maximums is null)
             {
                 throw new ArgumentNullException(nameof(maximums));
             }
-            if (replacements == null)
+            if (replacements is null)
             {
                 throw new ArgumentNullException(nameof(replacements));
             }
@@ -520,7 +520,7 @@ namespace Anemonis.RandomOrg
             {
                 throw new ArgumentException(Strings.GetString("random.sequence.total.invalid_range"));
             }
-            if ((userData != null) && (userData.Length > 1000))
+            if ((userData is not null) && (userData.Length > 1000))
             {
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
@@ -546,7 +546,7 @@ namespace Anemonis.RandomOrg
             random.Parameters.Maximums = result.Random.Maximums;
             random.Parameters.Replacements = result.Random.Replacements;
 
-            return new SignedRandomResult<IReadOnlyList<int>, IntegerSequenceParameters>(
+            return new(
                 random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature, result.AdvisoryDelay);
         }
 
@@ -573,7 +573,7 @@ namespace Anemonis.RandomOrg
             {
                 throw new ArgumentOutOfRangeException(nameof(decimalPlaces), decimalPlaces, Strings.GetString("random.decimal_fraction.decimal_places.invalid_range"));
             }
-            if ((userData != null) && (userData.Length > 1000))
+            if ((userData is not null) && (userData.Length > 1000))
             {
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
@@ -597,7 +597,7 @@ namespace Anemonis.RandomOrg
             random.Parameters.DecimalPlaces = result.Random.DecimalPlaces;
             random.Parameters.Replacement = result.Random.Replacement;
 
-            return new SignedRandomResult<decimal, DecimalFractionParameters>(
+            return new(
                 random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature, result.AdvisoryDelay);
         }
 
@@ -633,7 +633,7 @@ namespace Anemonis.RandomOrg
             {
                 throw new ArgumentOutOfRangeException(nameof(significantDigits), significantDigits, Strings.GetString("random.gaussian.significant_digits.invalid_range"));
             }
-            if ((userData != null) && (userData.Length > 1000))
+            if ((userData is not null) && (userData.Length > 1000))
             {
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
@@ -659,7 +659,7 @@ namespace Anemonis.RandomOrg
             random.Parameters.StandardDeviation = result.Random.StandardDeviation;
             random.Parameters.SignificantDigits = result.Random.SignificantDigits;
 
-            return new SignedRandomResult<decimal, GaussianParameters>(
+            return new(
                 random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature, result.AdvisoryDelay);
         }
 
@@ -689,7 +689,7 @@ namespace Anemonis.RandomOrg
             {
                 throw new ArgumentOutOfRangeException(nameof(length), length, Strings.GetString("random.string.length.invalid_range"));
             }
-            if (characters == null)
+            if (characters is null)
             {
                 throw new ArgumentNullException(nameof(characters));
             }
@@ -697,7 +697,7 @@ namespace Anemonis.RandomOrg
             {
                 throw new ArgumentException(Strings.GetString("random.string.characters.length.invalid_range"), nameof(characters));
             }
-            if ((userData != null) && (userData.Length > 1000))
+            if ((userData is not null) && (userData.Length > 1000))
             {
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
@@ -723,7 +723,7 @@ namespace Anemonis.RandomOrg
             random.Parameters.Characters = result.Random.Characters;
             random.Parameters.Replacement = result.Random.Replacement;
 
-            return new SignedRandomResult<string, StringParameters>(
+            return new(
                 random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature, result.AdvisoryDelay);
         }
 
@@ -744,7 +744,7 @@ namespace Anemonis.RandomOrg
             {
                 throw new ArgumentOutOfRangeException(nameof(count), count, Strings.GetString("random.uuid.count.invalid_range"));
             }
-            if ((userData != null) && (userData.Length > 1000))
+            if ((userData is not null) && (userData.Length > 1000))
             {
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
@@ -763,7 +763,7 @@ namespace Anemonis.RandomOrg
 
             TransferRandom(result.Random, random);
 
-            return new SignedRandomResult<Guid, UuidParameters>(
+            return new(
                 random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature, result.AdvisoryDelay);
         }
 
@@ -793,7 +793,7 @@ namespace Anemonis.RandomOrg
             {
                 throw new ArgumentOutOfRangeException(nameof(size), size, Strings.GetString("random.blob.invalid_total_size"));
             }
-            if ((userData != null) && (userData.Length > 1000))
+            if ((userData is not null) && (userData.Length > 1000))
             {
                 throw new ArgumentException(Strings.GetString("random.user_data.length.invalid_range"), nameof(userData));
             }
@@ -816,7 +816,7 @@ namespace Anemonis.RandomOrg
 
             random.Parameters.Size = result.Random.Size / 8;
 
-            return new SignedRandomResult<byte[], BlobParameters>(
+            return new(
                 random, result.BitsUsed, result.BitsLeft, result.RequestsLeft, result.Signature, result.AdvisoryDelay);
         }
     }

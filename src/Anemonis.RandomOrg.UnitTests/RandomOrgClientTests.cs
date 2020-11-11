@@ -73,7 +73,7 @@ namespace Anemonis.RandomOrg.UnitTests
 
                 cancellationTokenSource.Cancel();
 
-                await Assert.ThrowsExceptionAsync<OperationCanceledException>(() =>
+                await Assert.ThrowsExceptionAsync<TaskCanceledException>(() =>
                     client.GetUsageAsync(cancellationTokenSource.Token));
 
                 cancellationTokenSource.Dispose();
@@ -101,7 +101,7 @@ namespace Anemonis.RandomOrg.UnitTests
 
                 content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
-                return new HttpResponseMessage
+                return new()
                 {
                     StatusCode = HttpStatusCode.BadRequest,
                     Content = content

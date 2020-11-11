@@ -21,11 +21,11 @@ namespace Anemonis.Runtime.Configuration
 
         public static AssemblyConfiguration Load(Assembly assembly, string configuration)
         {
-            if (assembly == null)
+            if (assembly is null)
             {
                 throw new ArgumentNullException(nameof(assembly));
             }
-            if (configuration == null)
+            if (configuration is null)
             {
                 throw new ArgumentNullException(nameof(configuration));
             }
@@ -35,12 +35,12 @@ namespace Anemonis.Runtime.Configuration
 
             configurationBuilder.AddJsonFile(configurationFilePath, true, false);
 
-            return new AssemblyConfiguration(configurationBuilder.Build());
+            return new(configurationBuilder.Build());
         }
 
         public string GetString(string name)
         {
-            if (name == null)
+            if (name is null)
             {
                 throw new ArgumentNullException(nameof(name));
             }
