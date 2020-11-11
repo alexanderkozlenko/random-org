@@ -1,7 +1,5 @@
 ﻿// © Alexander Kozlenko. Licensed under the MIT License.
 
-#pragma warning disable CA1819
-
 namespace Anemonis.RandomOrg.Data
 {
     /// <summary>Encapsulates signed random objects and associated data.</summary>
@@ -13,8 +11,8 @@ namespace Anemonis.RandomOrg.Data
         /// <summary>Initializes a new instance of the <see cref="SignedRandom{TValue, TParameters}" /> class.</summary>
         public SignedRandom()
         {
-            Parameters = new TParameters();
-            License = new RandomLicense();
+            Parameters = new();
+            License = new();
         }
 
         /// <summary>Gets the random parameters.</summary>

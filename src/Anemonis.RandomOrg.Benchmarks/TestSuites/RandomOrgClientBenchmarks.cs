@@ -37,7 +37,7 @@ namespace Anemonis.RandomOrg.Benchmarks.TestSuites
                 ["generateSignedBlobs"] = _resources["sig_blb"]
             };
 
-            _client = new RandomOrgClient("00000000-0000-0000-0000-000000000000", new HttpClient(new RandomOrgBenchmarkHandler(contents)));
+            _client = new("00000000-0000-0000-0000-000000000000", new HttpClient(new RandomOrgBenchmarkHandler(contents)));
         }
 
         private static IReadOnlyDictionary<string, string> CreateResourceDictionary()

@@ -27,7 +27,7 @@ namespace Anemonis.RandomOrg.UnitTests
 
         private static string CreateTestString(int length)
         {
-            return length >= 0 ? new string('*', length) : null;
+            return length >= 0 ? new('*', length) : null;
         }
 
         private async Task<HttpResponseMessage> HandleRequest(HttpRequestMessage request, JObject joreq, JObject jores)
@@ -50,7 +50,7 @@ namespace Anemonis.RandomOrg.UnitTests
 
             content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json; charset=utf-8");
 
-            return new HttpResponseMessage
+            return new()
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = content

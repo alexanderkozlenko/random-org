@@ -18,7 +18,7 @@ namespace Anemonis.RandomOrg.Benchmarks.Internal
 
         public RandomOrgBenchmarkHandler(IReadOnlyDictionary<string, string> contents)
         {
-            if (contents == null)
+            if (contents is null)
             {
                 throw new ArgumentNullException(nameof(contents));
             }
@@ -33,7 +33,7 @@ namespace Anemonis.RandomOrg.Benchmarks.Internal
 
             responseContent.Headers.ContentType = _contentTypeHeaderValue;
 
-            return new HttpResponseMessage
+            return new()
             {
                 StatusCode = HttpStatusCode.OK,
                 Content = responseContent

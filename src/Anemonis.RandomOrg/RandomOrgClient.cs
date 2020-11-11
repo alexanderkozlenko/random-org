@@ -18,19 +18,17 @@ using Anemonis.RandomOrg.Resources;
 
 using Newtonsoft.Json;
 
-#pragma warning disable CA2000
-
 namespace Anemonis.RandomOrg
 {
     /// <summary>Represents RANDOM.ORG service client.</summary>
     public sealed partial class RandomOrgClient : IDisposable
     {
-        private static readonly string _contentTypeHeaderValue = $"{JsonRpcTransport.MediaType}; charset={JsonRpcTransport.Charset}";
-        private static readonly string _userAgentHeaderValue = CreateUserAgentHeaderValue();
+        private static readonly string s_contentTypeHeaderValue = $"{JsonRpcTransport.MediaType}; charset={JsonRpcTransport.Charset}";
+        private static readonly string s_userAgentHeaderValue = CreateUserAgentHeaderValue();
 
-        private static readonly Uri _serviceUri = new Uri("https://api.random.org/json-rpc/3/invoke", UriKind.Absolute);
-        private static readonly JsonSerializer _jsonSerializer = CreateJsonSerializer();
-        private static readonly Dictionary<string, JsonRpcResponseContract> _responseContracts = CreateJsonRpcContracts();
+        private static readonly Uri s_serviceUri = new("https://api.random.org/json-rpc/3/invoke", UriKind.Absolute);
+        private static readonly JsonSerializer s_jsonSerializer = CreateJsonSerializer();
+        private static readonly Dictionary<string, JsonRpcResponseContract> s_responseContracts = CreateJsonRpcContracts();
 
         private readonly string _apiKey;
         private readonly JsonRpcContractResolver _jsonRpcContractResolver = CreateJsonRpcContractResolver();
@@ -44,7 +42,7 @@ namespace Anemonis.RandomOrg
         /// <exception cref="ArgumentNullException"><paramref name="apiKey" /> or <paramref name="httpInvoker" /> is <see langword="null" />.</exception>
         public RandomOrgClient(string apiKey, HttpMessageInvoker httpInvoker)
         {
-            if (apiKey == null)
+            if (apiKey is null)
             {
                 throw new ArgumentNullException(nameof(apiKey));
             }
@@ -52,14 +50,14 @@ namespace Anemonis.RandomOrg
             {
                 throw new ArgumentException(Strings.GetString("client.api_key.invalid_format"), nameof(apiKey));
             }
-            if (httpInvoker == null)
+            if (httpInvoker is null)
             {
                 throw new ArgumentNullException(nameof(httpInvoker));
             }
 
             _apiKey = apiKey;
             _httpInvoker = httpInvoker;
-            _jsonRpcSerializer = new JsonRpcSerializer(_jsonRpcContractResolver, _jsonSerializer);
+            _jsonRpcSerializer = new(_jsonRpcContractResolver, s_jsonSerializer);
         }
 
         /// <summary>Initializes a new instance of the <see cref="RandomOrgClient" /> class.</summary>
@@ -111,7 +109,7 @@ namespace Anemonis.RandomOrg
         private static JsonRpcContractResolver CreateJsonRpcContractResolver()
         {
             var resolver = new JsonRpcContractResolver();
-            var enumerator = _responseContracts.GetEnumerator();
+            var enumerator = s_responseContracts.GetEnumerator();
 
             while (enumerator.MoveNext())
             {
@@ -123,24 +121,24 @@ namespace Anemonis.RandomOrg
 
         private static Dictionary<string, JsonRpcResponseContract> CreateJsonRpcContracts()
         {
-            return new Dictionary<string, JsonRpcResponseContract>(16, StringComparer.Ordinal)
+            return new(16, StringComparer.Ordinal)
             {
-                ["getUsage"] = new JsonRpcResponseContract(typeof(RpcRandomUsageResult)),
-                ["generateIntegers"] = new JsonRpcResponseContract(typeof(RpcRandomResult<int>)),
-                ["generateIntegerSequences"] = new JsonRpcResponseContract(typeof(RpcRandomResult<IReadOnlyList<int>>)),
-                ["generateDecimalFractions"] = new JsonRpcResponseContract(typeof(RpcRandomResult<decimal>)),
-                ["generateGaussians"] = new JsonRpcResponseContract(typeof(RpcRandomResult<decimal>)),
-                ["generateStrings"] = new JsonRpcResponseContract(typeof(RpcRandomResult<string>)),
-                ["generateUUIDs"] = new JsonRpcResponseContract(typeof(RpcRandomResult<Guid>)),
-                ["generateBlobs"] = new JsonRpcResponseContract(typeof(RpcRandomResult<byte[]>)),
-                ["generateSignedIntegers"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcIntegersRandom, int>)),
-                ["generateSignedIntegerSequences"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcIntegerSequencesRandom, IReadOnlyList<int>>)),
-                ["generateSignedDecimalFractions"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcDecimalFractionsRandom, decimal>)),
-                ["generateSignedGaussians"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcGaussiansRandom, decimal>)),
-                ["generateSignedStrings"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcStringsRandom, string>)),
-                ["generateSignedUUIDs"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcUuidsRandom, Guid>)),
-                ["generateSignedBlobs"] = new JsonRpcResponseContract(typeof(RpcSignedRandomResult<RpcBlobsRandom, byte[]>)),
-                ["verifySignature"] = new JsonRpcResponseContract(typeof(RpcVerifyResult))
+                ["getUsage"] = new(typeof(RpcRandomUsageResult)),
+                ["generateIntegers"] = new(typeof(RpcRandomResult<int>)),
+                ["generateIntegerSequences"] = new(typeof(RpcRandomResult<IReadOnlyList<int>>)),
+                ["generateDecimalFractions"] = new(typeof(RpcRandomResult<decimal>)),
+                ["generateGaussians"] = new(typeof(RpcRandomResult<decimal>)),
+                ["generateStrings"] = new(typeof(RpcRandomResult<string>)),
+                ["generateUUIDs"] = new(typeof(RpcRandomResult<Guid>)),
+                ["generateBlobs"] = new(typeof(RpcRandomResult<byte[]>)),
+                ["generateSignedIntegers"] = new(typeof(RpcSignedRandomResult<RpcIntegersRandom, int>)),
+                ["generateSignedIntegerSequences"] = new(typeof(RpcSignedRandomResult<RpcIntegerSequencesRandom, IReadOnlyList<int>>)),
+                ["generateSignedDecimalFractions"] = new(typeof(RpcSignedRandomResult<RpcDecimalFractionsRandom, decimal>)),
+                ["generateSignedGaussians"] = new(typeof(RpcSignedRandomResult<RpcGaussiansRandom, decimal>)),
+                ["generateSignedStrings"] = new(typeof(RpcSignedRandomResult<RpcStringsRandom, string>)),
+                ["generateSignedUUIDs"] = new(typeof(RpcSignedRandomResult<RpcUuidsRandom, Guid>)),
+                ["generateSignedBlobs"] = new(typeof(RpcSignedRandomResult<RpcBlobsRandom, byte[]>)),
+                ["verifySignature"] = new(typeof(RpcVerifyResult))
             };
         }
 
@@ -161,7 +159,7 @@ namespace Anemonis.RandomOrg
             target.License.Type = source.License.Type;
             target.License.Text = source.License.Text;
 
-            if (source.License.InfoUrl != null)
+            if (source.License.InfoUrl is not null)
             {
                 target.License.InfoUrl = source.License.InfoUrl.OriginalString;
             }
@@ -178,15 +176,15 @@ namespace Anemonis.RandomOrg
             target.License.Type = source.License.Type;
             target.License.Text = source.License.Text;
 
-            if (source.License.InfoUrl != null)
+            if (source.License.InfoUrl is not null)
             {
-                target.License.InfoUrl = new Uri(source.License.InfoUrl);
+                target.License.InfoUrl = new(source.License.InfoUrl);
             }
         }
 
         private Dictionary<string, object> CreateGenerationParameters(int capacity)
         {
-            return new Dictionary<string, object>(capacity + 1, StringComparer.Ordinal)
+            return new(capacity + 1, StringComparer.Ordinal)
             {
                 ["apiKey"] = _apiKey
             };
@@ -220,21 +218,20 @@ namespace Anemonis.RandomOrg
             {
                 _jsonRpcSerializer.SerializeRequest(request, requestStream);
 
-                cancellationToken.ThrowIfCancellationRequested();
                 requestStream.Position = 0;
 
-                using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, _serviceUri))
+                using (var httpRequest = new HttpRequestMessage(HttpMethod.Post, s_serviceUri))
                 {
                     var requestContent = new StreamContent(requestStream);
 
-                    requestContent.Headers.Add("Content-Type", _contentTypeHeaderValue);
+                    requestContent.Headers.Add("Content-Type", s_contentTypeHeaderValue);
 
                     httpRequest.Content = requestContent;
                     httpRequest.Headers.Date = DateTime.UtcNow;
                     httpRequest.Headers.ExpectContinue = false;
                     httpRequest.Headers.Add("Accept", JsonRpcTransport.MediaType);
                     httpRequest.Headers.Add("Accept-Charset", JsonRpcTransport.Charset);
-                    httpRequest.Headers.Add("User-Agent", _userAgentHeaderValue);
+                    httpRequest.Headers.Add("User-Agent", s_userAgentHeaderValue);
 
                     using (var httpResponse = await _httpInvoker.SendAsync(httpRequest, cancellationToken).ConfigureAwait(false))
                     {
@@ -245,7 +242,7 @@ namespace Anemonis.RandomOrg
 
                         var contentTypeHeaderValue = httpResponse.Content.Headers.ContentType;
 
-                        if (contentTypeHeaderValue == null)
+                        if (contentTypeHeaderValue is null)
                         {
                             throw new RandomOrgProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                         }
@@ -253,17 +250,15 @@ namespace Anemonis.RandomOrg
                         {
                             throw new RandomOrgProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                         }
-                        if ((contentTypeHeaderValue.CharSet != null) && (string.Compare(contentTypeHeaderValue.CharSet, JsonRpcTransport.Charset, StringComparison.OrdinalIgnoreCase) != 0))
+                        if ((contentTypeHeaderValue.CharSet is not null) && (string.Compare(contentTypeHeaderValue.CharSet, JsonRpcTransport.Charset, StringComparison.OrdinalIgnoreCase) != 0))
                         {
                             throw new RandomOrgProtocolException(httpResponse.StatusCode, Strings.GetString("protocol.http.headers.content_type.invalid_value"));
                         }
 
                         var responseData = default(JsonRpcData<JsonRpcResponse>);
 
-                        using (var responseStream = await httpResponse.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                        using (var responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false))
                         {
-                            cancellationToken.ThrowIfCancellationRequested();
-
                             _jsonRpcContractResolver.AddResponseBinding(requestId, request.Method);
 
                             try
@@ -302,7 +297,7 @@ namespace Anemonis.RandomOrg
                         {
                             throw new RandomOrgException(request.Method, response.Error.Code, response.Error.Message);
                         }
-                        if (response.Result == null)
+                        if (response.Result is null)
                         {
                             throw new RandomOrgClientException(Strings.GetString("protocol.random.message.invalid_value"));
                         }
@@ -328,8 +323,6 @@ namespace Anemonis.RandomOrg
         /// <exception cref="RandomOrgProtocolException">An error occurred during communication with the RANDOM.ORG service.</exception>
         public async Task<RandomUsage> GetUsageAsync(CancellationToken cancellationToken = default)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-
             var parameters = new Dictionary<string, object>(1, StringComparer.Ordinal)
             {
                 ["apiKey"] = _apiKey
@@ -337,7 +330,7 @@ namespace Anemonis.RandomOrg
 
             var result = await InvokeServiceMethodAsync<RpcRandomUsageResult>("getUsage", parameters, cancellationToken).ConfigureAwait(false);
 
-            return new RandomUsage(result.Status, result.BitsLeft, result.RequestsLeft);
+            return new(result.Status, result.BitsLeft, result.RequestsLeft);
         }
 
         /// <summary>Verifies the signature of signed random objects and associated data as an asynchronous operation.</summary>
@@ -356,24 +349,22 @@ namespace Anemonis.RandomOrg
         public async Task<bool> VerifySignatureAsync<TValue, TParameters>(SignedRandom<TValue, TParameters> random, byte[] signature, CancellationToken cancellationToken = default)
             where TParameters : RandomParameters, new()
         {
-            if (random == null)
+            if (random is null)
             {
                 throw new ArgumentNullException(nameof(random));
             }
-            if (signature == null)
+            if (signature is null)
             {
                 throw new ArgumentNullException(nameof(signature));
             }
-            if (random.Data == null)
+            if (random.Data is null)
             {
                 throw new ArgumentException(Strings.GetString("client.verify.data.not_specified"), nameof(random));
             }
-            if (random.License.Type == null)
+            if (random.License.Type is null)
             {
                 throw new ArgumentException(Strings.GetString("client.verify.license.type.not_specified"), nameof(random));
             }
-
-            cancellationToken.ThrowIfCancellationRequested();
 
             var rpcRandomParam = default(RpcRandomObject);
 
@@ -398,15 +389,15 @@ namespace Anemonis.RandomOrg
                     break;
                 case SignedRandom<IReadOnlyList<int>, IntegerSequenceParameters> xRandom:
                     {
-                        if (xRandom.Parameters.Minimums == null)
+                        if (xRandom.Parameters.Minimums is null)
                         {
                             throw new ArgumentException(Strings.GetString("random.sequence.minimums.not_specified"), nameof(random));
                         }
-                        if (xRandom.Parameters.Maximums == null)
+                        if (xRandom.Parameters.Maximums is null)
                         {
                             throw new ArgumentException(Strings.GetString("random.sequence.maximums.not_specified"), nameof(random));
                         }
-                        if (xRandom.Parameters.Replacements == null)
+                        if (xRandom.Parameters.Replacements is null)
                         {
                             throw new ArgumentException(Strings.GetString("random.sequence.replacements.not_specified"), nameof(random));
                         }
@@ -425,7 +416,7 @@ namespace Anemonis.RandomOrg
 
                         for (var i = 0; i < count; i++)
                         {
-                            if (xRandom.Data[i] == null)
+                            if (xRandom.Data[i] is null)
                             {
                                 throw new ArgumentException(Strings.GetString("random.sequence.sequence.not_specified"), nameof(random));
                             }
@@ -483,7 +474,7 @@ namespace Anemonis.RandomOrg
                     break;
                 case SignedRandom<string, StringParameters> xRandom:
                     {
-                        if (xRandom.Parameters.Characters == null)
+                        if (xRandom.Parameters.Characters is null)
                         {
                             throw new ArgumentException(Strings.GetString("random.string.characters.not_specified"), nameof(random));
                         }

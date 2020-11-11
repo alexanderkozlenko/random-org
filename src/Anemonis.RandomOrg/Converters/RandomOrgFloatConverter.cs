@@ -17,11 +17,11 @@ namespace Anemonis.RandomOrg.Converters
             {
                 case JsonToken.Integer:
                     {
-                        return new decimal((long)reader.Value);
+                        return new((long)reader.Value);
                     }
                 case JsonToken.Float:
                     {
-                        return new decimal((double)reader.Value);
+                        return new((double)reader.Value);
                     }
             }
 

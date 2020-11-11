@@ -10,7 +10,7 @@ namespace Anemonis.RandomOrg.DataRpc
     {
         protected RpcSignedRandom()
         {
-            License = new RpcRandomLicense();
+            License = new();
         }
 
         [JsonProperty("method", Required = Required.Always)]
