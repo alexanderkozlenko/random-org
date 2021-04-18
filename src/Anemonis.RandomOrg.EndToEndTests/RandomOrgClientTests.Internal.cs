@@ -10,11 +10,11 @@ namespace Anemonis.RandomOrg.EndToEndTests
 {
     public partial class RandomOrgClientTests
     {
-        private static readonly AssemblyConfiguration _configuration = AssemblyConfiguration.Load(Assembly.GetExecutingAssembly(), "svcconfig");
+        private static readonly AssemblyConfiguration s_configuration = AssemblyConfiguration.Load(Assembly.GetExecutingAssembly(), "svcconfig");
 
         private static string GetServiceApiKey()
         {
-            var serviceApiKey = _configuration.GetString("random:apiKey");
+            var serviceApiKey = s_configuration.GetString("random:apiKey");
 
             if (serviceApiKey == string.Empty)
             {

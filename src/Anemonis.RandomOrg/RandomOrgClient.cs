@@ -97,10 +97,10 @@ namespace Anemonis.RandomOrg
 
         private static HttpMessageInvoker CreateHttpInvoker()
         {
-            var httpHandler = new HttpClientHandler
+            var httpHandler = new SocketsHttpHandler
             {
                 AllowAutoRedirect = false,
-                AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+                AutomaticDecompression = DecompressionMethods.All
             };
 
             return new HttpClient(httpHandler);
